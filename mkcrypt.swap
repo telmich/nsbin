@@ -1,0 +1,11 @@
+#!/bin/sh
+# cLinux
+# Nico Schottelius (nico-linux@schottelius.org)
+# 2004-12-29
+# create swap devices from $argv
+
+i=0
+for i in devices ...
+   crypt-dev.rand.key "$1" 
+###dd if=/dev/urandom bs=512 count=2 | cryptsetup create swap "$1"
+####dd if=/dev/urandom bs=512 count=2 | cryptsetup create swap /dev/hda6 

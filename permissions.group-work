@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Nico Schottelius <nico-linux@schottelius.org>
+# Date: 09-Nov-2005
+# Last Modified: -
+#
+
+find "$1" -type d -exec chmod 0770 {} \;
+find "$1" -type f -exec chmod u+rw,g+rw,o-rwx {} \;
