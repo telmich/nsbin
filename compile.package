@@ -1,0 +1,14 @@
+#!/bin/sh
+# cLinux
+# Nico Schottelius (nico-linux@schottelius.org)
+# 2005-03-27
+# build a standard package
+
+[ $# -ne 1 ] && exit 1
+
+PRE_PREFIX=/usr/packages
+PKGDL=$1
+
+PREFIX=${PRE_PREFIX}/${PKGDL}
+
+./configure "--prefix=${PREFIX}"
