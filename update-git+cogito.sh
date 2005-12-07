@@ -40,7 +40,7 @@ for project in $PROJECTS; do
    fi
 
    if [ $? -ne 0 ]; then
-      echo "Pull or clone failed, aborting now."
+      echo "Pull or clone failed, ABORTING."
       exit 23
    fi
 
