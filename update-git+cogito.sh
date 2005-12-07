@@ -6,10 +6,15 @@
 # Install latest git and cogito to $INSTALL_PREFIX/$name and
 # link the binaries to $BINDIR
 # Needs git and cogito to work!
+# And:
+# - libexpat-dev
+# - libcurl3-dev
+# - libssl-dev
+# - libz-dev
 
 BASE_GET=http://www.kernel.org/pub/scm/
 PROJECTS="git/git.git cogito/cogito.git"
-BUILDDIR=/home/nico/build
+BUILDDIR=/home/user/nico/build
 INSTALL_PREFIX=/usr/packages
 BINDIR=/usr/local/bin
 
@@ -32,6 +37,11 @@ for project in $PROJECTS; do
       echo "Updating $realname from \"origin\""
       cd "$BUILDDIR/$realname" || error_in "$BUILDDIR/$realname"
       cg-update origin
+   fi
+
+   if [ $? -ne 0 ]; then
+      echo "Pull or clone failed, aborting now."
+      exit 23
    fi
 
    cd "$BUILDDIR/$realname"
