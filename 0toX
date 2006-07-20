@@ -1,0 +1,16 @@
+#!/bin/bash
+# @Descripton:
+# Move blender output files to your
+# extension
+# @Author: Nico Schottelius <nico@schottelius.(org|net)>
+# @Date: April 2., 1999
+# @Copying: See GNU GENERAL PUBLIC LICENSE ; Version 2, June 1991 
+
+if [ -z $1 ]
+     then echo "Please choose extension"
+          echo "Usage: $0 <extension>"
+else
+     for i in [0-9][0-9][0-9][0-9]
+     do mv $i $i.$1
+     done
+fi

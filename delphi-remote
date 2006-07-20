@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo $DISPLAY
+ssh -n -X ts "startdelphi"

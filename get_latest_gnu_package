@@ -1,0 +1,31 @@
+#!/bin/sh
+# Author: Nico Schottelius <nico@schottelius.net>
+# Date: 04-Feb-2003
+# Last Modified: 04-Feb-2003
+# Comment: get the latest gnu source package
+
+# variables
+PROGNAME=`basename $0`
+PID="$$"
+TEMPFILE=/tmp/.`mktemp "$PROGNAME""$PID""XXXXXX"`.html
+BASE_URL="ftp://ftp.gnu.org/pub/gnu"
+SHOW_URLS="lynx -dump $TEMPFILE"
+
+# init()
+umask 7
+
+if [ "$#" -ne 1 -o "$1" = "--help" ]; then
+   echo "$PROGNAME: gnu-package-name"
+   exit 1
+fi
+
+# retrieve index
+wget $BASE_URL/$1/ -O $TEMPFILE
+
+# get number of lines
+num_of_lines=`$SHOW_URLS | wc | awk '{ print $1 } '`
+ref_lines=`$SHOW_URLS | grep -n '^References'| sed 's/\(.*\):References/\1/'`
+interesting_lines=$[$num_of_lines-$ref_lines]
+
+# display interesting urls
+$SHOW_URLS | tail -n $interesting_lines

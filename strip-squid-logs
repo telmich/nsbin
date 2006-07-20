@@ -1,0 +1,3 @@
+cat $1 | tr A-Z a-z | egrep -v -e '.gif' -e '.png' -e '.jpg' -e x-javascript | \
+egrep -v 'schottelius.org' | egrep ' tcp_.*/200 '
+# | sed s/.jpg$//g | ed s/.png$//g

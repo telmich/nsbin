@@ -1,0 +1,20 @@
+#!/bin/sh
+
+HOST="192.168.0.1"
+
+ret="true"
+sleep="2"
+count="2"
+
+if [ -n "$1" ]; then HOST=$1;fi 
+
+while true; do
+	ping -c$count $HOST  >/dev/null 2>/dev/null || ret=failed
+	if [ $ret = "failed" ];  then
+		echo "Failed: "`date`
+	else
+		echo "Recieved: "`date`
+	fi
+	sleep $sleep 
+done
+

@@ -1,0 +1,1 @@
+while true; do for i in `seq 1 11`; do wlanctl-ng wlan0 lnxreq_wlansniff enable=true channel=$i; done; done 

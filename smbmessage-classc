@@ -1,0 +1,10 @@
+BASE=192.168.0
+MESSAGE="Network Failure"
+SMBCLIENT="smbclient -n NONE -M"
+
+i=1
+
+while [ $i -lt 255 ]; do 
+	echo $MESSAGE | $SMBCLIENT "$BASE"."$i"
+	i=$[$i+1]
+done

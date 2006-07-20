@@ -1,0 +1,19 @@
+#!/bin/sh
+# Nico Schottelius
+# Mi Nov 24 13:25:40 CET 2004
+
+EXCLUDE="/cdrom /dev /floppy /proc /sys /tmp"
+EXCLUDE_FILE=".exclude"
+SOURCE=/
+PREFIX="time nice -n 10"
+
+[ $# -ne 1 ] && exit 23
+
+DEST=$1
+
+rm -f $EXCLUDE_FILE
+for a in $EXCLUDE; do
+	echo $a >> $EXCLUDE_FILE
+done
+
+$PREFIX rsync -av -e ssh --exclude-from="$EXCLUDE_FILE" $SOURCE "${DEST}"

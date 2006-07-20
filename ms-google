@@ -1,0 +1,20 @@
+
+# seconds to wait
+#WAIT="42"
+WAIT="23"
+
+#AGENT="Mozilla/4.0 (compatible; MSIE 5.5; Windows 98)"
+AGENT="Mozilla/4.0 (compatible; MSIE 5.5; Windows 2004)"
+
+REFERER='http://http:llwww.google.de/search?q=linux'
+
+#URL='http://www.google.de/url?sa=l&q=http://tracking-microsoftch.qualitraffic.de/105.html%3Freferer%3Dgoogle_select&ai=Bh8poE-IRQs7aH7_sQae16egI1J_tCLz9oJ4B6YeHBtCGAxABGAEoBDgAQMQVSKw5yAEB&num=1'
+URL='http://www.google.de/url?q=http://tracking-microsoftch.qualitraffic.de/105.html%3Freferer%3Dgoogle_select&amp;sa=L&amp;ai=Bh8poE-IRQs7aH7_sQae16egI1J_tCLz9oJ4B6YeHBtCGAxABGAEoBDgAQMQVSKw5yAEB&amp;client='
+
+http://www.google.ch/url?sa=l&q=http://tracking-microsoftch.qualitraffic.de/62.html%3Freferer%3Dgoogle_select&ai=BSUtaz0oUQumLOsmgQcLu7ckI1J_tCLz9oJ4B6YeHBvCiBBACGAIoBzgAQMQVSKw5yAEB&num=2
+
+while true; do
+   curl -A "$AGENT" -e "$REFERER" "$URL"
+   sleep $WAIT
+done
+

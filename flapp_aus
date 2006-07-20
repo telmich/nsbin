@@ -1,0 +1,1 @@
+su -l root -c "shutdown -h now"

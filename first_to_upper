@@ -1,0 +1,2 @@
+#/bin/sh
+echo $@ | sed 's/\(^.\)\(.*\)/\1 \2/' | awk '{ print toupper($1)$2 }'

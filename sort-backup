@@ -1,0 +1,6 @@
+if [ -z "$1" ]; then
+   echo "searchdir, please"
+   exit 1
+fi 
+
+find "$1" -exec sort-backup.dothejob ~/sorted-backup {} \;

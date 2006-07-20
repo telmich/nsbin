@@ -1,0 +1,25 @@
+#!/bin/sh
+# Nico Schottelius (c) 2001
+# nico-linux at schottelius dot org
+# make secure connections to your mail servers
+# used at conferences / congresses / meetings
+#
+
+POP3=110
+POP3S=995
+IMAP=143
+IMAPS=993
+
+# our secured host
+HOST="217.14.64.75"
+#HOST="creme.schottelius.org"
+#HOST="213.146.113.242"
+#HOST="bruehe.schottelius.org"
+
+ssh -T -f -C -N -L2323:smtp.syhosting.ch:$IMAPS "$HOST"
+ssh -T -f -C -N -L2342:smtp.syhosting.ch:$POP3S "$HOST"
+ssh -T -f -C -N -L4242:creme.schottelius.org:$IMAPS "$HOST"
+
+#ssh -T -f -C -N -L4242:mail.schottelius.org:$POP3 "$HOST"
+#ssh -T -f -C -N -L2323:mail.schottelius.org:25 mail.schottelius.org
+#ssh -T -f -C -N -L2323:mail.folz.de:110 "$HOST"

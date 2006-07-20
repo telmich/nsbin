@@ -1,0 +1,4 @@
+#!/bin/sh
+
+netscape -mail &
+vncviewer ozean:1

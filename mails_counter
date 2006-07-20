@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Author: Nico Schottelius <nicos@pcsystems.de>
+# Date: 12th of October 2k
+# Last Modifed: dito
+# Copyright: GPL 2.0 or newer
+
+#
+echo "Starting Netscape Mail counter (c) by Nico Schottelius (nicos@pcsystems.de)"
+#FILE="/tmp/from.`date +%j`"
+#rm $FILE 2> /dev/null
+echo "Please wait, counting mails..."
+find ~/nsmail -name \* -exec cat {} 2> /dev/null \; | egrep "^From" | grep "@" \
+| grep -v Nico | less
+
+#grep From: $FILE.temp | grep -v Drafts | grep -v Sent | grep -v Trash | grep -v telmich | grep -v nicos | grep @ >> $FILE 2> /dev/null
+#echo "Action: sorting"
+#sort $FILE -o $FILE.temp
+#echo "Action: show number of mails"
+#less $FILE.temp
+#echo "Action: cleaning up"
+#rm $FILE $FILE.temp 2>/dev/null
+echo "Do you have more than 4000 ? :-)"

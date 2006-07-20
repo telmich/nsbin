@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# Standard:
+thehost="creeper"
+theuser="root"
+
+SSH="ssh"
+OPTS=""
+
+# HOST
+read -p "ssh host [$thehost] :" temphost
+if [ -z "$temphost" ]; then
+   OPTS="$OPTS $thehost"
+else
+   OPTS="$OPTS $temphost"
+fi   
+
+
+# USER 
+read -p "user [$theuser] :"     tempuser
+if [ -z "$tempuser" ]; then
+   OPTS="$OPTS -l$theuser"
+else
+   OPTS="$OPTS -l$tempuser"
+fi   
+
+# COMMAND 
+read -p "command: "  thecmd
+if [ -n "$thecmd" ]; then
+   OPTS="$OPTS \"$thecmd\""
+fi
+
+$SSH $OPTS

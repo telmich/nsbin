@@ -1,0 +1,1 @@
+cat $@ | oggenc - | ogg123 -

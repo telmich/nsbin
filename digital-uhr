@@ -1,0 +1,2 @@
+xclock -bg black -fg red -update 1 -digital -twentyfour
+

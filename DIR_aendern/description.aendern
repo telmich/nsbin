@@ -1,0 +1,9 @@
+#!/bin/sh
+
+read -p "Beschreibung: " mydesc
+
+for a in $* 
+  do
+  cat $a | sed "s/DESCRIPTION/${mydesc}/g" > $a.tmp
+  mv $a.tmp $a
+  done

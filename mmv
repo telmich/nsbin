@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# multi move 
+# Nico Schottelius <nico-linux@schottelius.(org|net)>
+# Last Changed : 8. Juni 2000
+# Usage: mmv oldext newext
+#
+
+if [ $# -ne 2 ]; then echo "Usage: $0 old_ext new_ext";exit 1;fi
+
+for i in *.$1;do mv "$i" "${i%.*}.$2";done

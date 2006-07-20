@@ -1,0 +1,11 @@
+#!/bin/sh
+
+tempfile=/tmp/blafaselquak
+
+cat > $tempfile
+
+echo -e \\f >> $tempfile
+
+echo "put $tempfile" | smbclient //ps-it-01/lp0 -N -P
+
+rm $tempfile

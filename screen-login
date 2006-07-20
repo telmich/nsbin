@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Author: Nico Schottelius <nico@schottelius.net>
+# Date: 03-Dec-2002
+# Last Modified: 03-Dec-2002
+# Comment: Automaticly start screen. But only one time
+# Comment: Connect to old session if it exists.
+# Comment: Allows multiply views of one session.
+# Comment: The problem is we get called recursivly: first login->bash
+# Comment: and the screen calls bash again.
+#
+
+# 1. are we in screen or are we login' in ?
+if [ -z "$STY" ]; then # login in
+   # check for existing screen
+   /usr/util/bin/screen -x
+   if [ "$?" -eq 1 ]; then    # no screen running
+      /usr/util/bin/screen -q # start a new screen
+   fi   
+else  # screen starts us
+   /bin/bash --login
+fi
+
+# don't keep on beeing in normal login shell
+exit

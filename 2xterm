@@ -1,0 +1,3 @@
+#!/bin/sh
+xterm -ls -title "F1rSt X-T3Rm" &
+xterm -ls -title "²×-13erM" &

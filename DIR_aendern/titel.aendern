@@ -1,0 +1,9 @@
+#!/bin/sh
+
+read -p "Titel: " mytitle
+
+for a in $* 
+  do
+  cat $a | sed "s/THE_TITLE/${mytitle}/g" > $a.tmp
+  mv $a.tmp $a
+  done

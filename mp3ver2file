@@ -1,0 +1,21 @@
+#!/bin/sh
+# Author: Nico Schottelius (nicos@pcsystems.de)
+# Date: 30. May 2000
+# Last Changed : 30. May 2000
+# Comment: Move hallo/spencer.mp3 to hallo-spencer.mp3
+# Comment: Attention : `mp3ver3file "dirs"` <-- quotes!
+
+list=$@
+
+for gruppen in $list
+  do
+  cd "$gruppen"
+  echo $gruppen
+  for lieder in *
+    do
+    # For testing purposes
+    #echo "$lieder" "../${gruppen}-${lieder}"
+    mv -- "$lieder" "../${gruppen}-${lieder}"
+  done
+  cd ..
+done

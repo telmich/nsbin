@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Nico Schottelius
+# Date: 18-Feb-2003
+# Last Modified: 15-September-2003
+# displays the things you got todo.
+#
+
+CALDIR=~/calendar
+
+cd $CALDIR
+for file in *; do 
+   egrep --with-filename -A 2 "^`date +%d.%m:`" "$file"
+   egrep --with-filename -A 2 "^TO.DO:" "$file"
+done

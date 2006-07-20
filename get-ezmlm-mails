@@ -1,0 +1,17 @@
+
+for number in $@; do
+   cat << EOF > /tmp/remove_me_not$$
+From: Nico Schottelius <telmich@schottelius.org>
+To: intern-get.$number@lists.ccc.de
+Cc: 
+Bcc: 
+Subject: get messages...
+Reply-To: 
+X-Linux-Info: http://linux.schottelius.org/
+X-Operating-System: Linux flapp 2.6.0-test5 
+
+EOF
+
+echo bla | mutt -H /tmp/remove_me_not$$ intern-get.$number@lists.ccc,de
+
+done

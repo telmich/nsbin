@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# Nico Schottelius
+# Date: 13-May-2003
+# Last Modified: 2004-09-06
+# usage: show_calendar <date> [date]
+# Format: DD.MM., DD.MM.YYYY
+# add $CALDIR/files:
+# -----------------------
+# cat $CALDIR/test
+# 01.09: auto ansehen..
+# -----------------------
+#
+
+CALDIR=~/calendar
+
+if [ $# -lt 1 ]; then
+   echo `basename $0` 'day.month [day.month.year]'
+   exit 1
+fi
+
+cd $CALDIR
+for file in *; do 
+   for date in $@ TO.DO; do 
+      egrep --with-filename -A 2 -e "^${date}:" "$file"
+   done
+done

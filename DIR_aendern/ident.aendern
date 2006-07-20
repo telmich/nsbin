@@ -1,0 +1,9 @@
+#!/bin/sh
+
+read -p "Identifikation: " myident
+
+for a in $* 
+  do
+  cat $a | sed "s/IDENT/${myident}/g" > $a.tmp
+  mv $a.tmp $a
+  done

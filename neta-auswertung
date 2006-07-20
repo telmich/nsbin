@@ -1,0 +1,1 @@
+neta "$1" | grep -i -e USER -e PASS -B 2 -A 2

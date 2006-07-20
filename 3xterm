@@ -1,0 +1,4 @@
+#!/bin/sh
+xterm -ls -title "--irst 0n3xx" &
+xterm -ls -title ">>> 2nd <<<" &
+xterm -ls -title "www.3rd.xterm" &

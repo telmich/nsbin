@@ -1,0 +1,29 @@
+#!/bin/sh
+# Nico Schottelius
+# 21-Mar-2004
+# 
+
+if [ $# -lt 2 ]; then
+   echo "usage: `basename $0` <outputdir>  <directory(ies) with waves>"
+   exit 1
+fi
+
+RIPDIR="$1"; shift
+
+if [ ! -d "$RIPDIR" ]; then
+   echo "$RIPDIR must be an existing directory"
+   exit 1
+fi
+
+cd $RIPDIR
+
+for dir in $@; do
+   if [ ! -d "$dir" ]; then
+      echo "Skipping $dir, is not an existing directory"
+      continue
+   fi
+   echo "Ripping $dir .."
+   
+   find "$dir" -exec rip-wave2ogg.doit "$dir" {} \;
+
+done

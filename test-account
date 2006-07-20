@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Nico Schottelius <nico-linux@schottelius.org>
+# Date: 21-Oct-2004
+# Last Modified: -
+#
+
+PROGLIST="wget curl zsh vim irssi perl"
+
+for prog in $PROGLIST; do
+   [ `which $prog` ] || MISSING="$MISSING $prog"
+done
+
+[ "$MISSING" ] || MISSING=" -"
+
+echo "Missing:$MISSING"
+

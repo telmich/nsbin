@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Nico Schottelius <nico@schottelius.(net|org)>
+# Date: 30-Jul-2003
+# Last Modified: -
+#
+# usage: dietcompile packagename --> makes /usr/package-diet
+#
+
+CC='diet gcc -nostdinc'
+
+$CC $@

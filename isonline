@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]; then
+   echo "`basename $0`"' host(s)'
+   exit 1
+fi   
+
+# how many times to try
+COUNT="5"
+
+for host in $@; do
+   ping_result="not reachable."
+   echo -n "Testing if host $host is reachable: "
+   ping -c $COUNT $host &>/dev/null && ping_result="reachable."
+   echo $ping_result
+done   

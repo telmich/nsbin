@@ -1,0 +1,28 @@
+#!/bin/sh
+echo ""
+echo "1) Benni+Mop"
+echo "2) Mop"
+echo "3) Benni"
+echo "4) Other"
+read -p "Choice: " ch
+
+case "$ch" in
+        1)
+		xterm -title "***) Telnet: Benni (***" -e telnet benni &
+		xterm -title "***) Telnet: Mop (***" -e telnet mop &
+                ;;
+	2)
+		xterm -title "***) Telnet: Mop (***"	 -e telnet mop &
+		;;
+
+	3)
+		xterm -title "***) Telnet: Benni (***" -e telnet benni &
+		;;
+	4)
+		xterm -title "***) Xterm - Telnet (***" -e telnet &
+		;;
+	*)
+		xterm -title "***) Telnet: Benni (***" -e telnet benni &
+		xterm -title "***) Telnet: Mop (***" -e telnet mop &
+                ;;
+esac

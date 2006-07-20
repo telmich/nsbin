@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# old terminal
+# Nico Schottelius <nico-linux@schottelius.(org|net)>
+# Last Changed : 8. Juni 2000
+#
+
+title="phosphor"
+colour="darkgreen"
+
+xterm -fg $colour -bg black -bd $colour -cr $colour -hc $colour \
+-title $title -name $title -T $title \
+-bc -bcf 1000 -bcn 900  -fb *-*-bold-*-*-*-*-*-*-*-*-*-*-* \
+-fn '-misc-fixed-bold-r-normal-*-*-*-*-*-*-*-iso8859-1' \
+-ls -mesg -bw 8 +cu +dc +s +sb -sl 1500 -ulc $@
+
+# other fonts
+#-fn '-adobe-*-bold-r-*-*-*-140-*-*-*-*-iso8859-*' \
+# -fn '-misc-fixed-bold-r-normal-*-15-120-100-100-c-90-*-*' \
+# -fn '-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*' \
+
+# -u8 does not like german characters...
+#-ls -mesg -bw 8 +cu +dc +s +sb -sl 1500 -ulc -u8

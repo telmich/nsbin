@@ -1,0 +1,13 @@
+#!/bin/sh
+
+file=$1
+host=creme.schottelius.org
+dir=public_html/pre-release/
+url="http://schotteli.us/~nico/pre-release"
+
+[ -z "$file" ] && exit 1
+
+scp "$file" "${host}:$dir"
+ssh $host "chmod a+r $dir/$file"
+
+echo "Pre-released ${url}/${file}"

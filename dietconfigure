@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Nico Schottelius <nico@schottelius.(net|org)>
+# Date: 30-Jul-2003
+# Last Modified: -
+#
+# usage: dietcompile packagename --> makes /usr/package-diet
+#
+
+DIET_CC='diet gcc -nostdinc'
+DIET_CXX='diet gcc -nostdinc'
+main="$1"; shift
+#CC="$DIET_CC" CXX="$DIET_CXX" ./configure --prefix=/usr/$main-diet  ${1+"$@"}
+CC="$DIET_CC" ./configure --prefix=/usr/packages/$main  ${1+"$@"}

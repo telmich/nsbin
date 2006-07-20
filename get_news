@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# Nico Schottelius <nico@schottelius.(net|org)>
+# Date: 25-May-2004
+# Last Modified: 27-May-2004
+# Get only the latest headlines from different news sites
+# Version: 0.3
+#
+
+BASE_DIR=~/.get_news
+TMP=/tmp/$$-$UID-`date +%s`
+
+if [ $# -ne 1 ]; then
+   echo "Go away. I want one argument."
+   exit 666
+fi
+
+USERFILE="$BASE_DIR/$1"
+
+case "$1" in
+   heise)
+      RDF=http://www.heise.de/newsticker/heise.rdf
+      BEGIN_NEWS='<title>'
+      END_NEWS='<\/title>'
+      NEWS_NAME="heise online news"
+      ;;
+   pro-linux)
+      RDF=http://www.pl-forum.de/backend/pro-linux.rdf
+      BEGIN_NEWS='<title>'
+      END_NEWS='<\/title>'
+      NEWS_NAME="Pro-Linux News"
+      ;;
+   *)
+      "Go away. I don't know anything about $1."
+      exit 23
+esac
+
+# get
+curl -s "$RDF" | grep "$BEGIN_NEWS" | grep -v "$NEWS_NAME" | sed -e "s/$BEGIN_NEWS//g"  -e "s/$END_NEWS//g" > "$TMP"
+
+[ -d "$BASE_DIR" ] || mkdir -p "$BASE_DIR"
+
+if [ ! -f "$USERFILE" ]; then
+   cat "$TMP"
+else 
+   diff -u "$USERFILE" "$TMP" | grep ^+ | grep -v ^+++ 2>/dev/null | sed 's/^+//g'
+fi
+
+mv -f "$TMP" "$USERFILE" || rm -f "$TMP"

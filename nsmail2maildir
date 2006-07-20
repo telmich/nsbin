@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Nico Schottelius <nico@schottelius.(net|org)>
+# Date: 22-Sep-2003
+# Last Modified: 26-Sep-2003
+#
+# some code stolen from mbox2maildir by Bruce Guenter <bruceg@em.ca>,
+# which based on mbox2maildir by Russell Nelson <nelson@qmail.org>
+# first this was a shellscript, now it's a perlscript
+
+# this is where all the mails goto
+MAILDIR_BASE=/home/user/nico/Maildir/nsmail2
+
+for spool in $@; do 
+   i=0
+   MAILDIR=$MAILDIR_BASE/`basename $spool`-$i;
+   MAIL=$spool
+   mkdir -p $MAILDIR/{new,cur,tmp}
+   if [ -f "$MAIL" ]; then
+      echo Settings: $MAILDIR - $MAIL
+#      mbox2maildir-test "$MAIL" "$MAILDIR"
+      #read -p "converted $spool"
+   fi
+   i=$[$i+1]
+done

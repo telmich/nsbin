@@ -1,0 +1,14 @@
+#!/bin/sh
+
+SLEEP=$1
+
+if [ -z "$SLEEP" ]; then
+   echo "$0 Zeit zum Schlafen"
+   exit 1
+fi
+
+while true; do
+   fetchmail >/dev/null ;
+   echo "Mails abgeholt, schlafe nun $SLEEP"
+   sleep $SLEEP;
+done

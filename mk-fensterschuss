@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Nico Schottelius <nico-linux@schottelius.org>
+# Date: 22-Sep-2004
+# Last Modified: -
+#
+
+if [ $# -lt 1 ]; then
+   echo "`basename $0` name_of_screenshot"
+   exit 1
+fi
+
+name=$1
+file="$name-screenshot-`date +%Y%m%d`.png"
+
+[ -e "$file" ] && return 1
+xwd | xwdtopnm | pnmtopng > "$file"

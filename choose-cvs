@@ -1,0 +1,16 @@
+name="CVS"
+
+tmp="/tmp/$name-$$"
+
+alias dialog="dialog"
+
+
+dialog --menu "$name" 0 0 0 anoncvs@anoncvs.xfree86.org:/cvs xfree-xc \
+:pserver:anonymous@mplayerhq.hu:/cvsroot/mplayer mplayer-main 2> $tmp
+export CVSROOT=`cat $tmp`
+
+dialog --inputbox "CVS Module" 0 0 2> $tmp
+export CVSMODULE=`cat $tmp`
+
+dialog --textbox 0 0 "Checking out $CVSMODULE from $CVSROOT"
+bash -c "cvs co $CVSMODULE"

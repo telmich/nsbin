@@ -1,0 +1,39 @@
+#!/bin/bash
+# Author: Nico Schottelius (nicos@pcsystems.de)
+# Use: If tar is too fast, we 'll slow it down with dd
+# Use: In /etc/crontab , "30 6 * * * /root/bin/slowtar", to run backup
+# ever morning at 6:30
+# Date: 18th Jan 2000
+# Last Modified: 18 Jan 2000
+# Last Modified by: 
+
+##################################### START ####################################
+###################### Change everthing you need here ##########################
+##################################### START ####################################
+
+# To which device backup ?
+DEV="/dev/st0"
+
+# What speed to user for the device ?
+# Use 8k for floppy disk
+SPEED="1000k"
+
+# Which Directories should be backuped ?
+DIRS="/etc"
+
+# Set the logfile base name ($LOG.err is the error file)
+LOG="/var/log/backup"
+
+##################################### STOP #####################################
+###################### No more changes need under this line ####################
+##################################### STOP #####################################
+
+# First display a nice message for the syslog daemon.
+echo "Starting backup...you can find the log in $LOG"
+
+#Tar the files and copy them to you device via streamer
+tar -cvf- -b1000 $DIRS | dd of=$DEV bs=$SPEED >> $LOG 2>> ${LOG}.err 
+
+#Finished & Cleanup
+echo "Backup done."
+unset DEV DIRS LOG

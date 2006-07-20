@@ -1,0 +1,38 @@
+
+# Date: 15. February 2002
+# Author: Nico Schottelius <nico-linux@schottelius.(org|net)>
+# Last Changed: same
+# Version: 0.2
+# Comment:
+#
+#  0.1: runs fine
+#  0.2: uses awk, sed make some problems (with last NS expression)
+#
+#
+
+if [ $# -lt 1  ]; then
+   echo `basename $0`': domain(s)'
+   echo 'Hey, what domain to get?'
+   exit 1
+fi   
+
+DIG="dig"
+EGREP="egrep"
+GREP="grep"
+SED="sed"
+AWK="awk"
+ECHO="echo"
+   
+for domain in $@; do
+
+##   NS_SERVERS=`$DIG $domain ns|$EGREP -i 'in.*ns'|$GREP -v '^;' | $SED 's/.*IN.*NS\(.*\)/\1/g' | sed 's/\.$//g'`
+   NS_SERVERS=`$DIG $domain ns|$EGREP -i 'in.*ns'|$GREP -v '^;' | $AWK '{ print $5} ' | sed 's/\.$//g'`
+   $ECHO "Servers: $NS_SERVERS"
+
+   for server in $NS_SERVERS; do
+      $ECHO "Quering $server for $domain ..."
+      $DIG @$server $domain axfr >> $domain-$server 2>&1
+      $ECHO "Done. Saved output to $domain-$server"
+   done   
+done
+

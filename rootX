@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ozean="/home/user/nico/bin/ssh/ozean"
+eiche="/home/user/nico/bin/ssh/eiche"
+
+xterm -ls -title "Eiche Root" -e "$eiche" &
+xterm -ls -title "Ozean Root" -e "$ozean" &
+

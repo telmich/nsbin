@@ -1,0 +1,4 @@
+#!/bin/sh
+FCCDIR=~/firstclass/opt/firstclass
+
+cd $FCCDIR && ./fcc

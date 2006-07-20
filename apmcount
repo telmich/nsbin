@@ -1,0 +1,245 @@
+#!/bin/sh
+# Author: Nico Schottelius <nico AT schottelius DOT org>
+# Date: 10th of April 2k+1
+# Last Modified: 27th of June 2k+2
+# Version: 0.7
+# Comment: This tool shows how many minutes are one percent and at 
+# the end it shows the time the battery would live, if it has 100% 
+# capacity.
+#
+#
+# BUGS: 
+#
+# - The first values is most times not so good, because we didn't really
+#   catch one complete percent; FIXED: 11th of April 2k+1
+#
+# - if you stop before we've 2 values, awk will get a division through zero!
+#   FIXED: 11th of April 2k+1
+#
+# Changelog: 
+#
+# 27th of June 2002:
+# - fixed bug: when charging, apmcount said you lost percent...fixed through
+#   grep -v "battery charging"
+#
+# 11th of April 2001:
+# - Ahh! I am awake again and now it seems apmcount becomes some kind of
+#   stable. Version 0.3 looks pretty good, although it still has the awk-zero-
+#   division bug. Also sometimes when you kill apmcount early there are some
+#   bad messages from the shell; Currently working on 0.4 to fix all errors
+#   and maybe typos. Version 0.5 won't have the debug messages in it 
+#   anymore.
+#
+# 10th of April 2001:
+# - I need to know how long the battery of my new notebooks lasts. 
+#   As I didn't find anything good I started scripting this here.
+#
+#
+# 27th of April 2001: 
+# Just pasted this old picture I have found written by me.
+#
+#                                 /
+#                                run as long as we don't got a signal
+#                                |
+#                                |
+#                             save_percent in temp_p 
+#                                |
+#                                |
+#                             save_time_in_gnu_style in temp_t 
+#                                |
+#                                |
+#                             if temp_p not equals last i (i).
+#                                --> the percentage has changed
+#
+#
+#
+# 1st of May 2k+1: Moved INTERVAL to the top of the script, 
+# so it is easier for the user to change the interval.
+#
+#
+# APMCOUNT runs pretty fine, if you let it run for about
+# 10 minutes it is more or less exactly :)
+#
+
+set +x
+
+
+# How many records to skip ? One is normally quiet good!
+SKIP=1
+
+# INTERVAL: How long to sleep (in secs) and check for the time again
+INTERVAL="5"
+
+
+#### MESSAGES TO THE USER #####
+
+PERCENT_ONE="This percentage lasted (in secs): "
+PERCENT_ALL="The complete battery would aprox. live about (minutes)"
+TIME_RAN="We ran so long:"
+PERCENT_START="We started at percent:"
+PERCENT_STOP="We stoped at percent:"
+USED_PERCENT="We used so many percent of battery:"
+ONE_HOUR_TIME="For one hour running this machine we need"
+TO_LESS_PERCENT="Sorry, we ran to short and didn't get enough percents. \
+Please take some more time to run `basename $0`."
+TO_LESS_TIME="Sorry, we ran to short. Give me some more time to run."
+SORRY_ONLINE="Sorry, running apmcount while beeing AC-Online is senseless."
+
+####### END OF MESSAGES ########
+
+
+################ STOP CHANGING OR NOT, WHAT YOU WANT :) #####################
+
+# TRAP signals
+trap EXIT="yes" SIGINT SIGSEGV SIGQUIT SIGTERM
+
+# in SAVE we'll save the time it needed for the last percent
+# in TIME is the time saved
+SAVE=""
+TIME=""
+
+# temporary memory p=percent, t=time
+temp_p=""
+temp_t=""
+
+# i is the count variable
+i="0"
+
+# We use START later, but cut out the first value
+START=$[$i+$SKIP]
+
+# howto get the seconds
+DATE="date +%s"
+
+# Set the first value
+eval SAVE_$i=`apm | awk '{ print $6 }' | sed 's/\(.*\)%/\1/g'`
+eval TIME_$i=`$DATE`
+
+# Shall we exit
+EXIT="no"
+
+# check for status: Online/offline
+
+if [ "`apm | grep "battery charging"`" != "" ]; then
+   echo $SORRY_ONLINE
+   exit 1
+fi
+
+# do it until we recieve the ctrl+C sequenz
+while [ $EXIT != "yes" ] ; do
+
+   # position number sixth is "XX%" (67%), eleminate the percent sign
+   # with % sign
+   temp_p=`apm | awk '{ print $6 }' | sed 's/\(.*\)%/\1/g'`
+
+   # Save the current time
+   temp_t=`$DATE`
+
+   # Check whether the values are different or not, if yes,
+   # increment i, and place the values in the right place 
+   # else do nothing
+   if [ `eval echo \\$SAVE_$i` -ne `echo $temp_p` ];then
+      
+      # increment i
+      i=$[$i+1];
+
+      # place the data in our pseudo array
+      eval SAVE_$i=\$temp_p
+
+      # place the time in our pseudo array
+      eval TIME_$i=\$temp_t
+
+      # Display the time the last percent lasted
+      eval echo \$PERCENT_ONE \$[\$TIME_$i - \$TIME_$[$i-1]]
+   
+   fi
+
+   # sleep until we repeat the while loop again
+   sleep $INTERVAL
+
+# end of days
+done
+
+# now calculate the rest
+# We got the time in seconds:
+# The last time - the first time
+
+# We stop at the last element
+END=$i
+
+
+################################################
+# Check whether we can start the report or not.
+################################################
+
+
+# If $i (the count variable) is less than / equal to Start, forget the thing
+# At least 2 values are needed for division :)
+
+if [ $i -le $START ]; then
+   echo $TO_LESS_PERCENT
+   exit 1
+fi
+
+
+# allcountedpercent must be > 0
+# allcountedpercent = Start_percent(20) - End_percent (10)
+# Start_percent = counted_percents (i) - SKIP (defined above)
+# Also the time should be more than zero
+
+# percentage is getting less, so start - end
+eval COMPLETE_PERCENT="\$[\$SAVE_$START - \$SAVE_$END]"
+
+# First the time, time is getting higher, so END - START 
+eval COMPLETE_SECS="\$[\$TIME_$END - \$TIME_$START]"
+
+
+# if not greater than 0 
+if [ ! $COMPLETE_PERCENT -gt 0 ];then
+   echo $TO_LESS_PERCENT
+   exit 1
+fi   
+
+# if not greater than 0 
+if [ ! $COMPLETE_SECS -gt 0 ];then
+   echo $TO_LESS_TIME
+   exit 1
+fi   
+
+########## REPORT BEGINS ############
+echo $TIME_RAN $COMPLETE_SECS
+eval echo \$PERCENT_START \$SAVE_$START
+eval echo \$PERCENT_STOP \$SAVE_$END
+echo $USED_PERCENT $COMPLETE_PERCENT
+
+# In German we call the "Dreisatz", you should understand the next lines
+#
+# We've X seconds and X percent, both are present.
+# We look for 100 percent and 3600 seconds
+#
+# X percent / X * 100 = 100 percent
+# X seconds / X * 3600 = 1 hour
+#
+# So if we wanna have the time 100, the battery would last with
+# 100 %, we need the following:
+# 100_percent_time = ( time_lasted / percent_needed ) * 100
+#
+#
+# We ran X minutes / seconds with X percent battery power
+# We run 60 minutes with X minutes / X * 60 (or 3600 for seconds)
+# ONE_HOUR= ( percents_needed / time_lasted ) * 3600
+#
+#
+
+HUNDRED_P_TIME=`echo "$COMPLETE_SECS $COMPLETE_PERCENT" |  \
+awk '{ print ($1 / $2) * 100 / 60 }'`
+
+echo $PERCENT_ALL $HUNDRED_P_TIME
+
+# Now let's calculate how many percent are needed to run this
+# machine one hour
+
+ONE_HOUR=`echo "$COMPLETE_SECS $COMPLETE_PERCENT" |  \
+awk '{ print ($2 / $1) * 3600 }'`
+
+echo $ONE_HOUR_TIME $ONE_HOUR

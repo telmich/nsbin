@@ -1,0 +1,3 @@
+#!/bin/bash
+kppp -c default &
+~/bin/Netscape -mail &

@@ -1,0 +1,1 @@
+smbmount //$1/spezial /mnt/$1/ -o username=nico,uid=500

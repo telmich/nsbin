@@ -1,0 +1,16 @@
+#!/bin/sh
+# Author: Nico Schottelius <nico AT schottelius DOT org>
+# Date: 14th of February 2002
+#
+
+if [ $# -ne 2 ]; then
+   echo `basename $0`': prefix file'
+   echo 'Hey, hey guy, what to convert ?'
+   exit 1
+fi   
+   
+# something other programs do not use
+G_STR=".`date +%s%M%U`-`basename $0`-`basename $2`"
+   
+cat $2 | sed "s,^prefix.*=\(.*\),prefix = $1\1,g" > $G_STR
+mv $G_STR $2

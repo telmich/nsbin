@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# Author: Nico Schottelius <nico@schottelius.(net|org)>
+# Date: 7th of March 2002
+# Last changed: 12th of March 2002
+# Comment: convert netscapes addressbook to mutt's alias file
+# Bugs:
+# OldBugs:
+#     possibly add better alias [instead of ns] -- done, 12/March/2002
+#
+#
+#
+# Netscape sample:
+#
+# dn: cn=First middle lastname,mail=addressfrom@someone.org
+#
+# mutt sample: 
+#
+# alias shortname more details <the@address>
+#
+
+NS_DATA_START="^dn:"
+
+if [ $# -lt 1 ]; then
+   echo `basename $0`: 'netscapefile(s)'
+   echo 'Will output mutt alias format'
+   echo 'Attention: Short names are generated, please change them correctly'
+   exit 1
+fi
+
+# alias name1 name2 name3 <emailaddr> to
+# alias name1name2name3 name1 name2 name3 <emailaddr>
+
+# awk helper
+awk_func() 
+{
+   awk '
+      /^alias .* <.*>$/ {  # only use right pattern
+         save=ORS          # is \n
+         ORS=""            # reset, so we print one line
+         line++;           # count lines
+         print $1 " "      # == alias
+         for(j=2;j<NF;j++) # now everything before the email
+            print $j
+#         print line        # if you like to have a number behind everyone...
+         for(i=2;i<=NF;i++)   # now print it with spaces, included mail address
+            print " " $i
+         ORS=save          # restore \n
+         print ""          # and add line break
+      } '
+}
+
+# now convert the Addressbook!
+for mfile in $@; do
+   cat $mfile | grep $NS_DATA_START |  \
+   sed 's/dn: cn=\(.*\),mail=\(.*\)/alias \1 <\2>/g' | awk_func
+done

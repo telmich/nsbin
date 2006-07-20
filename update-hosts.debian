@@ -1,0 +1,6 @@
+hosts="eiche"
+
+for host in $hosts; do
+   ssh root@$host "apt-get update"
+   ssh root@$host "apt-get dist-upgrade"
+done

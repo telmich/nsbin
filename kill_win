@@ -1,0 +1,15 @@
+#!/bin/sh
+
+BASE_IP=213.173
+
+
+for ip in `seq 0 255`; do
+   real_ip="$BASE_IP.$1.$ip"
+   is_win=""
+   is_win=`nmap -p 139 $real_ip | grep 139/tcp`
+   if [ -n "$is_win" ]; then
+      smbclient -N -W MSHEIMNETZ -L $real_ip
+   fi   
+
+done
+#  ./smbnuke 213.173.$ip.255; done

@@ -1,0 +1,2 @@
+#!/bin/sh
+mplayer -vo dga -fs "$@"

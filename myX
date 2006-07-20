@@ -1,0 +1,6 @@
+#!/bin/sh
+
+X &
+export DISPLAY=localhost:0 # use tcp/ip and not unix domain!
+sleep 2; 
+blackbox 

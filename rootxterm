@@ -1,0 +1,5 @@
+#xterm -fg red -bg black -ls -title r00t -name r00t -bd green -bc -bcf 900 -bcn 750
+
+title="r00t"
+
+xterm -fg red -bg black -ls -title $title -name $title -T $title -bd green -bw 8 -bc -bcf 900 -bcn 750 -cr darkgreen +cu +dc -hc green -mesg -s -sb -leftbar -sl 1500 -ulc -u8 -e su -l

@@ -1,0 +1,16 @@
+#!/bin/sh
+# Date: ~ Autumn 2002
+# Last Changed: -
+# Author: Nico Schottelius <Nico-linux AT Schottelius DOT Org>
+# Mini Mua
+#
+
+
+recipient="Nico Schottelius"
+mailaddr="toaddr@anywhere.org"
+bcc="youraddress@somewhere.org"
+
+read -p "Recipient [$recipient]: " temp
+read -p "Mail [$mailaddr]: " temp
+echo "Type message (end with CTRL + D, aka EOF)"
+cat | gpg -a -e -r "$recipient" | mail -b "$bcc" -s "$subject" "$mailaddr"

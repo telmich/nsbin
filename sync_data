@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+# Author: Nico Schottelius <nico-linux@schottelius.(org|net)>
+# Date: 27-Feb-2003
+# Last Modified: 27-Feb-2003
+#
+
+if [ $# -ne 2 ]; then
+   echo rsync '[import|export]' target
+   exit 1
+fi   
+
+BACKUP_BASE="/tmp/backup/"
+RSYNC="rsync -e ssh -abvz --backup-dir=$BACKUP_BASE --delete"
+
+# source is normally local
+case "$2" in
+   wdt-home)
+      SRC=~/firmen/wdt/rsync/home/
+      DEST=fs1:/home/nico/
+      ;;
+   wdt-doc)
+      SRC=~/firmen/wdt/rsync/doc/
+      DEST=fs2:/mnt/data/spezial/edv/doc/
+      ;;
+   wdt-cgi)
+      SRC=~/firmen/wdt/rsync/cgi/
+      DEST=fs1:/usr/local/apache/cgi-bin/ist-werte/
+      ;;
+   h07-fki)
+      SRC=~/temp/IMPORTANT_DOCS/linux_tasks/2fpd/decr-f/fake_install/
+      DEST=telmich@server1.h07.org:public_html/projects/fake-install/
+      ;;
+   *)
+      echo "No such target"
+      exit 1
+      ;;
+esac
+
+# normally export
+if [ "$1" = "import" ]; then
+   tmp=$SRC
+   SRC=$DEST
+   DEST=$tmp
+fi
+
+$RSYNC $SRC $DEST

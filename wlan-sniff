@@ -1,0 +1,5 @@
+#ifconfig wlan0 up
+cd ~nico/temp/sniff
+kismet_monitor
+kismet_server
+kismet_curses

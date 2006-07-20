@@ -1,0 +1,2 @@
+#!/bin/sh
+LANG=de_DE civclient -t neotrident -n telmich

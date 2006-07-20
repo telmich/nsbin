@@ -1,0 +1,7 @@
+
+if [ $# -lt 1 ] ; then 
+	echo noe
+	exit 1
+fi
+
+smbclient $@ -n STEVEN2 -N

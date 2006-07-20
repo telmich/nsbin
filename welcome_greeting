@@ -1,0 +1,23 @@
+# music
+#greeting_intro_play &
+
+# used to start the sequence
+ESC="\033"
+
+# used to end colors:
+END="\033[m"
+
+BOLD="$ESC[m"
+BLACK="$ESC[30m"
+GRAY="$ESC[1;30m"
+RED="$ESC[31m"
+LIGHT_RED="$ESC[1;31m"
+GREEN="$ESC[32m"
+
+
+#MY_ECHO="echo -e"
+MY_ECHO="echo"
+
+$MY_ECHO $BOLD$RED
+cat ~/.loginart
+$MY_ECHO $END

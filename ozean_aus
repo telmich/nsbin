@@ -1,0 +1,1 @@
+ssh ozean -lroot "shutdown -h now"

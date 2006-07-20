@@ -1,0 +1,27 @@
+#!/bin/sh
+
+file=$1
+host=creme-s.schottelius.org
+basedir=/home/server/www/nico/org/schottelius/creme-s
+baseurl="http://beta.clinux.info"
+reldir=testing/0.0.5/
+
+url=$baseurl/$reldir
+dir=$basedir/$reldir
+
+if [ $# -lt 1 ]; then
+   echo "Please tell me, what to pre-release to testing dir."
+   exit 1
+fi
+
+for file in $@; do
+   if [ ! -e "$file" ]; then
+      echo "File $file is not existing, skipping."
+      continue
+   fi
+
+   scp "$file" "${host}:$dir"
+   ssh "$host" "chmod a+r $dir/$file"
+
+   echo "Pre-released ${url}/${file}"
+done
