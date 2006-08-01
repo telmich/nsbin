@@ -1,4 +1,7 @@
 #!/bin/sh
-xterm -ls -title "--irst 0n3xx" &
-xterm -ls -title ">>> 2nd <<<" &
-xterm -ls -title "www.3rd.xterm" &
+
+XTERM=x-terminal-emulator
+
+$XTERM -ls -title "--irst 0n3xx" &
+$XTERM -ls -title ">>> 2nd <<<" &
+$XTERM -ls -title "www.3rd.xterm" &
