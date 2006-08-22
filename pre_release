@@ -1,9 +1,9 @@
 #!/bin/sh
 
 file=$1
-host=creme.schottelius.org
+host=home.schottelius.org
 dir=public_html/pre-release/
-url="http://schotteli.us/~nico/pre-release"
+url="http://home.schottelius.org/~nico/pre-release"
 
 [ -z "$file" ] && exit 1
 
