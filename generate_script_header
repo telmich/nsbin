@@ -33,6 +33,7 @@ for _file in $@; do
 # $author <$email>
 # Date: `date +%d-%h-%Y`
 # Last Modified: -
+# Description:
 #
 EOF
       fi
