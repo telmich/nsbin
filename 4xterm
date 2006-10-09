@@ -1,5 +1,5 @@
 #!/bin/sh
-xterm -ls -title "Welcome to the world of darkness -#1#-" &
-xterm -ls -title "Welcome to the cinema -#2#-" &
-xterm -ls -title "Welcome to the paradis on earth -#3#-" &
-xterm -ls -title "Welcome to the Universe -#4#-" &
+x-terminal-emulator -ls -title "Welcome to the world of darkness -#1#-" &
+x-terminal-emulator -ls -title "Welcome to the cinema -#2#-" &
+x-terminal-emulator -ls -title "Welcome to the paradis on earth -#3#-" &
+x-terminal-emulator -ls -title "Welcome to the Universe -#4#-" &
