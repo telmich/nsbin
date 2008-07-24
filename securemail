@@ -11,16 +11,24 @@ IMAP=143
 IMAPS=993
 
 # our secured host
+HOST="bruehe.schottelius.org"
+HOST="217.14.64.75"
+HOST="creme.schottelius.org"
+HOST="213.146.113.242"
 HOST="home.schottelius.org"
-#HOST="217.14.64.75"
-#HOST="creme.schottelius.org"
-#HOST="213.146.113.242"
-#HOST="bruehe.schottelius.org"
+HOST="nico@62.65.138.78"
+HOST="nico@77.109.138.222"
+
+ssh -T -f -C -N -L4242:imaps.schottelius.org:$IMAPS "$HOST"
+ssh -T -f -C -N -L2323:proxy001.exchange.netvs.ch:$IMAP "$HOST"
+ssh -T -f -C -N -L4223:ddba020.netstream.ch:$POP3S "$HOST"
+
+#ssh -T -f -C -N -L2342:ddba020.netstream.ch:$IMAP "$HOST"
+#ssh -T -f -C -N -L4242:localhost:$IMAP "$HOST"
 
 #ssh -T -f -C -N -L2323:smtp.syhosting.ch:$IMAPS "$HOST"
 #ssh -T -f -C -N -L2342:smtp.syhosting.ch:$POP3S "$HOST"
 #ssh -T -f -C -N -L4242:home.schottelius.org:$IMAP "$HOST"
-ssh -T -f -C -N -L4242:localhost:$IMAP "$HOST"
 
 #ssh -T -f -C -N -L4242:mail.schottelius.org:$POP3 "$HOST"
 #ssh -T -f -C -N -L2323:mail.schottelius.org:25 mail.schottelius.org
