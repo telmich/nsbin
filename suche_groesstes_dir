@@ -5,6 +5,4 @@
 
 DIR=""
 
-[ $# -eq 1 ] && DIR=$1
-
-du $DIR | sort -g | less
+du "$@" | sort -g
