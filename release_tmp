@@ -1,0 +1,15 @@
+#!/bin/sh
+
+file=$1
+host=home.schottelius.org
+dir=public_html/temp/
+url="http://home.schottelius.org/~nico/temp"
+
+[ -z "$file" ] && exit 1
+
+bfile="$(basename "$file")"
+
+scp "$file" "${host}:$dir"
+ssh $host "chmod a+r $dir/$bfile"
+
+echo "Pre-released ${url}/${bfile}"
