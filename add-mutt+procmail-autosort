@@ -10,7 +10,8 @@
 PROCMAILRC=~/.procmailrc
 MUTT_MAILBOXES=~/.mutt/mailboxes
 MUTT_HEADERS=~/.mutt/hooks
-PROCMAIL_MATCH='(^TO|^Delivered-To: )' # email after that
+#PROCMAIL_MATCH='(^TO|^Delivered-To: )' # email after that
+PROCMAIL_MATCH='(^TO|^X-Original-To: )' # email after that
 
 echo generating new mutt and new procmailentry
 read -p "To Email: " email
