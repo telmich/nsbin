@@ -1,0 +1,4 @@
+#!/bin/sh
+# Open vim
+
+x-terminal-emulator -e vim "$@"
