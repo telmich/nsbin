@@ -9,6 +9,8 @@
 # (and 'source ~/.mutt/mailboxes' in .muttrc)
 #
 
+#firstfile=~/.mutt/preferred_mailboxes
+
 echo 'set folder="~/Maildir"'
 
 if [ -f ~/.mutt/important_mailboxes ]; then
