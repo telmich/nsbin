@@ -25,11 +25,13 @@ date="$(date +%Y%m%d)"
 parallel="-j8"
 
 (
+   set -e
+   set -x
    cd "$builddir"
 
-   # update
+   # update / change branch
    git-fetch
-   git-checkout -b $date $date
+   git-checkout -b "next-${date}" "origin/master"
 
    # clean
    make $parallel clean
