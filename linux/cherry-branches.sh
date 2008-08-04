@@ -18,12 +18,11 @@
 
 echo "Displaying commits you don't have in your tree"
 
-for remote in $(awk '$2 ~ /git/ { print $1 }' Next/Trees); do
-   url=$(awk "\$1 ~ /$remote/ { print \$3 }" Next/Trees)
-   rurl=$(echo $url | awk -F'#' '{ print $1 }')
-   branch=$(echo $url | awk -F'#' '{ print $2 }')
-   
-   cherry="$remote/$branch"
-   echo "Cherry: $cherry ..."
-   git-cherry $cherry | grep -v '^+ '
+for remote in $(git-branch -r); do
+   #echo "==> Cherry: $remote ..."
+   # is slow
+   # git-cherry $remote | grep -v '^+ '
+
+   # is fast
+   git-log --pretty=oneline --left-right master..$remote | sed "s;^;$remote;"
 done
