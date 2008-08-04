@@ -18,16 +18,12 @@
 # along with nsbin. If not, see <http://www.gnu.org/licenses/>.
 #
 
-builddir="$HOME/build/linux-nico"
-date="$(date +%Y%m%d)"
-
 # comment out on single cpu systems
 parallel="-j8"
 
 (
    set -e
    set -x
-   cd "$builddir"
 
    # clean
    make $parallel clean
@@ -49,5 +45,3 @@ parallel="-j8"
 
    echo "Reboot should reboot to $version now ..."
 )
-
-
