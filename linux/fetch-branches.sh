@@ -16,13 +16,13 @@
 # along with this file. If not, see <http://www.gnu.org/licenses/>.
 #
 
-for remote in $(awk '$2 ~ /git/ { print $1 }' Next/Trees); do
-   url=$(awk "\$1 ~ /$remote/ { print \$3 }" Next/Trees)
-   rurl=$(echo $url | awk -F'#' '{ print $1 }')
-   branch=$(echo $url | awk -F'#' '{ print $2 }')
-
+echo "Fetching remotes:"
+for remote in $(git-remote); do
+   echo -n "${remote}..."
    git-fetch -n $remote; ret=$?
    if [ $ret -ne 0 ]; then
       echo "Problem with $remote (see above)"
+   else
+      echo "done"
    fi
 done
