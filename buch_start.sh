@@ -1,5 +1,6 @@
 
 #devs='/dev/sde /dev/sdf /dev/sdg'
+devs="/dev/sde /dev/sdc /dev/sdd"
 devs="/dev/sdb /dev/sdc /dev/sdd"
 set -e
 set -x
