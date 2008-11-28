@@ -5,3 +5,4 @@
 #
 
 pkill -f -u nico "ssh -T -f -C -N -L"
+pkill -f -u nico "ssh -T -f -C -N -R"
