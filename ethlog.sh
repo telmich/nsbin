@@ -1,5 +1,5 @@
 #!/bin/sh
-ddir="${HOME}/privat/firmen/netstream/logs"
+ddir="${HOME}/privat/firmen/ethz/logs"
 file=$(date +%Y-%m-%d)
 dfile="${ddir}/${file}"
 
