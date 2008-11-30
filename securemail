@@ -16,17 +16,17 @@ HOST="bruehe.schottelius.org"
 HOST="217.14.64.75"
 HOST="creme.schottelius.org"
 HOST="213.146.113.242"
+HOST="nico@62.65.138.78"
 HOST="home.schottelius.org"
 HOST="nico@77.109.138.222"
-#HOST="nico@62.65.138.78"
 
-#ssh -T -f -C -N -L2342:mx2.schottelius.org:$SMTP 62.65.138.66
-ssh -T -f -C -N -L4242:imaps.schottelius.org:$IMAPS "$HOST"
 ssh -T -f -C -N -L2323:mx3.schottelius.org:$IMAPS "$HOST"
 
 # Fernzugriff
 ssh -T -f -C -N -R4242:localhost:22 "$HOST"
 
+#ssh -T -f -C -N -L2342:mx2.schottelius.org:$SMTP 62.65.138.66
+#ssh -T -f -C -N -L4242:imaps.schottelius.org:$IMAPS "$HOST"
 #ssh -T -f -C -N -L2323:ddba020.netstream.ch:$POP3S "$HOST"
 #ssh -T -f -C -N -L2342:ddba020.netstream.ch:$IMAP "$HOST"
 #ssh -T -f -C -N -L2323:proxy001.exchange.netvs.ch:$IMAP "$HOST"
