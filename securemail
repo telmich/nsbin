@@ -21,6 +21,7 @@ HOST="home.schottelius.org"
 HOST="nico@77.109.138.222"
 
 ssh -T -f -C -N -L2323:mx3.schottelius.org:$IMAPS "$HOST"
+ssh -T -f -C -N -L4242:mx3.schottelius.org:$SMTP "$HOST"
 
 # Fernzugriff
 ssh -T -f -C -N -R4242:localhost:22 "$HOST"

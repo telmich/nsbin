@@ -1,2 +1,2 @@
 #!/bin/sh
-openvt -s -w vlock -a
+openvt -s -w -- vlock -a

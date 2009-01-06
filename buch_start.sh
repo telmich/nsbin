@@ -2,6 +2,7 @@
 #devs='/dev/sde /dev/sdf /dev/sdg'
 devs="/dev/sde /dev/sdc /dev/sdd"
 devs="/dev/sdb /dev/sdc /dev/sdd"
+devs="/dev/sdc /dev/sdb"
 set -e
 set -x
 mdadm --assemble /dev/md0 $devs
