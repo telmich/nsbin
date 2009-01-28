@@ -20,6 +20,7 @@
 
 builddir="$HOME/build/linux-next"
 date="$(date +%Y%m%d)"
+name="next-$date"
 
 # comment out on single cpu systems
 parallel="-j8"
@@ -31,7 +32,7 @@ parallel="-j8"
 
    # update / change branch
    git-fetch
-   git-checkout -b "next-${date}" "origin/master"
+   git-checkout -b "$name" "$name"
 
    # clean
    make $parallel clean
