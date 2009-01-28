@@ -1,8 +1,11 @@
 #!/bin/sh
 
-file="$1"
 sep=';'
 name='dryad'
+hostname="$1"; shift
+ipnbase="$1"; shift
+field="$1"; shift
+file="$1"; shift
 
 awk "-F$sep" 'BEGIN {
       hc=1;
@@ -23,11 +26,11 @@ awk "-F$sep" 'BEGIN {
    
    /^S-09/
    {
-      mac = mac2dp($2)
-      print "      host dryad" hc \
-         " {\n         hardware ethernet " mac
-            ";\n         fixed-address 192.168.54."
-            i
-            ";\n      }";
+      mac = mac2dp($field);
+      print \
+         "      host " hostname hc " {\n" \
+         "         hardware ethernet " mac ";\n" \
+         "         fixed-address " ipnbase hc ";\n" \
+         "      }";
       hc++;
-   }' < "$1"
+   }' ipnbase="$ipnbase" field="$field" hostname="$hostname" < "$file" 
