@@ -1,9 +1,13 @@
 #!/bin/sh
+# Nico Schottelius
+# Generate dhcpd.conf from CSV file
+# Usage: mac-adresses-csv-to-dhcpd.sh a dryad 192.168.54. 0 2 ./08-12180\ MAC\ Adressen.csv
 
 sep=';'
 name='dryad'
 hostname="$1"; shift
 ipnbase="$1"; shift
+ipstart="$1"; shift
 field="$1"; shift
 file="$1"; shift
 
@@ -24,13 +28,11 @@ awk "-F$sep" 'BEGIN {
    }
 
    
-   /^S-09/
-   {
+   /^S-09/ {
       mac = mac2dp($field);
-      print \
-         "      host " hostname hc " {\n" \
+      print "      host " hostname hc " {\n" \
          "         hardware ethernet " mac ";\n" \
-         "         fixed-address " ipnbase hc ";\n" \
-         "      }";
+         "         fixed-address " ipnbase (ipstart+hc) ";\n" \
+         "      }\n";
       hc++;
-   }' ipnbase="$ipnbase" field="$field" hostname="$hostname" < "$file" 
+   }' ipnbase="$ipnbase" field="$field" ipstart="$ipstart" hostname="$hostname" < "$file" 
