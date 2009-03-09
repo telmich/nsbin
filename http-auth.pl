@@ -208,3 +208,21 @@ parent();
 
 #print "This is libwww-perl-$LWP::VERSION\n";
       #print $response->content;
+
+=head1 NAME
+
+   http-auth -- test http-auth (401) security with a wordlist
+
+=head1 SYNOPSIS
+
+   http-auth <url> <realm> <username> <wordlist>
+
+=head1 DESCRIPTION
+
+=head1 AUTHOR
+
+   Nico Schottelius <nico-http-auth *at* schottelius.org>
+
+=head1 SEE ALSO
+
+   curl(1), wget(1)
