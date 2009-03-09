@@ -18,11 +18,12 @@ my $user = shift;
 my $worte = shift;
 my $ppid = $$;
 
-# standard values
+# standard values: user changable
 my $ua = LWP::UserAgent->new;
-   $ua->agent("C3/25");
+   $ua->agent("C3/25");          # as you like
+my $concurrent = 2;              # number of forks testing http-auth
 
-my $concurrent = 2;
+# reset: will be setup later
 my $per_process = 0;
 my $last_process = 0;
 my $tempdir;
@@ -218,6 +219,11 @@ parent();
    http-auth <url> <realm> <username> <wordlist>
 
 =head1 DESCRIPTION
+
+   http-auth tries to authenticate at <url> with <realm> and given
+   <username> via http-auth (required by a 401 answer). It forks
+   $concurrent forks (normally 2, can be changed in the source), which
+   work on $lines/$concurrent lines of the <wordlist>.
 
 =head1 AUTHOR
 
