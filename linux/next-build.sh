@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with nsbin. If not, see <http://www.gnu.org/licenses/>.
 #
+#
+# Script to build todays linux-next kernel
+# You have to have it cloned already in $builddir
 
 builddir="$HOME/build/linux-next"
 date="$(date +%Y%m%d)"
