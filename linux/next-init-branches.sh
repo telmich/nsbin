@@ -15,6 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this file. If not, see <http://www.gnu.org/licenses/>.
 #
+#
+# This script initialises all the git remotes found in the next-tree,
+# so you can merge them yourself.
+#
+# You've to run it in a linux-next cloned directory:
+#
+#  % git clone git://git.kernel.org/pub/scm/linux/kernel/git/sfr/linux-next.git
+#  % cd linux-next
+#  % next-init-branches.sh
+# 
+#
 
 for remote in $(awk '$2 ~ /git/ { print $1 }' Next/Trees); do
    url=$(awk "\$1 ~ /$remote/ { print \$3 }" Next/Trees)
@@ -24,5 +35,4 @@ for remote in $(awk '$2 ~ /git/ { print $1 }' Next/Trees); do
    # reset, if it changed or we ran before
    git-remote rm $remote 2>/dev/null
    git-remote -v add $remote -t $branch $rurl
-
 done
