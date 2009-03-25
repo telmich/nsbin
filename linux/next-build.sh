@@ -21,7 +21,7 @@
 # Script to build todays linux-next kernel
 # You have to have it cloned already in $builddir
 
-builddir="$HOME/build/linux-next"
+builddir="$1"; shift
 date="$(date +%Y%m%d)"
 name="next-$date"
 
@@ -33,9 +33,11 @@ parallel="-j8"
    set -x
    cd "$builddir"
 
-   # update / change branch
-   git-fetch
-   git-checkout -b "$name" "$name"
+   # update from git
+   git fetch -v
+
+   # checkout branch from tag: next- is not mergable!
+   git checkout -b "$name" "$name"
 
    # clean
    make $parallel clean
@@ -45,13 +47,4 @@ parallel="-j8"
 
    # build
    make $parallel all
-
-   # install
-   sudo make install
-   sudo make modules_install
-
-   # script to regenerate grub.cfg (grub2)
-   sudo update-grub
 )
-
-echo "Reboot should reboot to linux-next$date now ..."
