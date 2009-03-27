@@ -30,9 +30,9 @@ cluster="$1"; shift
 count="$1"; shift
 
 for i in $(seq 1 16); do
-   echo Trying $cluster/${i}:
    num=$(printf "%0.2d" $i) 
 
+   echo "Trying $cluster/${num}: (press enter to reboot machine)"
    read waitforinput
    
    ssh root@${cluster}${num} reboot
