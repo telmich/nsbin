@@ -26,13 +26,11 @@
 #
 #
 
-if [ "$#" -ne 1 ]; then
-   echo "No version"
-   exit 1
-fi
+while [ "$#" -ge 1 ]; do
+   version="$1"; shift
 
-version="$1"
+   rm -vrf "/boot/System.map-$version" "/boot/vmlinuz-$version" "/lib/modules/$version"
 
-rm -rf "/boot/System.map-$version" "/boot/vmlinuz-$version" "/lib/modules/$version"
+   echo "Warning: Keeping configuration (/boot/config-$version)."
 
-echo "Warning: Keeping configuration (/boot/config-$version)."
+done
