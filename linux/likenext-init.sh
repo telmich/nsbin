@@ -25,12 +25,14 @@
 #
 #  % git clone git://git.kernel.org/pub/scm/linux/kernel/git/sfr/linux-next.git
 #  % mkdir mynext && cd mynext
-#  % git init
-#  % next-init-branches.sh ../linux-next/Next/Trees
+#  % likenext-init.sh ../linux-next/Next/Trees
 # 
 #
 
 file="$1"; shift
+
+# init current dir, don't care whether it is already, git init works well ;-)
+git init
 
 for remote in $(awk '$2 ~ /git/ { print $1 }' "$file"); do
    url=$(awk "\$1 ~ /$remote/ { print \$3 }" "$file")
