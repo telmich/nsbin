@@ -1,5 +1,12 @@
 #!/bin/sh -e
 # Nico Schottelius, 20080910 11:09
+# The initial version
+#
+#     udhcpc -nfqi wlan0 &&  vpnc ~nico/ethz/vpn/pc.conf
+#
+# Failed due to many reasons. See the working hack/version below.
+#
+#
 #ip link set wlan0 down
 #iwconfig wlan0 essid public
 #ip link set wlan0 up
@@ -19,3 +26,6 @@ vpnc ~nico/ethz/vpn/pc.conf
 
 #vpnc ~nico/firmen/ethz/vpn/vpnc.conf
 # vpnc-disconnect
+#!/bin/sh
+
+
