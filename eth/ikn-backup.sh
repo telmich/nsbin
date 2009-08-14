@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 
-ccollect=/home/user/nico/p/ccollect/ccollect/ccollect.sh
+ccollect=/home/users/nico/lp/ccollect/ccollect/ccollect.sh
 
 # in pre_exec
 #cryptsetup luksOpen /dev/sdc usbhd

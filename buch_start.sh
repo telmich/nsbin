@@ -1,14 +1,16 @@
 
+dev1="/dev/sd$1"; shift
+dev2="/dev/sd$1"; shift
+dev3="/dev/sd$1"; shift
+
 #devs='/dev/sde /dev/sdf /dev/sdg'
 devs="/dev/sde /dev/sdc /dev/sdd"
-devs="/dev/sdb /dev/sdc /dev/sdd"
-devs="/dev/sdc /dev/sdb"
 set -e
 set -x
-mdadm --assemble /dev/md0 $devs
+mdadm --assemble /dev/md0 $dev1 $dev2 $dev3
 cryptsetup luksOpen /dev/md0 raid
 fsck /dev/mapper/raid
-mount /home/server/raid
+mount /home/services/raid
 
 exit 0
 

@@ -41,6 +41,8 @@ else
    version="$(git tag | tail -n1)"
 fi
 
+novversion=$(echo $version | sed 's/^v//')
+
 echo "Building $version"
 echo "$version" > "$marker"
 
@@ -48,31 +50,19 @@ git checkout -b "${__myname}-${version}" ${version}
 
 # build kernel
 make $parallel clean
-make $parallel defconfig
-#cat /boot/config-2.6.26-2-amd64 >> .config
-
-cat << eof
-CONFIG_BNX2=y
-CONFIG_SCSI=y
-CONFIG_SCSI_DMA=y
-CONFIG_SCSI_PROC_FS=y
-CONFIG_BLK_DEV_SD=y
-CONFIG_BLK_DEV_SR=y
-CONFIG_CHR_DEV_SG=y
-CONFIG_SCSI_MPT2SAS=y
-CONFIG_XFS_FS=y
-CONFIG_EXT3_FS=y
-eof
->> .config
-
+cat /boot/config-2.6.26-2-amd64 >> .config
+yes "" | make $parallel oldconfig
 make $parallel all
 
 # install kernel
 make $parallel install modules_install
 
-# copy kernel image
-cp "arch/x86/boot/bzImage" "/boot/${__myname}"
-#update-initramfs -c -k "$version"
+# create initramfs
+update-initramfs -c -k "$novversion"
+
+# copy images
+cp "arch/x86/boot/bzImage" "/boot/vmlinuz-${__myname}"
+cp "/boot/initrd.img-${novversion}" "/boot/initrd-${__myname}"
 
 # reboot
 #reboot
