@@ -4,6 +4,7 @@ BDIR=~/b/ikiwiki
 
 ( cd "${BDIR}" && git describe )
 
+START="$(date)"
 PERL5LIB=${BDIR}  ${BDIR}/ikiwiki.in \
 	--libdir ${BDIR} \
 	--templatedir ${BDIR}/templates \
@@ -11,4 +12,6 @@ PERL5LIB=${BDIR}  ${BDIR}/ikiwiki.in \
 	-set underlaydirbase=${BDIR}/underlays \
 	--setup ikiwiki.setup \
    "$@"
-echo ikiwiki result: $?
+ret=$?
+END="$(date)"
+echo ${START} - ${END}: ikiwiki result: $?
