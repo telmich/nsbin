@@ -32,12 +32,22 @@ main="$(cat ~/.x-monitors-main)"
 positions="left-of right-of above below"
 prefix=".x-monitors-"
 
-# search for all possible monitors in all positions
-for position in $positions; do
-   posfile="${HOME}/${prefix}${position}"
-   if [ -f "${posfile}" ]; then
-      while read output; do
-         xrandr --output "${output}" --${position} "${main}" --auto
-      done < "${posfile}"
-   fi
+i=0
+
+# Needs to run twice: xrandr may not be able to
+# enable a newly connected monitor, because a disconnected one
+# is still enabled. The first runs disables disconnected monitors, the
+# second one enables all connected ones.
+while [ "${i}" -lt 2 ]; do
+   # search for all possible monitors in all positions
+   for position in $positions; do
+      posfile="${HOME}/${prefix}${position}"
+      if [ -f "${posfile}" ]; then
+         while read output; do
+            xrandr --output "${output}" --${position} "${main}" --auto
+         done < "${posfile}"
+      fi
+   done
+
+   i=$(($i+1))
 done
