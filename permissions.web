@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#
+# /usr/bin is obsolete
+# /usr/lib is obsolete
+# /usr/*/{bin,lib,...} is now the correct path
+#
+
+find "$1" -type f -exec chmod 0644 {} \;
+find "$1" -type d -exec chmod 0755 {} \;
