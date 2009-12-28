@@ -1,2 +1,0 @@
-#!/bin/sh
-#echo "/usr/local/bin/irssi  -c localhost" | ssh schottelius.org -lnico

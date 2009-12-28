@@ -1,9 +1,0 @@
-lp=ende
-lang=de
-searchLoc=0
-cmpType=relaxed
-relink=on
-<input type="hidden" name="sectHdr" value="on">
-<input type="hidden" name="spellToler" value="std">
-
-search=
