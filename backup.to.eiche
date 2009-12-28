@@ -1,2 +1,0 @@
-#rsync -e ssh -av --delete --files-from=$HOME/.to_backup eiche.intern.schottelius.org:/mnt/backup/scice
-rsync -e ssh -av --delete ~/Maildir ~/projects/ eiche.intern.schottelius.org:/mnt/backup/scice
