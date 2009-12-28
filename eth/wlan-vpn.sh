@@ -22,7 +22,7 @@ ip l s eth0 down
 wpa_supplicant -B -Dwext -iwlan0 -c ~nico/ethz/wlan/wpa_supplicant.conf
 sleep 5
 udhcpc -nqfi wlan0
-vpnc ~nico/ethz/vpn/pc.conf
+vpnc ~nico/ethz/vpn/sg.conf
 
 #vpnc ~nico/firmen/ethz/vpn/vpnc.conf
 # vpnc-disconnect

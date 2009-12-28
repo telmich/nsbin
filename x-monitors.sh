@@ -34,6 +34,8 @@ prefix=".x-monitors-"
 
 i=0
 
+xrandr --output "${main}" --auto
+
 # Needs to run twice: xrandr may not be able to
 # enable a newly connected monitor, because a disconnected one
 # is still enabled. The first runs disables disconnected monitors, the

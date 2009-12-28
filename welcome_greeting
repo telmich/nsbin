@@ -22,3 +22,6 @@ MY_ECHO="echo"
 #$MY_ECHO $BOLD$RED
 cat ~/.loginart
 #$MY_ECHO $END
+
+echo ""
+cat ~/.ziele

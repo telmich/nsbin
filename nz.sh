@@ -3,4 +3,5 @@ ddir="${HOME}/privat/persoenlich/notizen"
 file=$(date +%Y-%m-%d)
 dfile="${ddir}/${file}"
 
-vi "${dfile}"
+set -x
+$EDITOR "${dfile}"
