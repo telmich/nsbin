@@ -1,0 +1,7 @@
+#!/bin/sh
+# cLinux
+# Nico Schottelius (nico-linux@schottelius.org)
+# 2004-12
+# 
+
+cryptsetup -c aes create home $1
