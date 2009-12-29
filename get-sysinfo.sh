@@ -4,7 +4,9 @@ host="$(hostname)"
 dest="${0%%*/}.${host}.log"
 
 (
-   # system / software
+   # log, what produced the output
+   cat "$0"
+
    uname -a
    dmesg
 
