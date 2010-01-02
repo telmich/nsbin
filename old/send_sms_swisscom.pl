@@ -45,8 +45,8 @@ $ua->cookie_jar({});
 
 $response = $ua->post('https://www.swisscom-mobile.ch/youth/sms_senden-de.aspx?login',
 {
-	isiwebuserid =>	'0798326861',
-	isiwebpasswd =>	'keins2342'
+	isiwebuserid =>	'your-phone-number-here',
+	isiwebpasswd =>	'your-web-password-here'
 });
 unless ($response->is_success() || $response->is_redirect())
 {
