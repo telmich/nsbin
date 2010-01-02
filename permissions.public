@@ -6,4 +6,4 @@
 #
 
 find "$1" -type d -exec chmod 0755 {} \;
-find "$1" -type f -exec chmod a+r {} \;
+find "$1" -type f -exec chmod 0644 {} \;
