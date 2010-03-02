@@ -8,10 +8,11 @@ START="$(date)"
 PERL5LIB=${BDIR}  ${BDIR}/ikiwiki.in \
 	--libdir ${BDIR} \
 	--templatedir ${BDIR}/templates \
-	-set underlaydir=${BDIR}/underlays \
-	-set underlaydirbase=${BDIR}/underlays \
 	--setup ikiwiki.setup \
    "$@"
 ret=$?
 END="$(date)"
 echo ${START} - ${END}: ikiwiki result: $?
+
+#	-set underlaydir=${BDIR}/underlays/basewiki \
+#	-set underlaydirbase=${BDIR}/underlays \
