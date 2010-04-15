@@ -5,6 +5,7 @@
 # cd "${dir}" && git init
 
 set -e
+set -x
 
 dir=/home/users/nico/ethz/ftp
 site=ftp://ftp.ethz.ch/ETH

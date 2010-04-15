@@ -31,6 +31,6 @@ count="$1"; shift
 for i in $(seq 1 16); do
    num=$(printf "%0.2d" $i) 
    echo Trying $cluster/${num}:
-   ipmitool -U "$user" -P "$pass" -I lanplus -H ${cluster}-ra${num} power off
-   ipmitool -U "$user" -P "$pass" -I lanplus -H ${cluster}-ra${num} power status
+   ipmitool -U "$user" -P "$pass" -I lanplus -H ${cluster}${num}-ra power off
+   ipmitool -U "$user" -P "$pass" -I lanplus -H ${cluster}${num}-ra power status
 done

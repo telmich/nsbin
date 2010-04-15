@@ -23,11 +23,14 @@ export day="$(date +%d)"
 # 
 # for all other reservations: delete
 # 
+   #sed 's/||/|/g'    | \
+   #sed 's/|/||/g'
 
 curl --silent --netrc ${site} | \
-   sed 's/||/|/g'    | \
-   awk -F'|' \
-      '$4 !~ /(permanent|time-frame|^ *$)/ { 
+   awk 'BEGIN { FS="||" } 
+      { print "- " $1 "--" }
+
+      $4 !~ /(permanent|time-frame|^ *$)/ { 
 
       orig = $0
 
@@ -53,6 +56,5 @@ curl --silent --netrc ${site} | \
    }
       # print unchangable lines
       $4 ~ /(permanent|time-frame|^ *$)/ { print $0 }
-   ' | \
-   sed 's/|/||/g'
+   '
 

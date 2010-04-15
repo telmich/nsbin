@@ -15,13 +15,13 @@
 set -x
 
 ip l s eth0 down
-( wpa_cli terminate; exit 0 )
+( wpa_cli terminate || exit 0 )
 
-( rmmod iwlagn; modprobe iwlagn; sleep 2 )
+# ( rmmod iwlagn; modprobe iwlagn; sleep 2 )
 
 wpa_supplicant -B -Dwext -iwlan0 -c ~nico/ethz/wlan/wpa_supplicant.conf
 sleep 5
-udhcpc -nqfi wlan0
+( udhcpc -nqfi wlan0 || dhcpcd wlan0 )
 vpnc ~nico/ethz/vpn/sg.conf
 
 #vpnc ~nico/firmen/ethz/vpn/vpnc.conf
