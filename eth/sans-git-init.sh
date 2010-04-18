@@ -30,6 +30,8 @@ powner="$1"; shift
 export GIT_DIR="${basedir}/${repo}"
 
 git init
+
+# allow display via gitweb
 touch "${GIT_DIR}/git-daemon-export-ok"
 cat << eof > "${GIT_DIR}/config"
 [core]
@@ -37,8 +39,8 @@ cat << eof > "${GIT_DIR}/config"
         bare = true
         sharedRepository = group
 [gitweb]
-        owner = "${powner:-Unknown stranger}"
+        owner = "${powner:-"sans"}"
 eof
 
 chgrp sans -R "${GIT_DIR}"
-chmod g+rw -R "${GIT_DIR}
+chmod g+rw -R "${GIT_DIR}"
