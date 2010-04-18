@@ -18,13 +18,14 @@
 # along with nsbin. If not, see <http://www.gnu.org/licenses/>.
 #
 #
-# Usage: $0 repo pseudo-owner
+# Usage: $0 repo desc pseudo-owner
 #
 
 basedir=/home/services/sans/git
 group=sans
 
 repo="$1"; shift
+desc="$1"; shift
 powner="$1"; shift
 
 export GIT_DIR="${basedir}/${repo}"
@@ -33,6 +34,11 @@ git init
 
 # allow display via gitweb
 touch "${GIT_DIR}/git-daemon-export-ok"
+
+# add description
+echo "${desc}" > "${GIT_DIR}/description"
+
+# make sure group rights are kept
 cat << eof > "${GIT_DIR}/config"
 [core]
         filemode = true
