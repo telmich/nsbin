@@ -55,3 +55,4 @@ done
 for class in $allclasses; do
    echo "# Create umbrella list systems-$class containing {${allprofs}}-$class"
 done
+echo "# Create umbrella list systems-all containing {systems-{$allclasses}"
