@@ -20,13 +20,22 @@
 # Prepare exam
 #
 
+set -e
+
 d="static.edu.panter.ch"
 f="${d}.tar.bz2"
 p="PruefungsStoff2010.html"
+bd="swdev"
 b="firefox"
+v="evince"
 
+mkdir ${bd}
 wget "http://static.edu.panter.ch/offline/$f"
+wget http://pubwww.hsz-t.ch/~bseelige/info2/pattern/DesignJava.PDF
+wget http://pubwww.hsz-t.ch/~bseelige/info2/uml/uml2.pdf
 
 tar xvfj ${f}
 
-"$b" "$d/$p"
+"$b" "$d/$p" &
+"$v" DesignJava.PDF &
+"$v" uml2.pdf &
