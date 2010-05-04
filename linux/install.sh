@@ -18,10 +18,27 @@
 # along with nsbin. If not, see <http://www.gnu.org/licenses/>.
 #
 
-make install
-make modules_install
-update-grub
+set -e
+#version="$(git describe)
 version=$(cat include/config/kernel.release)
+ddir="/boot"
+spath="arch/x86_64/boot/bzImage"
+fname="linux-$(version)"
+fpath="${ddir}/${fname}"
+gpath="$ddir/grub/menu.lst"
+
+
+#make install
+cp "$spath" "$fpath"
+make modules_install
+#update-grub
+cat << eof >> "$gpath"
+title  $version
+root   (hd0,0)
+kernel ${fpath}
+
+eof
+
 echo "Reboot should reboot to $version now ..."
 read notyet
 reboot
