@@ -22,7 +22,11 @@
 
 
 host="$(hostname)"
-dest="${0%%*/}.${host}.log"
+dest="${0##*/}.${host}.log"
+prog="| tee ${dest}"
+
+# output to stdout
+[ "$1" = "-" ] && prog=""
 
 (
    # log, what produced the output
@@ -48,4 +52,4 @@ dest="${0%%*/}.${host}.log"
    mount
    df -h
 
-) 2>&1 | tee "${dest}"
+) 2>&1 ${prog}

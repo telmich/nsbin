@@ -42,6 +42,7 @@ while [ $i -lt 4 ]; do
    eval prof=\$prof_$i
    eval ml=\$ml_$i
    allprofs="$prof $allprofs"
+   allmls="$ml $allmls"
 
    for class in $classes; do
       echo "# Create (automatic) mailinglist: ${ml}-${class}"
@@ -53,6 +54,6 @@ while [ $i -lt 4 ]; do
 done
 
 for class in $allclasses; do
-   echo "# Create umbrella list systems-$class containing {${allprofs}}-$class"
+   echo "# Create umbrella list systems-$class containing {${allmls}}-$class"
 done
 echo "# Create umbrella list systems-all containing {systems-{$allclasses}"
