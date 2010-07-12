@@ -52,4 +52,4 @@ prog="| tee ${dest}"
    mount
    df -h
 
-) 2>&1 ${prog}
+) 2>&1 | tee "${dest}"

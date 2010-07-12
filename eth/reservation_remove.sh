@@ -23,11 +23,19 @@ export day="$(date +%d)"
 # 
 # for all other reservations: delete
 # 
-   #sed 's/||/|/g'    | \
-   #sed 's/|/||/g'
+# Sample lines:
+# || node1 || nicosc || 2010-04-12 - 2010-04-14 || Resevered for fun, past entry || SHARED ||
+# || node2 || nicosc || 2010-04-12 - 2020-04-14 || Still Resevered || EXCLUSIVE ||
+# || node3 || nicosc || 14-04-2020 || Resevered wrong || EXCLUSIVE ||
+# || node4 || nicosc || 2010-04-12 || Resevered wrong || FOOBAR ||
+
+
+# FS="||" does not work -> regexp operator
+# FS="\|\|" does not work -> \ interpreted by shell?
+# FS="\\|\\|" works  -> \\ converted to \ and \| passed to awk?
 
 curl --silent --netrc ${site} | \
-   awk 'BEGIN { FS="||" } 
+   awk 'BEGIN { FS="\\|\\|" } 
       { print "- " $1 "--" }
 
       $4 !~ /(permanent|time-frame|^ *$)/ { 

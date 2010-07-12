@@ -23,7 +23,7 @@ SED="sed"
 AWK="awk"
 ECHO="echo"
    
-for domain in $@; do
+for domain in "$@"; do
 
 ##   NS_SERVERS=`$DIG $domain ns|$EGREP -i 'in.*ns'|$GREP -v '^;' | $SED 's/.*IN.*NS\(.*\)/\1/g' | sed 's/\.$//g'`
    NS_SERVERS=`$DIG $domain ns|$EGREP -i 'in.*ns'|$GREP -v '^;' | $AWK '{ print $5} ' | sed 's/\.$//g'`

@@ -14,7 +14,7 @@
 
 set -x
 
-ip l s eth0 down
+#ip l s eth0 down
 ( wpa_cli terminate || exit 0 )
 
 # ( rmmod iwlagn; modprobe iwlagn; sleep 2 )

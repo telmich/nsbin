@@ -23,7 +23,7 @@ set -e
 version=$(cat include/config/kernel.release)
 ddir="/boot"
 spath="arch/x86_64/boot/bzImage"
-fname="linux-$(version)"
+fname="vmlinuz-$version"
 fpath="${ddir}/${fname}"
 gpath="$ddir/grub/menu.lst"
 

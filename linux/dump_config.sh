@@ -19,6 +19,9 @@
 #
 # Initially written for SyGroup (www.sygroup.ch)
 # Date: Mon Nov 14 11:45:11 CET 2005
+#
+# Create report for kernel hackers
+#
 
 #
 # Standard variables (stolen from cconf)
@@ -27,6 +30,6 @@ __pwd="$(pwd -P)"
 __mydir="${0%/*}"; __abs_mydir="$(cd "$__mydir" && pwd -P)"
 __myname=${0##*/}; __abs_myname="$__abs_mydir/$__myname"
 
-prefix="$1"; shift
-
-zcat /proc/config.gz > "$prefix-$(uname -r)"
+out="${__myname}.$(uname -r)"
+get-sysinfo.sh
+zcat /proc/config.gz > "${__myname}.$(uname -r)"

@@ -1,3 +1,9 @@
+#!/bin/sh
+# show all installed figlet fonts
+#
+
+set -e
+
 #cd /usr/figle*/share/figlet/
 cd /usr/share/figlet
 for a in *.flf; do BLA=${a%.flf}; echo $BLA; echo hallo | figlet -f $BLA; done

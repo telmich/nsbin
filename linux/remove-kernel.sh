@@ -29,7 +29,7 @@
 while [ "$#" -ge 1 ]; do
    version="$1"; shift
 
-   rm -vrf "/boot/System.map-$version" "/boot/vmlinuz-$version" "/lib/modules/$version"
+   rm -vrf "/boot/System.map-$version" "/boot/linux-$version" "/boot/vmlinuz-$version" "/lib/modules/$version"
 
    echo "Warning: Keeping configuration (/boot/config-$version)."
 
