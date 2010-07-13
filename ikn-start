@@ -1,0 +1,2 @@
+#!/bin/sh
+ssh -t ikn screen -Ul zsh -i -c x
