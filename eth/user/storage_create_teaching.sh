@@ -27,7 +27,7 @@ $0: <sharename> <groupowner> <member> [more_members]
 
    Requires NETHZ_USERNAME to be set.
 
-   Example: NETHZ_USERNAME="nicosc" $0 sg-hs09-asl nicosc troscoe alonso"
+   Example: NETHZ_USERNAME="nicosc" $0 sg-hs09-asl nicosc troscoe alonso
 
 eof
    exit 1
@@ -39,7 +39,7 @@ if [ -z "$NETHZ_USERNAME" ]; then
 fi
 
 sendmail="/usr/sbin/sendmail"
-to="support@inf.ethz.ch systems-sysadmins@lists.inf.ethz.ch"
+to="systems-sysadmins@lists.inf.ethz.ch"
 from="${NETHZ_USERNAME}@ethz.ch"
 
 sharename="$1"; shift
@@ -48,13 +48,20 @@ members="$@"
 
 dirname="$(echo $sharename | awk -F- '{ print $2 "/" $3 }')"
 
+#cat << eof
 cat << eof | $sendmail -f "$from" $to
-To: support@inf.ethz.ch, systems-sysadmins@lists.inf.ethz.ch
+To: systems-sysadmins@lists.inf.ethz.ch
 Subject: New samba teaching export: $sharename
 
-Dear ISG,
+Dear Systems Group Sysadmins,
 
-can you create the new Samba-only share
+as ISG needs a verification from either an IK or a professor,
+I would like you to forward the following information to ISG:
+
+--------------------------------------------------------------------------------
+ISG: Reply to $from for testing, the user is responsible for testing the share.
+--------------------------------------------------------------------------------
+ISG: Create the new Samba-only share
 
    $sharename
 
@@ -66,15 +73,24 @@ and export it to the NEW unix group named
 
    $sharename
 
-with the following members:
+with the following members
 
    $members
+
+with Samba permissions set to (see #109493)
+
+   user systems
+   group $sharename
+   dir 2770
+   files 660
 
 and make the following person responsible for the group: 
 
    $groupowner
 
-I'm allowed to create that share and this message is also sent to the systems-sysadmins.
+--------------------------------------------------------------------------------
+
+Yes, my prof allowed me to create that share.
 
 Cheers,
 
