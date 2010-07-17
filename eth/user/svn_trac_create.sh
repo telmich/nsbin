@@ -19,13 +19,15 @@
 #
 #
 
-if [ $# -ne 2 ]; then
+if [ $# -lt 3 ]; then
    cat << eof
-$0: <ml-name> <ml-owner-email>
+$0: <repo-name> <repo-admin> <trac|notrac> [comments]
+
+   trac: Also create a trac instance for the svn repo.
 
    Requires NETHZ_USERNAME to be set.
 
-   Example: NETHZ_USERNAME="nicosc" $0 example example@ethz.ch
+   Example: NETHZ_USERNAME="nicosc" $0 coolcode troscoe trac Add write permissions for group xyz
 
 eof
    exit 1
@@ -38,28 +40,29 @@ fi
 
 sendmail="/usr/sbin/sendmail"
 to="support@inf.ethz.ch systems-sysadmins@lists.inf.ethz.ch"
+to="nicosc@ethz.ch"
 from="${NETHZ_USERNAME}@ethz.ch"
 
-mlname="$1"; shift
-mlowner="$1"; shift
+reponame="$1"; shift
+repoowner="$1"; shift
+trac="$1"; shift
 
-dirname="$(echo $sharename | awk -F- '{ print $2 "/" $3 }')"
+if [ "$trac" = trac ]; then
+   tracflag="on"
+else
+   tracflag="off"
+fi
 
 cat << eof | $sendmail -f "$from" $to
 To: support@inf.ethz.ch, systems-sysadmins@lists.inf.ethz.ch
-Subject: New mailing list: $mlname
+Subject: Request for new svn repo $reponame for OU Systems
 
-Dear ISG,
-
-can you create the new mailinglist
-
-   ${mlname}@lists.inf.ethz.ch
-
-with
-
-    $mlowner
-
-as owner?
+Comments:         $@
+Repository admin: $repoowner
+Repository name:  $reponame
+With Trac:        $tracflag
+eMail address:    $from
+group:            Systems
 
 Cheers,
 
