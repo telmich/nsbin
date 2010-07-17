@@ -40,7 +40,6 @@ fi
 
 sendmail="/usr/sbin/sendmail"
 to="support@inf.ethz.ch systems-sysadmins@lists.inf.ethz.ch"
-to="nicosc@ethz.ch"
 from="${NETHZ_USERNAME}@ethz.ch"
 
 reponame="$1"; shift
