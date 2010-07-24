@@ -12,7 +12,7 @@
 # -----------------------
 #
 
-CALDIR=~/calendar
+CALDIR=~/.calendar
 
 if [ $# -lt 1 ]; then
    echo `basename $0` 'day.month [day.month.year]'
