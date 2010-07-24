@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case $(hostname) in
+   kr)
+      other="ikn.ethz.ch"
+   ;;
+
+   ikn)
+      other="kr.ethz.ch"
+   ;;
+esac
+
+rsync -av --delete --exclude .electricsheep ~/ $other:
