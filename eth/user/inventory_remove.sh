@@ -43,7 +43,7 @@ from="${NETHZ_USERNAME}@ethz.ch"
 numbers="$@"
 
 cat << eof | $sendmail -f "$from" $to
-To: support@inf.ethz.ch
+To: support@inf.ethz.ch, systems-sysadmins@lists.inf.ethz.ch
 Subject: De-Inventarisierung: $numbers
 
 Hallo ISG,
