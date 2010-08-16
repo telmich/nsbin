@@ -30,7 +30,7 @@ powner="$1"; shift
 
 export GIT_DIR="${basedir}/${repo}"
 
-git init
+git init --shared=group --bare
 
 # allow display via gitweb
 touch "${GIT_DIR}/git-daemon-export-ok"
