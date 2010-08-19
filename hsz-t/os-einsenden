@@ -17,25 +17,43 @@
 # You should have received a copy of the GNU General Public License
 # along with nsbin. If not, see <http://www.gnu.org/licenses/>.
 #
-# Prepare exam
+# Submit solution according to http://edu.panter.ch/FormelleBedingungenUebungenBetriebssysteme
 #
 
-set -e
+if [ $# -ne 2 ]; then
+   cat << eof
+$0: <subject> <srcdir>
 
-d="static.edu.panter.ch"
-f="${d}.tar.bz2"
-p="PruefungsStoff2010.html"
-bd="swdev"
-b="firefox"
-v="evince"
+eof
+   exit 1
+fi
 
-mkdir ${bd}
-wget "http://static.edu.panter.ch/offline/$f"
-wget http://pubwww.hsz-t.ch/~bseelige/info2/pattern/DesignJava.PDF
-wget http://pubwww.hsz-t.ch/~bseelige/info2/uml/uml2.pdf
 
-tar xvfj ${f}
+subject_suff="$1"; shift
+input="$1"; shift
 
-"$b" "$d/$p" &
-"$v" DesignJava.PDF &
-"$v" uml2.pdf &
+self="nschotte"
+to="bseelige"
+domain="@hsz-t.ch"
+self_q="${self}${domain}"
+to_q="${to}${domain}"
+subject_pref="[Betriebssysteme]"
+
+
+sendmail="/usr/sbin/sendmail"
+to_all="${to_q} ${self_q}"
+to_all="${to_q}"
+
+
+(
+   (
+      cat << eof
+To: $to_all
+Subject: $subject_pref $subject_suff
+From: $self_q
+
+eof
+
+   )
+   tar c "${input}" | gzip -9 | uuencode "${subject_suff}.tar.gz"
+) | $sendmail -f "$self_q" $to_all
