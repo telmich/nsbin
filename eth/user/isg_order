@@ -54,7 +54,7 @@ eof
 fi
 
 sendmail="/usr/sbin/sendmail"
-to="support@inf.ethz.ch"
+to="support@inf.ethz.ch nicosc@ethz.ch"
 to="nicosc@ethz.ch"
 from="${NETHZ_USERNAME}@ethz.ch"
 
@@ -67,7 +67,7 @@ fond="$(awk "/$prof/ { print \$3 }" "$ETHZ_FOND_TABLE")"
 
 cat << eof | $sendmail -f "$from" $to
 To: support@inf.ethz.ch
-Subject: Best. $vendor (Nico Schottelius, $lz)
+Subject: Best. $vendor ($NETHZ_USERNAME, $lz)
 
 Dear support@inf.ethz.ch,
 
