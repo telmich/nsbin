@@ -28,26 +28,28 @@ __pwd="$(pwd -P)"
 __mydir="${0%/*}"; __abs_mydir="$(cd "$__mydir" && pwd -P)"
 __myname=${0##*/}; __abs_myname="$__abs_mydir/$__myname"
 
-fond_table="$HOME/ethz/vcs/ns/administrativ/fonds"
 
-if [ $# -lt 3 ]; then
-   cat << eof
-$0: <fond> <vendor> <device> [comment]
-
-   fond: a prof like gustavo|mothy|nesime|donald
-
-   device: as found on neptun
-
-   Requires NETHZ_USERNAME to be set.
-
-   Example: NETHZ_USERNAME="nicosc" $0 
-
-eof
+if [ -z "$NETHZ_USERNAME" -o -z "$ETHZ_FOND_TABLE" ]; then
+   echo "Error: Set \$NETHZ_USERNAME to your username"
+   echo "Error: Set \$ETHZ_FOND_TABLE to the fond table"
    exit 1
 fi
 
-if [ -z "$NETHZ_USERNAME" ]; then
-   echo "Error: Set \$NETHZ_USERNAME to your username"
+all_profs="$(echo $(awk '{ print $1 }' "$ETHZ_FOND_TABLE"))"
+
+if [ $# -lt 3 ]; then
+   cat << eof
+$__myname: <fond> <vendor> <device> [comment]
+
+   fond: a prof like $all_profs
+
+   device: as found on vendor site
+
+   Requires NETHZ_USERNAME and ETHZ_FOND_TABLE to be set.
+
+   Example: NETHZ_USERNAME="nicosc" ETHZ_FOND_TABLE="/path/to/it" $__myname myprof Banana 'Yellow, not green' 'trac: #42'
+
+eof
    exit 1
 fi
 
@@ -60,8 +62,8 @@ prof="$1"; shift
 vendor="$1"; shift
 device="$1"; shift
 
-lz="$(awk "/$prof/ { print \$2 }" "$fond_table")"
-fond="$(awk "/$prof/ { print \$3 }" "$fond_table")"
+lz="$(awk "/$prof/ { print \$2 }" "$ETHZ_FOND_TABLE")"
+fond="$(awk "/$prof/ { print \$3 }" "$ETHZ_FOND_TABLE")"
 
 cat << eof | $sendmail -f "$from" $to
 To: support@inf.ethz.ch
