@@ -5,4 +5,4 @@
 # Last Modified: -
 #
 
-find "$1" -exec chmod og-rwx {} \;
+find "$1" -exec chmod u+rw,og-rwx {} \;

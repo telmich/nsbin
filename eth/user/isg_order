@@ -55,7 +55,6 @@ fi
 
 sendmail="/usr/sbin/sendmail"
 to="support@inf.ethz.ch nicosc@ethz.ch"
-to="nicosc@ethz.ch"
 from="${NETHZ_USERNAME}@ethz.ch"
 
 prof="$1"; shift

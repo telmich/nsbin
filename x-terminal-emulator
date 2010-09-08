@@ -2,4 +2,4 @@
 
 [ -x /usr/bin/urxvtcd ] && exec /usr/bin/urxvtcd 
 
-exec urxvtc
+exec urxvtc "$@"

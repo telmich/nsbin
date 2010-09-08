@@ -1,6 +1,6 @@
 #!/bin/sh
 set -x
-BDIR=~/b/ikiwiki
+BDIR=~/temp/build/ikiwiki
 
 ( cd "${BDIR}" && git describe )
 
