@@ -1,0 +1,89 @@
+#!/bin/sh
+# 
+# 2010      Nico Schottelius (nico-nsbin at schottelius.org)
+# 
+# This file is part of nsbin.
+#
+# nsbin is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# nsbin is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with nsbin. If not, see <http://www.gnu.org/licenses/>.
+#
+#
+# Order device at ISG
+#
+
+#
+# Standard variables (stolen from cconf)
+#
+__pwd="$(pwd -P)"
+__mydir="${0%/*}"; __abs_mydir="$(cd "$__mydir" && pwd -P)"
+__myname=${0##*/}; __abs_myname="$__abs_mydir/$__myname"
+
+fond_table="$HOME/ethz/vcs/ns/administrativ/fonds"
+
+if [ $# -lt 3 ]; then
+   cat << eof
+$0: <fond> <vendor> <device> [comment]
+
+   fond: a prof like gustavo|mothy|nesime|donald
+
+   device: as found on neptun
+
+   Requires NETHZ_USERNAME to be set.
+
+   Example: NETHZ_USERNAME="nicosc" $0 
+
+eof
+   exit 1
+fi
+
+if [ -z "$NETHZ_USERNAME" ]; then
+   echo "Error: Set \$NETHZ_USERNAME to your username"
+   exit 1
+fi
+
+sendmail="/usr/sbin/sendmail"
+to="support@inf.ethz.ch"
+to="nicosc@ethz.ch"
+from="${NETHZ_USERNAME}@ethz.ch"
+
+prof="$1"; shift
+vendor="$1"; shift
+device="$1"; shift
+
+lz="$(awk "/$prof/ { print \$2 }" "$fond_table")"
+fond="$(awk "/$prof/ { print \$3 }" "$fond_table")"
+
+cat << eof | $sendmail -f "$from" $to
+To: support@inf.ethz.ch
+Subject: Best. $vendor (Nico Schottelius, $lz)
+
+Dear support@inf.ethz.ch,
+
+here is the form data from $__myname.
+
+Cost center:   $lz
+Description:   Hoi Thomas!
+
+               Bitte folgendes von $vendor bestellen:
+
+               $device
+
+               $@
+
+               Viele Gruesse,
+
+               $USER
+
+Fond:          $fond
+
+eof
