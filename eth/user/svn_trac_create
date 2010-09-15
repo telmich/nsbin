@@ -19,9 +19,16 @@
 #
 #
 
+#
+# Standard variables (stolen from cconf)
+#
+__pwd="$(pwd -P)"
+__mydir="${0%/*}"; __abs_mydir="$(cd "$__mydir" && pwd -P)"
+__myname=${0##*/}; __abs_myname="$__abs_mydir/$__myname"
+
 if [ $# -lt 3 ]; then
    cat << eof
-$0: <repo-name> <repo-admin> <trac|notrac> [comments]
+$__myname: <repo-name> <repo-admin> <trac|notrac> [comments]
 
    trac: Also create a trac instance for the svn repo.
 
@@ -39,7 +46,7 @@ if [ -z "$NETHZ_USERNAME" ]; then
 fi
 
 sendmail="/usr/sbin/sendmail"
-to="support@inf.ethz.ch systems-sysadmins@lists.inf.ethz.ch"
+to="systems-sysadmins@lists.inf.ethz.ch"
 from="${NETHZ_USERNAME}@ethz.ch"
 
 reponame="$1"; shift
@@ -53,8 +60,10 @@ else
 fi
 
 cat << eof | $sendmail -f "$from" $to
-To: support@inf.ethz.ch, systems-sysadmins@lists.inf.ethz.ch
+To: systems-sysadmins@lists.inf.ethz.ch
 Subject: Request for new svn repo $reponame for OU Systems
+
+Sysadmin-Proxy: Forward this e-mail 1:1 to support@inf.ethz.ch.
 
 Comments:         $@
 Repository admin: $repoowner
@@ -67,4 +76,6 @@ Cheers,
 
    $USER
 
+-- 
+Send by ${__myname}
 eof
