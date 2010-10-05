@@ -37,9 +37,9 @@ fi
 
 all_profs="$(echo $(awk '{ print $1 }' "$ETHZ_FOND_TABLE"))"
 
-if [ $# -lt 3 ]; then
+if [ $# -lt 4 ]; then
    cat << eof
-$__myname: <fond> <vendor> <device> [comment]
+$__myname: <fond> <vendor> <device> <office> [comment]
 
    fond: a prof like $all_profs
 
@@ -60,6 +60,7 @@ from="${NETHZ_USERNAME}@ethz.ch"
 prof="$1"; shift
 vendor="$1"; shift
 device="$1"; shift
+office="$1"; shift
 
 lz="$(awk "/$prof/ { print \$2 }" "$ETHZ_FOND_TABLE")"
 fond="$(awk "/$prof/ { print \$3 }" "$ETHZ_FOND_TABLE")"
@@ -78,6 +79,8 @@ Description:   Hoi Thomas!
                Bitte folgendes von $vendor bestellen:
 
                $device
+
+               und in Büro $office liefern.
 
                $@
 
