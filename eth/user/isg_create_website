@@ -1,0 +1,82 @@
+#!/bin/sh
+# 
+# 2010      Nico Schottelius (nico-nsbin at schottelius.org)
+# 
+# This file is part of nsbin.
+#
+# nsbin is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# nsbin is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with nsbin. If not, see <http://www.gnu.org/licenses/>.
+#
+#
+# Order device at ISG
+#
+
+#
+# Standard variables (stolen from cconf)
+#
+__pwd="$(pwd -P)"
+__mydir="${0%/*}"; __abs_mydir="$(cd "$__mydir" && pwd -P)"
+__myname=${0##*/}; __abs_myname="$__abs_mydir/$__myname"
+
+
+if [ -z "$NETHZ_USERNAME" ]; then
+   echo "Error: Set \$NETHZ_USERNAME to your username"
+   exit 1
+fi
+
+if [ $# -lt 1 ]; then
+   cat << eof
+$__myname: <primary name> [aliases]
+
+   Requires NETHZ_USERNAME to be set.
+
+   Example: NETHZ_USERNAME="nicosc" $__myname www.test.ethz.ch www.toast.ethz.ch
+
+eof
+   exit 1
+fi
+
+website="$1"; shift
+aliases="$@"
+
+[ "$aliases" ] || aliases="-"
+
+headerto="support@inf.ethz.ch"
+to="support@inf.ethz.ch"
+
+sendmail="/usr/sbin/sendmail"
+from="${NETHZ_USERNAME}@ethz.ch"
+
+cat << eof | $sendmail -f "$from" $to
+To: $headerto
+Subject: New Web Site
+
+Dear ISG,
+
+following the procedures described on http://www.isg.inf.ethz.ch/ServicesWebWebsite
+we request a new website under the URL
+
+   http://$website
+
+List of aliases: $aliases
+
+Let us know when the administrative user is ready to be collected.
+
+Cheers,
+
+   $USER
+
+-- 
+Send by ${__myname}
+
+eof
