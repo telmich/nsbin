@@ -59,7 +59,7 @@ from="${NETHZ_USERNAME}@ethz.ch"
 
 cat << eof | $sendmail -f "$from" $to
 To: $headerto
-Subject: New Web Site
+Subject: New Web Site $website
 
 Dear ISG,
 
@@ -70,7 +70,9 @@ we request a new website under the URL
 
 List of aliases: $aliases
 
-Let us know when the administrative user is ready to be collected.
+Let us know when everything is setup, please.
+
+After that I'll collect the username and password from your office.
 
 Cheers,
 
