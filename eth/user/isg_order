@@ -20,6 +20,10 @@
 #
 # Order device at ISG
 #
+# ETHZ_FOND_TABLE:
+#
+# name lz fond
+#
 
 #
 # Standard variables (stolen from cconf)
