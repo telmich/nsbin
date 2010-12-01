@@ -46,6 +46,7 @@ while [ "${i}" -lt 2 ]; do
       posfile="${HOME}/${prefix}${position}"
       if [ -f "${posfile}" ]; then
          while read output; do
+            xrandr --output "${output}" --off
             xrandr --output "${output}" --${position} "${main}" --auto
          done < "${posfile}"
       fi

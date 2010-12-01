@@ -38,6 +38,9 @@ dest="${0##*/}.${host}.log"
    # hw in total
    lshw
 
+   # information from dmidecode may differ
+   dmidecode
+
    # ram
    free
 

@@ -2,4 +2,4 @@
 file=$(date +%Y-%m-%d)
 
 set -x
-$EDITOR "${file}"
+$EDITOR "$1${file}"

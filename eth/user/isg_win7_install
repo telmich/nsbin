@@ -58,7 +58,7 @@ from="${NETHZ_USERNAME}@ethz.ch"
 
 cat << eof | $sendmail -f "$from" $to
 To: $headerto
-Subject: Reinstallation of $machine
+Subject: Installation request for Host $machine
 
 Dear support@inf.ethz.ch,
 

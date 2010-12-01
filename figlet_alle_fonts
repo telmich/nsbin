@@ -6,4 +6,6 @@ set -e
 
 #cd /usr/figle*/share/figlet/
 cd /usr/share/figlet
-for a in *.flf; do BLA=${a%.flf}; echo $BLA; echo hallo | figlet -f $BLA; done
+cd /usr/share/figlet/fonts/
+#for a in *.flf; do BLA=${a%.flf}; echo $BLA; echo hallo | figlet -f $BLA; done
+for a in *.flf; do BLA=${a%.flf}; echo $BLA; echo CM Bofs | figlet -f $BLA; done

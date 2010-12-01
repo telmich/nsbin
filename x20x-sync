@@ -1,13 +1,15 @@
 #!/bin/sh
 
+dir="/home/"
+
 case $(hostname) in
    kr)
-      other="ikn.ethz.ch"
+      other="root@ikn.ethz.ch"
    ;;
 
    ikn)
-      other="kr.ethz.ch"
+      other="root@kr.ethz.ch"
    ;;
 esac
 
-rsync -av --delete --exclude .electricsheep ~/ $other:
+sudo rsync -av --delete-before --delete $dir $other:$dir
