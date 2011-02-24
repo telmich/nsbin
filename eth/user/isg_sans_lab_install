@@ -51,6 +51,9 @@ machine="sans-lab-$1"; shift
 headerto="support@inf.ethz.ch"
 to="support@inf.ethz.ch $from"
 
+# always append sans-home = sans-intern
+set -- "$@" sans-home
+
 while [ $# -ge 1 ]; do
    addr="$1@ethz.ch"
    to="$to $addr"
