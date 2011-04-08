@@ -77,7 +77,7 @@ comment="$@"
 
 # Also send to user
 cat << eof | $sendmail -f "$from" $from $to
-To: <$from>, <$to)
+To: <$from>, <$to>
 Subject: Create account $account in ou $ou
 
 Sysadmin-Proxy: Check & forward this e-mail 1:1 to support@inf.ethz.ch.
