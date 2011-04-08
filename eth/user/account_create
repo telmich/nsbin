@@ -50,7 +50,9 @@ $__myname: <username> <ou> <class> <responsible account> <expiry-date> [comment]
 
    Requires NETHZ_USERNAME to be set.
 
-   Example: NETHZ_USERNAME="nicosc" $0 asteven roscoe staff nicosc  31-DEC-2023
+   Examples:
+      NETHZ_USERNAME="nicosc" $0 asteven roscoe staff nicosc 31-DEC-2012
+      NETHZ_USERNAME="nicosc" $0 foobar donaldk stud nicosc 31-MAR-2014 And a funny day
 
 eof
    exit 1
