@@ -1,0 +1,9 @@
+#!/bin/sh
+
+START="$(date +%s)"
+"$@"
+END="$(date +%s)"
+LENGTH=$((END-START))
+LENGTHM=$((LENGTH/60))
+
+echo "Run: ${LENGTH}s ($LENGTHM minutes)"
