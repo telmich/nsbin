@@ -3,6 +3,8 @@
 # Nico Schottelius
 #
 
+set -e
+
 DIR="$1"
 
 [ -z "${DIR}" ] && DIR="${PWD}"
@@ -14,4 +16,5 @@ if ! [ -d "${DIR}" ]; then
 	exit 1
 fi
 
-rm "${DIR}"/*.{aux,nav,out,toc,snm,log,vrb}
+cd "${DIR}"
+rm -f *.aux *.nav *.out *.toc *.snm *.log *.vrb
