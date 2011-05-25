@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# start 4 mutt clients
+tmutt
+tmutt
+
+# start tee window
+x-terminal-emulator -name tee -e ressh.sh tee.schottelius.org
+
+# start root window
+x-terminal-emulator -name sudo -e sudo -i
+
+# retrieve mails
+x-terminal-emulator -name fetchmail -e hole_mails 30
