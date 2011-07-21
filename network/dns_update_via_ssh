@@ -1,0 +1,2 @@
+ifconfig -a | ssh partyloewe@ns.schottelius.org "cat > IP"
+
