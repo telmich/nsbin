@@ -1,3 +1,0 @@
-mount /dev/sdc1 /mnt
-find /mnt -type f -exec mv {} ~nico/photos/eingehend
-chown -R nico ~nico/photos/eingehend
