@@ -1,0 +1,4 @@
+~/bin/home/route start
+cd /tmp/seti
+./setiathome &
+su -l nico -c startx
