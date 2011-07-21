@@ -1,0 +1,227 @@
+#!/bin/sh
+# 
+# 2011      Nico Schottelius (nico-nsbin at schottelius.org)
+# 
+# This file is part of nsbin.
+#
+# nsbin is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# nsbin is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with nsbin. If not, see <http://www.gnu.org/licenses/>.
+#
+#
+# Some ideas and a working version to mirror a twiki via httrack
+#
+#
+
+# Use https
+# Use /twiki/
+
+httrack -%i -w https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki/WebHome \
+ -%P -N0 -s0 -p7 -a -K0 -%k -%s -%u \
+ -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Linux 2.6.42)" -%F '<!-- Mirrored by your friendly Sysadmin (Nico) from %s%s by HTTrack Website Copier/3.x [XR&CO'"'"'2004], %s -->' \
+ -B -%x0 \
+ '+*.png' '+*.gif' '+*.jpg' '+*.css' '+*.js' '+*.pdf' '+fifthelement.inf.ethz.ch/*.pdf' \
+ '+fifthelement.inf.ethz.ch/bin/view*/KutterFondsWiki/*' \
+ '-fifthelement.inf.ethz.ch/bin/view*/KutterFondsWiki/*?raw=*' \
+ '+fifthelement.inf.ethz.ch/bin/view*/KutterFondsWiki/*?raw=on' \
+ '-fifthelement.inf.ethz.ch/bin/view*/KutterFondsWiki/*?skin=*' \
+ '+fifthelement.inf.ethz.ch/bin/view*/KutterFondsWiki/*?skin=koalaprint' \
+ '+fifthelement.inf.ethz.ch/pub/KutterFondsWiki/*'
+
+# baseurl: https://fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome
+
+
+--------------------------------------------------------------------------------
+
+httrack --preserve
+
+
+--------------------------------------------------------------------------------
+[13:22] kr:7% httrack --preserve
+
+Welcome to HTTrack Website Copier (Offline Browser) 3.43-9+libhtsjava.so.2
+Copyright (C) Xavier Roche and other contributors
+To see the option list, enter a blank line or try httrack --help
+
+Enter project name :kutterfonds
+
+Base path (return=/home/users/nico/websites/) :/home/users/nico/kutter/7/
+
+Enter URLs (separated by commas or blank spaces) :https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/bin/viewauth/KutterFondsWiki/WebHome https://fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/
+
+Action:
+(enter)  1  Mirror Web Site(s)
+   2  Mirror Web Site(s) with Wizard
+   3  Just Get Files Indicated
+   4  Mirror ALL links in URLs (Multiple Mirror)
+   5  Test Links In URLs (Bookmark Test)
+   0  Quit
+: 
+Enter URLs (separated by commas or blank spaces) :https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/bin/viewauth/KutterFondsWiki/WebHome https://fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/
+
+Action:
+(enter)  1  Mirror Web Site(s)
+   2  Mirror Web Site(s) with Wizard
+   3  Just Get Files Indicated
+   4  Mirror ALL links in URLs (Multiple Mirror)
+   5  Test Links In URLs (Bookmark Test)
+   0  Quit
+: 2
+
+Proxy (return=none) :
+
+You can define wildcards, like: -*.gif +www.*.com/*.zip -*img_*.zip
+Wildcards (return=none) :+*.pdf
+
+You can define additional options, such as recurse level (-r<number>), separed by blank spaces
+To see the option list, type help
+Additional options (return=none) :--preserve
+
+---> Wizard command line: httrack https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/bin/viewauth/KutterFondsWiki/WebHome https://fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/ -W -O "/home/users/nico/kutter/7/kutterfonds"  -%v --preserve  +*.pdf
+
+Ready to launch the mirror? (Y/n) :
+
+--------------------------------------------------------------------------------
+[13:45] kr:7% httrack --preserve  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/bin/viewauth/KutterFondsWiki/ "fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/*" 
+   -> nur index
+
+[13:45] kr:7% rm -rf *; httrack --preserve  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/bin/viewauth/KutterFondsWiki/Webhome "fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/*" 
+   -> nur index
+
+[13:46] kr:7% rm -rf *; httrack --preserve  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/bin/viewauth/KutterFondsWiki/Webhome                                                      
+   -> nur index
+
+NUR INDEX: weil von viewauth auf view verlinkt wird!
+
+Neuer Versuch mit https://fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome
+
+[13:50] kr:7% rm -rf *; httrack --preserve  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome                                                                     
+   -> falsche links durch --preserve
+       -%p    preserve html files  as is  (identical to  -K4 -%F "" ) (--preserve)
+
+NEUER VERSUCH: -%F "" und zweitem URL zum spiegeln
+
+   [13:53] kr:7% rm -rf *; httrack -%F ""  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/    
+
+
+
+[14:00] kr:7% rm -rf *; httrack -%F ""  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/
+
+   -> sieht gut aus!
+   -> link zu viewauth ist kaputt, hinzufügen!
+
+Sieht so aus, als ob ohne --preserve sich der dokumententyp verändert
+
+Versuch: --preserve und danach -K0
+
+[14:12] kr:7% rm -rf *; httrack --preserve -K0  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki/   https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/
+
+
+[14:18] kr:7% permissions.public . && rsync -av --delete ./ wwwkf@free.inf.ethz.ch:/home/wwwkf/www/htdocs/oldwiki/2
+
+
+--------------------------------------------------------------------------------
+[14:18] kr:7% rm -rf *; httrack --preserve -K0  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki/   https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/ "+*.gif" "+*.css"
+
+--------------------------------------------------------------------------------
+Err, nun ohne preserve!
+
+[14:41] kr:7% rm -rf *; httrack  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki/   https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/ "+*.gif" "+*.css"               
+
+
+Ausprobieren, ob locale Schuld ist... NICHT ZUTREFFEND - neuer Webserver liefrt utf8
+[14:11] kr:7% locale -a
+C
+de_CH.utf8
+de_DE.utf8
+en_US
+en_US.iso88591
+en_US.utf8
+POSIX
+[14:12] kr:7% locale   
+LANG=de_CH.UTF-8
+LC_CTYPE="de_CH.UTF-8"
+LC_NUMERIC="de_CH.UTF-8"
+LC_TIME="de_CH.UTF-8"
+LC_COLLATE="de_CH.UTF-8"
+LC_MONETARY="de_CH.UTF-8"
+LC_MESSAGES="de_CH.UTF-8"
+LC_PAPER="de_CH.UTF-8"
+LC_NAME="de_CH.UTF-8"
+LC_ADDRESS="de_CH.UTF-8"
+LC_TELEPHONE="de_CH.UTF-8"
+LC_MEASUREMENT="de_CH.UTF-8"
+LC_IDENTIFICATION="de_CH.UTF-8"
+LC_ALL=de_CH.UTF-8
+[14:12] kr:7% man locale
+[14:12] kr:7% export LC_ALL=en_US.iso88591
+
+--------------------------------------------------------------------------------
+[14:46] kr:7% rm -rf *; httrack  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/WebHome https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki/   https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/ "+*.gif" "+*.css"
+[14:46] kr:7% permissions.public . && rsync -av --delete ./ wwwkf@free.inf.ethz.ch:/home/wwwkf/www/htdocs/oldwiki/2
+
+--------------------------------------------------------------------------------
+Einen URL höher, damit auch der viewauth reinkommt..err..komische idee
+
+[14:48] kr:7% rm -rf *; httrack  https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki/   https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/ "+*.gif" "+*.css"
+
+
+--> rss feed ist noch von fifthelement
+--> javascript ist noch von fifthelment
+
+   https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/scripts/ hinzufügen und +*.js
+
+
+--------------------------------------------------------------------------------
+--can-go-up-and-down hinzu: geht zu weit, nimmt alle wikis mit!!!
+
+
+--------------------------------------------------------------------------------
+Final version (named "run"):
+
+set -e
+
+rm -rf *
+httrack  \
+         https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/         \
+         https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki      \
+         https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/images                     \
+         https://fifthelement.inf.ethz.ch/css                                                         \
+         https://fifthelement.inf.ethz.ch/images                                                      \
+         "+fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki/*"                                         \
+         ;
+
+
+permissions.public .
+
+rsync -av --delete ./ wwwkf@free.inf.ethz.ch:/home/wwwkf/www/htdocs/oldwiki/2 
+
+exit 0
+         https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/pub/KutterFondsWiki            \
+         #https://fifthelement.inf.ethz.ch/twiki/bin/rss                                               \
+
+
+# breaks: because http auth forgotten on view../
+# https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki "+fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/*" 
+
+# breaks: uses bin/* and retrieves other wikis as well
+# https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki
+
+# works, but is missing pdfs, javascript, etc.
+#         https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/view/KutterFondsWiki/         \
+#         https://USERNAME:PASSWORD@fifthelement.inf.ethz.ch/twiki/bin/viewauth/KutterFondsWiki      \
+
+
+# whatever... + ... /css hat nich die css bei viewauth geändert
+         "+fifthelement.inf.ethz.ch/twiki/pub/images/"                                                   \
+         "+fifthelement.inf.ethz.ch/images/"                                                             \
+         "+fifthelement.inf.ethz.ch/css/"                                                                \
