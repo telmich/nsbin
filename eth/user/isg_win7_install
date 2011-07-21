@@ -34,9 +34,9 @@ if [ -z "$NETHZ_USERNAME" ]; then
    exit 1
 fi
 
-if [ $# -ne 3 ]; then
+if [ $# -lt 3 ]; then
    cat << eof
-$__myname: <machine> <ou> <room>
+$__myname: <machine> <ou> <room> [comments]
 
    Requires NETHZ_USERNAME to be set.
 
@@ -49,6 +49,7 @@ fi
 machine="$1"; shift
 ou="$1"; shift
 room="$1"; shift
+comment="$@"
 
 headerto="support@inf.ethz.ch"
 to="support@inf.ethz.ch $from"
@@ -75,7 +76,7 @@ Name:            Nico Schottelius
 NumScreens:      1
 OU:              $ou
 Office:          cab/e/79
-Other Info:      
+Other Info:      $comment
 Phone:           27609
 Resolution:      1920x1200
 Root:            ISG

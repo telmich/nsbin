@@ -1,5 +1,9 @@
 #!/bin/sh
-file=$(date +%Y-%m-%d)
+
+suffix="$1"
+datef="$2"
+
+file=$(date +%Y-%m-%d $datef)
 
 set -x
-$EDITOR "$1${file}"
+$EDITOR "${file}${suffix}"

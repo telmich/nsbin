@@ -22,7 +22,7 @@ set -e
 #version="$(git describe)
 version=$(cat include/config/kernel.release)
 ddir="/boot"
-spath="arch/x86_64/boot/bzImage"
+spath="arch/x86/boot/bzImage"
 fname="vmlinuz-$version"
 fpath="${ddir}/${fname}"
 gpath="$ddir/grub/menu.lst"

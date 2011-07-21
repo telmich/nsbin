@@ -7,3 +7,6 @@ LENGTH=$((END-START))
 LENGTHM=$((LENGTH/60))
 
 echo "Run: ${LENGTH}s ($LENGTHM minutes)"
+
+# Record values
+echo "$@; ${LENGTH}" >> ~/.mytime

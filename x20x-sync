@@ -10,6 +10,13 @@ case $(hostname) in
    ikn)
       other="root@kr.ethz.ch"
    ;;
+   *)
+      echo "I am confused, where I am?"
+      exit 1
+   ;;
 esac
 
-sudo rsync -av --delete-before --delete $dir $other:$dir
+sudo rsync -av \
+   --exclude /home/services/eth-usbhd  \
+   --exclude /home/services/usbhd      \
+   --delete-before --delete $dir $other:$dir

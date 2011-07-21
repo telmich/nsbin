@@ -10,6 +10,6 @@ url="http://home.schottelius.org/~nico/temp"
 bfile="$(basename "$file")"
 
 scp "$file" "${host}:$dir"
-ssh $host "chmod a+r $dir/$bfile"
+ssh $host "chmod a+r \"$dir/$bfile\""
 
 echo "Pre-released ${url}/${bfile}"

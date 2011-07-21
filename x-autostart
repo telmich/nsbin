@@ -5,7 +5,7 @@ tmutt
 tmutt
 
 # start tee window
-x-terminal-emulator -name tee -e ressh.sh tee.schottelius.org
+# x-terminal-emulator -name tee -e ressh.sh tee.schottelius.org
 
 # start root window
 x-terminal-emulator -name sudo -e sudo -i
