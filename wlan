@@ -15,17 +15,19 @@
 set -x
 
 #ip l s eth0 down
+# Ensure previous wpa_supplicant is not running
 ( wpa_cli terminate || exit 0 )
 
-# ( rmmod iwlagn; modprobe iwlagn; sleep 2 )
+# Ensure the adapter works, reloading the driver helps
+( rmmod iwlagn; modprobe iwlagn; sleep 2 )
 
 wpa_supplicant -B -Dwext -iwlan0 -c ~nico/ethz/wlan/wpa_supplicant.conf
+# Give wpa some time to connect
 sleep 5
-( udhcpc -nqfi wlan0 || dhcpcd wlan0 )
-vpnc ~nico/ethz/vpn/sg.conf
 
+# Choose an dhcp client
+( udhcpc -nqfi wlan0 || dhcpcd wlan0 )
+
+# vpnc ~nico/ethz/vpn/sg.conf
 #vpnc ~nico/firmen/ethz/vpn/vpnc.conf
 # vpnc-disconnect
-#!/bin/sh
-
-
