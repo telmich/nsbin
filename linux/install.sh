@@ -24,20 +24,23 @@ version=$(cat include/config/kernel.release)
 ddir="/boot"
 spath="arch/x86/boot/bzImage"
 fname="vmlinuz-$version"
+fname="vmlinuz-nico"
 fpath="${ddir}/${fname}"
 gpath="$ddir/grub/menu.lst"
+initramfs="/boot/initramfs-nico.img"
 
 
 #make install
 cp "$spath" "$fpath"
 make modules_install
+mkinitcpio -k "$version" -g "$initramfs"
 #update-grub
-cat << eof >> "$gpath"
-title  $version
-root   (hd0,0)
-kernel ${fpath}
-
-eof
+#cat << eof >> "$gpath"
+#title  $version
+#root   (hd0,0)
+#kernel ${fpath}
+#
+#eof
 
 echo "Reboot should reboot to $version now ..."
 read notyet
