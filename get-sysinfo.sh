@@ -35,6 +35,9 @@ dest="${0##*/}.${host}.log"
    lspci -nn
    lspci -vv
 
+   # usb stuff
+   lsusb
+
    # hw in total
    lshw
 
