@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd ~/oeffentlich/audio 
+mpd --no-daemon ./mpd.conf 
+
