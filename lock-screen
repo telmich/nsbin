@@ -1,0 +1,4 @@
+#!/bin/sh
+
+~/b/i3lock/i3lock -t -i /home/users/nico/oeffentlich/bilder/linux-tux-bsd/think_linux_kachel.png
+xset dpms force off
