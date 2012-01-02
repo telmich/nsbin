@@ -25,23 +25,18 @@ parallel="-j8"
    set -e
    set -x
 
-   # clean
-   make $parallel clean
-   
-   # create config - use the last one, as far as possible
-   make oldconfig
+    git fetch -v 
+    git merge origin/master
 
-   # build
-   make $parallel all
-
-   # install
-   sudo make install
-   sudo make modules_install
-
-   # script to regenerate grub.cfg (grub2)
-   sudo update-grub
-
-   version=$(cat include/config/kernel.release)
-
-   echo "Reboot should reboot to $version now ..."
+    # clean
+    make $parallel clean
+    
+    # create config - use the last one, as far as possible
+    make oldconfig
+    
+    # build
+    make $parallel all
+    
+    # install
+    sudo ~/bin/linux/install
 )
