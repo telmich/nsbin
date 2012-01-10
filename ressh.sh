@@ -6,6 +6,7 @@
 #
 
 while true; do
-   ssh "$@"
-   read foo
+    ssh "$@"
+    read foo
+    reset
 done
