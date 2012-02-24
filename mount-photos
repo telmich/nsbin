@@ -1,0 +1,12 @@
+#!/bin/sh -ex
+
+dev=/dev/sdc3
+#dev=/dev/disk/by-id/usb-APPLE_SD_Card_Reader_000000000310-0:0-part3
+name=photos
+dev_plain=/dev/mapper/photos
+key=/home/users/nico/privat/rechner/eigene/brief-macbook-air/sd-karte
+
+cryptsetup --key-file "$key" luksOpen "$dev" "$name"
+
+fsck "$dev_plain"
+mount "$dev_plain"
