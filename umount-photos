@@ -1,3 +1,0 @@
-umount /dev/mapper/photos 
-cryptsetup luksClose photos
-
