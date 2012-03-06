@@ -2,7 +2,8 @@
 #
 # Nico Schottelius
 # Date: 13-May-2003
-# Last Modified: 2004-09-06
+# Modified: 2004-09-06
+# Modified: 2012-03-06
 # usage: show_calendar <date> [date]
 # Format: DD.MM., DD.MM.YYYY
 # add $CALDIR/files:
@@ -19,10 +20,9 @@ if [ $# -lt 1 ]; then
    exit 1
 fi
 
-cd $CALDIR
-for file in *; do 
-   for date in $@ TO.DO; do 
-      #egrep --with-filename -A 2 -e "^${date}[:\.]" "$file"
-      egrep --with-filename -A 2 -e "^${date}:" "$file"
-   done
+grep_param="-e ^TO.DO:"
+for arg in "$@"; do
+    grep_param="${grep_param} -e ^${arg}:"
 done
+
+find "$CALDIR" -type f -exec egrep --with-filename -A 2 "$grep_param" {} \;
