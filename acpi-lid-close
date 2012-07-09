@@ -3,10 +3,4 @@
 if grep -q closed /proc/acpi/button/lid/*/state; then
     sleep 3
     su nico -c "DISPLAY=:0.0 xset dpms force off"
-#    sleep 2
-#    su nico -c "DISPLAY=:0.0 xset dpms force off"
-#    sleep 2
-#    su nico -c "DISPLAY=:0.0 xset dpms force off"
-#    sleep 2
-#    su nico -c "DISPLAY=:0.0 xset dpms force off"
 fi
