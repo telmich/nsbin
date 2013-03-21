@@ -1,0 +1,16 @@
+#!/bin/sh
+
+start=$(date)
+rsync -av --delete --progress 	\
+	--exclude '/proc/*' 	\
+	--exclude '/tmp/*' 	\
+	--exclude '/sys/*' 	\
+	--exclude '/dev/*' 	\
+	--exclude '/home/users/nico/.bitcoin/blocks/' 	\
+	--exclude '/home/users/nico/.bitcoin/chainstate/' 	\
+	"$@" 			\
+	/ root@rrloch:/home/services/buch/backup/bento
+end=$(date)
+
+echo $start
+echo $end
