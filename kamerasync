@@ -24,9 +24,8 @@
 set -ex
 
 dev="$1"
-destbase=~nico/photos/
+destbase=~nico/photos
 dest=$destbase/$(date +%Y%m%d).eingehend
-#dest=~nico/$(date +%Y%m%d).eingehend
 mp="/mnt"
 
 if [ ! -e "$destbase" ]; then
@@ -40,3 +39,4 @@ mv -i "$mp/DCIM/"*/* "$dest"
 sudo umount "$mp"
 sudo chown -R nico  "$dest"
 su nico -c "cd $dest && renrot IMG_*.*"
+rm -f $dest/*_orig
