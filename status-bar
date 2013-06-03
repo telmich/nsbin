@@ -1,0 +1,9 @@
+#!/bin/sh
+
+
+i3status | while :
+do
+    read line
+    sut=$(sut)
+    echo $sut | $line" || exit 1
+done
