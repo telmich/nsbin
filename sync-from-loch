@@ -1,0 +1,23 @@
+#!/bin/sh -e
+
+################################################################################
+# standard vars stolen from cconf
+__pwd="$(pwd -P)"
+__mydir="${0%/*}"; __abs_mydir="$(cd "$__mydir" && pwd -P)"
+__myname=${0##*/}; __abs_myname="$__abs_mydir/$__myname"
+
+
+src=root@loch:/home/services/backup/bento-manuell/
+
+if [ $# -ne 1 ]; then
+    echo "$0: $dst"
+    exit 1
+fi
+
+dst=$1; shift
+
+sshdir=$(cd "$__abs_mydir/../.ssh" && pwd -P)
+sshkey=$sshdir/id_rsa
+
+set -x
+rsync -av -e "ssh -i $sshkey" --delete "$src" "$dst"
