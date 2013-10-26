@@ -26,7 +26,7 @@ set -ex
 dev="$1"
 destbase=~nico/photos
 dest=$destbase/$(date +%Y%m%d).eingehend
-mp="/mnt"
+mp="/mnt/kamera"
 
 if [ ! -e "$destbase" ]; then
     echo "base $destbase not existing" >&2
@@ -38,5 +38,5 @@ sudo mount "$dev" "$mp" -o uid=nico
 mv -i "$mp/DCIM/"*/* "$dest"
 sudo umount "$mp"
 sudo chown -R nico  "$dest"
-su nico -c "cd $dest && renrot IMG_*.*"
+su nico -c "cd $dest && renrot IMG_*.JPG DSC*JPG"
 rm -f $dest/*_orig

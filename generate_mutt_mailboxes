@@ -11,7 +11,7 @@
 
 #firstfile=~/.mutt/preferred_mailboxes
 
-echo 'set folder="~/Maildir"'
+#echo 'set folder="~/Maildir"'
 
 if [ -f ~/.mutt/important_mailboxes ]; then
    cat ~/.mutt/important_mailboxes
@@ -23,3 +23,8 @@ find ~/Maildir/ -type d -name new | \
        -e s'/mailboxes +postponed\///g'         \
        -e 's/mailboxes +$//g' | \
    grep -v '^$' 
+
+if [ -f ~/.mutt/unimportant_mailboxes ]; then
+   cat ~/.mutt/unimportant_mailboxes
+fi
+

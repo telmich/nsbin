@@ -25,4 +25,4 @@ EXTENSION=".tar.bz2"
 
 FULL_URL=${BASEURL}${VERSION}${EXTENSION}
 
-wget "$FULL_URL"
+wget -c "$FULL_URL"

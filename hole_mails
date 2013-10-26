@@ -10,6 +10,7 @@ fi
 while true; do
    fetchmail >/dev/null
    offlineimap
+   fetchmail >/dev/null
    echo "Mails abgeholt, schlafe nun $SLEEP Sekunde(n)"
    sleep $SLEEP;
 done

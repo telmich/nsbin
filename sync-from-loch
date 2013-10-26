@@ -19,5 +19,8 @@ dst=$1; shift
 sshdir=$(cd "$__abs_mydir/../.ssh" && pwd -P)
 sshkey=$sshdir/id_rsa
 
+d1=$(date)
 set -x
 rsync -av -e "ssh -i $sshkey" --delete "$src" "$dst"
+echo $d1
+date

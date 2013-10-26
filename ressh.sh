@@ -6,7 +6,7 @@
 #
 
 while true; do
+    reset
     ssh "$@"
     read foo
-    reset
 done

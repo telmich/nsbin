@@ -23,11 +23,18 @@ set -e
 version=$(cat include/config/kernel.release)
 ddir="/boot"
 spath="arch/x86/boot/bzImage"
-fname="vmlinuz-$version"
-fname="vmlinuz-nico"
+
+if [ "$#" -ne 1 ]; then
+    echo "Give suffix for kernel"
+    exit 1
+fi
+
+basename="$1"
+
+fname="vmlinuz-$basename"
 fpath="${ddir}/${fname}"
 gpath="$ddir/grub/menu.lst"
-initramfs="/boot/initramfs-nico.img"
+initramfs="/boot/initramfs-${basename}.img"
 
 
 #make install

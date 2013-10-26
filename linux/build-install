@@ -38,5 +38,5 @@ parallel="-j8"
     make $parallel all
     
     # install
-    sudo ~/bin/linux/install
+    echo sudo ~/bin/linux/install "$1"
 )

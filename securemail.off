@@ -4,5 +4,6 @@
 # Kill ssh tunnels
 #
 
-pkill -f -u nico "ssh -T -f -C -N -L"
-pkill -f -u nico "ssh -T -f -C -N -R"
+#pkill -f -u nico "ssh -T -f -C -N -L"
+#pkill -f -u nico "ssh -T -f -C -N -R"
+pkill -f -u nico "ssh -T -f -C -N"

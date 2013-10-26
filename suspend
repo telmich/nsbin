@@ -1,5 +1,5 @@
 #!/bin/sh
 
-xtrlock &
-sudo /usr/sbin/pm-suspend
-#echo mem > /sys/power/state
+#xtrlock &
+#sudo "echo mem > /sys/power/state"
+~/bin/lock-screen && sudo /usr/sbin/pm-suspend

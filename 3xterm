@@ -5,5 +5,5 @@ XTERM=x-terminal-emulator
 $XTERM -ls -title "--irst 0n3xx" &
 $XTERM -ls -title ">>> 2nd <<<" &
 $XTERM -ls -title "www.3rd.xterm" &
-sleep 0.5
-i3-msg mh
+# sleep 0.5
+# i3-msg mh
