@@ -1,0 +1,19 @@
+#!/bin/sh
+
+~nico/bin/backup-marker
+
+start=$(date)
+rsync -av --delete --progress 	\
+	--exclude '/proc/*' 	\
+	--exclude '/tmp/*' 	\
+	--exclude '/sys/*' 	\
+	--exclude '/dev/*' 	\
+	--exclude '/home/users/nico/.bitcoin/blocks/' 	\
+	--exclude '/home/users/nico/.bitcoin/chainstate/' 	\
+	"$@" 			\
+	/ root@192.168.25.45:/mnt
+
+end=$(date)
+
+echo $start
+echo $end
