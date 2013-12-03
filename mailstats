@@ -1,0 +1,12 @@
+#!/bin/sh
+# Nico Schottelius, Tue Dec  3 23:16:30 CET 2013
+# Show mailstats
+
+(
+    for dir in ~/Maildir ~/Maildir/firmen/ungleich \
+        ~/Maildir/firmen/ungleich/panter \
+        ~/Maildir/firmen/ungleich/entwine; do
+
+        find $dir/cur $dir/new -type f
+    done
+) | wc -l
