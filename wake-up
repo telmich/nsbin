@@ -1,0 +1,15 @@
+#!/bin/sh
+
+host=$1; shift
+
+case "$host" in
+    blank)
+        mac=60:a4:4c:cf:f0:25
+    ;;
+    *)
+        echo "Unknown host $host" >&2
+        exit 1
+    ;;
+esac
+
+wol "$mac"
