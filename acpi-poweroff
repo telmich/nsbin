@@ -1,0 +1,4 @@
+#!/bin/sh
+
+suspend=~/bin/suspend
+su nico -c "DISPLAY=:0.0 $suspend"
