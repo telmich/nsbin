@@ -1,0 +1,36 @@
+#!/bin/sh
+
+set -x
+~nico/bin/backup-marker
+
+dsthost="$1"; shift
+case "$dsthost" in
+    42)
+        dst=42:/home/services/backup/bento
+    ;;
+    loch)
+        dst=root@loch:/home/services/backup/bento-manuell
+    ;;
+    zuhause)
+	    dst=root@zuhause.schottelius.org:/home/services/backup/bento-manuell
+    ;;
+    *)
+        echo "Unknown $1" >&2
+        exit 1
+    ;;
+esac
+
+start=$(date)
+rsync -av --delete --progress 	\
+	--exclude '/proc/*' 	\
+	--exclude '/tmp/*' 	\
+	--exclude '/sys/*' 	\
+	--exclude '/dev/*' 	\
+	--exclude '/home/users/nico/.bitcoin/blocks/' 	\
+	--exclude '/home/users/nico/.bitcoin/chainstate/' 	\
+	"$@" 			\
+	/ "$dst"
+end=$(date)
+
+echo $start
+echo $end
