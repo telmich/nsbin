@@ -21,7 +21,7 @@ case "$dsthost" in
 esac
 
 start=$(date)
-rsync -av --delete --progress 	\
+rsync -avS --delete --progress 	\
 	--exclude '/proc/*' 	\
 	--exclude '/tmp/*' 	\
 	--exclude '/sys/*' 	\

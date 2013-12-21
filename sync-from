@@ -30,6 +30,6 @@ sshconfig=$sshdir/config
 
 d1=$(date)
 set -x
-rsync -av -e "ssh -i $sshkey -F $sshconfig" --delete "$src" "$dst"
+rsync -avS -e "ssh -i $sshkey -F $sshconfig" --delete "$src" "$dst"
 echo $d1
 date
