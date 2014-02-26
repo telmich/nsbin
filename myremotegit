@@ -24,21 +24,27 @@
 host=git.schottelius.org
 dir="/home/services/git"
 
-if [ $# -ne 2 ]; then
-   echo "$0 name description"
+if [ $# -lt 2 ]; then
+   echo "$0 name description [remotename]"
    exit 1
 fi
 
 name=$1; shift
 desc=$1; shift
 
+if [ $# -ge 1 ]; then
+    remote=$1; shift
+else
+    remote=origin
+fi
+
 remote_dir="$dir/$name"
-remote="$host:$remote_dir"
+remote_url="$host:$remote_dir"
 
 # Create on remote side
 ssh "$host" "GIT_DIR=$remote_dir git init"
 ssh "$host" "echo $desc > $remote_dir/description"
 
 # Initialise git
-git remote add origin "$remote"
-git push origin master
+git remote add "$remote" "$remote_url"
+git push "$remote" master

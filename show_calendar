@@ -13,16 +13,17 @@
 # -----------------------
 #
 
-CALDIR=~/.calendar
+CALDIR=~/.calendar/
 
 if [ $# -lt 1 ]; then
    echo `basename $0` 'day.month [day.month.year]'
    exit 1
 fi
 
-grep_param="-e ^TO.DO:"
+# grep_param="-e ^TO.DO:"
 for arg in "$@"; do
     grep_param="${grep_param} -e ^${arg}:"
 done
 
-find "$CALDIR" -type f -exec egrep --with-filename -A 2 "$grep_param" {} \;
+# set -x
+find "$CALDIR" -type f -exec egrep --with-filename -A 2 $grep_param {} \;

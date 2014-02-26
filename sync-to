@@ -11,8 +11,8 @@ case "$dsthost" in
     loch)
         dst=root@loch:/home/services/backup/bento-manuell
     ;;
-    zuhause)
-	    dst=root@zuhause.schottelius.org:/home/services/backup/bento-manuell
+    luchsingen)
+	    dst=root@luchsingen.schottelius.org:/home/services/backup/bento-manuell
     ;;
     *)
         echo "Unknown $1" >&2
@@ -26,6 +26,9 @@ rsync -avS --delete --progress 	\
 	--exclude '/tmp/*' 	\
 	--exclude '/sys/*' 	\
 	--exclude '/dev/*' 	\
+	--exclude '/run/*' 	\
+	--exclude '/home/services/usbhd' 	\
+	--exclude '/home/users/nico/.cache/chromium/' \
 	--exclude '/home/users/nico/.bitcoin/blocks/' 	\
 	--exclude '/home/users/nico/.bitcoin/chainstate/' 	\
 	"$@" 			\

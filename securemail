@@ -19,17 +19,20 @@ HOST="213.146.113.242"
 HOST="nico@62.65.138.78"
 HOST="home.schottelius.org"
 HOST="nico@77.109.138.222"
+# HOST="root@backup1.ungleich.ch"
 
 if [ $# -ge 1 ]; then
     HOST=$1; shift
 fi
+    #-L2323:mx3.schottelius.org:$IMAPS   \
+    #-L4241:mx3.schottelius.org:$SMTP    \
 
 ssh -T -f -C -N \
-    -L2323:mx3.schottelius.org:$IMAPS   \
-    -L4241:mx3.schottelius.org:$SMTP    \
+    -L2323:77.109.138.221:$IMAPS   \
+    -L4241:77.109.138.221:$SMTP    \
     -L2324:imap.googlemail.com:$IMAPS   \
     -L2325:mail.zhaw.ch:$IMAPS          \
-    -R :4242:localhost:22 \
+    -R :4242:localhost:22               \
     -D 12345                            \
     "$HOST" "$@"
 

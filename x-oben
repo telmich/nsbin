@@ -1,6 +1,6 @@
 #!/bin/sh
 x-off
 
-xrandr --output HDMI1 --auto --rotate normal --above LVDS1
-xrandr --output DP1 --auto --rotate normal --above LVDS1
-xrandr --output VGA1 --auto --rotate normal --above LVDS1
+xrandr --output HDMI1 --auto --rotate normal --above eDP1
+xrandr --output DP1 --auto --rotate normal --above eDP1
+xrandr --output VGA1 --auto --rotate normal --above eDP1

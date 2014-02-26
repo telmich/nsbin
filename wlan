@@ -12,8 +12,14 @@
 #ip link set wlp0s3 up
 #iwconfig wlp0s3 essid public
 
-dev=wlp2s0
-dev=wlp3s0
+if [ "$#" -ge 1 ]; then
+	dev=$1; shift
+else
+	dev=wlp2s0
+	dev=wlp3s0
+	dev=wlan0
+	dev=wlp1s0
+fi
 
 set -x
 set +e
