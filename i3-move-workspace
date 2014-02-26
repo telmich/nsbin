@@ -1,0 +1,6 @@
+#!/bin/sh
+
+#i3 move workspace to output right
+# You may also use left, right, up, down 
+
+i3 move workspace to output "$1"
