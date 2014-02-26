@@ -1,0 +1,3 @@
+~root/scripts/enab_dialup
+ln -s /dev/tts/17 /dev/mobilephone
+gsmctl -o pin 3561

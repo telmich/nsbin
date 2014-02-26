@@ -1,0 +1,3 @@
+modprobe e100
+ifconfig eth0 192.168.1.5 up
+route add default gw 192.168.1.2

@@ -1,0 +1,9 @@
+echo 1 > /proc/sys/net/ipv4/ip_forward
+echo 1 > /proc/sys/net/ipv4/ip_dynaddr
+modprobe ppp_generic
+modprobe ppp_async
+modprobe ppp_deflate
+modprobe ppp_synctty
+modprobe 8250 #serial 2.5
+modprobe serial #serial 2.4
+modprobe bsd_comp
