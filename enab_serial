@@ -1,2 +1,0 @@
-modprobe serial
-chmod a+rw /dev/tts/*

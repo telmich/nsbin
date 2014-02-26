@@ -1,5 +1,0 @@
-
-modprobe ohci-hcd
-modprobe sd_mod
-modprobe usb-storage
-modprobe 

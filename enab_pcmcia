@@ -1,5 +1,0 @@
-
-modprobe pcmcia_core
-modprobe yenta_socket
-modprobe ds
-cardmgr

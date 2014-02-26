@@ -1,1 +1,0 @@
-ln -s /dev/fb/0 /dev/fb0
