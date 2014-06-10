@@ -16,6 +16,13 @@ end=7
 
 day=$start
 
+date="$(date +%F)"
+file="$HOME/privat/persoenlich/notizen/$date"
+if [ -f "$file" ]; then
+    echo "$date"
+    head -n 10 "$file"
+fi
+
 while [ "$day" -le "$end" ]; do
     date="$(date +%F -d "$day days")"
     file="$HOME/privat/persoenlich/notizen/$date"
