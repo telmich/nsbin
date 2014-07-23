@@ -1,0 +1,8 @@
+#!/bin/sh
+
+arrival="2014-7-14"
+arrival="2014-8-20"
+
+export arrival
+
+python3 -c 'import os; import datetime; day=datetime.datetime.strptime(os.environ["arrival"], "%Y-%m-%d"); delta = day - datetime.datetime.now(); print("Sanghee is %sd away" % (delta.days))'
