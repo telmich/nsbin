@@ -1,0 +1,20 @@
+#!/bin/sh
+
+
+if [ "$#" -ne 1 ]; then
+    echo "$0 position"
+    exit 1
+fi
+
+primary=eDP1
+
+# position: something xrandr understands
+position=$1; shift
+
+# Turn all off
+for dp in $(xrandr | awk '/connected/ { print $1 }'); do
+    # Skip primary display
+    [ "$dp" = "$primary" ] && continue
+
+    xrandr --output "$dp" --auto --$position "$primary"
+done
