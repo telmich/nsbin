@@ -1,0 +1,15 @@
+
+case "$1" in
+	home)
+	ifconfig eth0 down
+	iwconfig eth1 essid ELSAAIR
+	iwconfig eth1 key fa:fb:fc:01:02
+	iwconfig eth1 key restricted
+	ifconfig eth1 192.168.1.5 up
+	route add default gw 192.168.1.2
+	;;
+	*)
+	echo bla so nich
+	exit 1
+	;;
+esac
