@@ -1,0 +1,11 @@
+#!/bin/sh
+
+xrandr --output DP2     --above eDP1    --auto
+xrandr --output HDMI1   --left-of DP2   --auto --rotate left
+
+#i3 workspace 5
+#i3 move workspace to output right 
+#
+#i3 workspace 4
+#i3 move workspace to output up
+
