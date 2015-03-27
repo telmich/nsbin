@@ -1,6 +1,6 @@
 #!/bin/sh
 # 
-# 2010 Nico Schottelius (nico-nsbin at schottelius.org)
+# 2010-2015 Nico Schottelius (nico-nsbin at schottelius.org)
 # 
 # This file is part of nsbin.
 #
@@ -19,6 +19,11 @@
 #
 # 
 # See http://pod.tst.eu/http://cvs.schmorp.de/rxvt-unicode/doc/rxvt.7.pod#Rendering_Font_amp_Look_and_Feel_Iss
+# 
+# Example usage:
+#
+#   urxvt-font-change 'xft:Source Code Pro-12'
+#   urxvt-font-change 'xft:Source Code Pro-12,xft:Baekmuk Batang'
 # 
 
 printf '\33]50;%s\007' "$1"
