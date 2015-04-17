@@ -1,6 +1,6 @@
 #!/bin/sh
 # 
-# 2011      Nico Schottelius (nico-nsbin at schottelius.org)
+# 2011-2015      Nico Schottelius (nico-nsbin at schottelius.org)
 # 
 # This file is part of nsbin.
 #
@@ -21,8 +21,8 @@
 # Create remote git repo and add origin remote locally
 #
 
-host=git.schottelius.org
-dir="/home/services/git"
+host=nico-data.schottelius.org
+dir=/home/nico/git-bare
 
 if [ $# -lt 2 ]; then
    echo "$0 name description [remotename]"
