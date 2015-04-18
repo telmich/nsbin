@@ -1,5 +1,5 @@
 #!/bin/sh
-ddir="${HOME}/privat/persoenlich/notizen"
+ddir="${HOME}/vcs/notes"
 
 cd "$ddir"
 lh "$@"
