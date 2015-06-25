@@ -1,0 +1,13 @@
+#!/bin/sh
+
+synctime=~/.mailsync
+
+date > $synctime
+unison -batch \
+    -ignore 'Name .git' \
+    -ignore 'Name .notmuch' \
+    -ignore 'Name procmail.log' \
+    ~/Maildir ssh://nico-vm.schottelius.org/Maildir
+date >> $synctime
+
+cat "$synctime"
