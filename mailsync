@@ -11,3 +11,5 @@ unison -batch \
 date >> $synctime
 
 cat "$synctime"
+
+notmuch new
