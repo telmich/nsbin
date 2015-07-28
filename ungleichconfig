@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]; then
+    echo "$0 host-to-configure"
+    exit 1
+fi
+
+host=$1
+
+ssh -A ungleich@control.ungleich.ch "
+    cd ~/.cdist
+    git pull
+    git submodule update --init; " '~/cdist/bin/cdist config -vp' "$@"
+
