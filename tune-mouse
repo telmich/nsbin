@@ -1,0 +1,10 @@
+#!/bin/sh
+
+synclient HorizTwoFingerScroll=1
+
+x# Calm down a bit - not sure if it helps
+#synclient HorizHysteresis=50
+#synclient VertHysteresis=50
+
+synclient VertScrollDelta=-111
+synclient HorizScrollDelta=-111
