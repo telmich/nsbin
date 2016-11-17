@@ -1,10 +1,20 @@
 #!/bin/sh
 
-synclient HorizTwoFingerScroll=1
+# Thinkpad x1 carbon
+#synclient HorizTwoFingerScroll=1
 
-x# Calm down a bit - not sure if it helps
+# Calm down a bit - not sure if it helps
 #synclient HorizHysteresis=50
 #synclient VertHysteresis=50
 
-synclient VertScrollDelta=-111
-synclient HorizScrollDelta=-111
+#synclient VertScrollDelta=-111
+#synclient HorizScrollDelta=-111
+
+## # mouse speed
+
+# XPS 13
+# xinput set-prop "DLL0704:01 06CB:76AE Touchpad" "libinput Natural Scrolling Enabled" 1
+
+# lenovo x1 carbon 2016
+xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Natural Scrolling Enabled" 1 
+xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Accel Speed" -0.5
