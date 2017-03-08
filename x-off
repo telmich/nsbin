@@ -1,4 +1,4 @@
 #!/bin/sh
-xrandr --output DP1 --off
-xrandr --output HDMI1 --off
-xrandr --output VGA1 --off
+for d in DP1 DP2 HDMI1 HDMI2 VIRTUAL1; do
+    xrandr --output $d --off
+done

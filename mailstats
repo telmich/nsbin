@@ -2,11 +2,24 @@
 # Nico Schottelius, Tue Dec  3 23:16:30 CET 2013
 # Show mailstats
 
+#notmuch count tag:inbox or tag:unread 
 (
     for dir in ~/Maildir ~/Maildir/firmen/ungleich \
-        ~/Maildir/firmen/ungleich/panter \
-        ~/Maildir/firmen/ungleich/entwine; do
+        ~/Maildir/firmen/ungleich/technik/INBOX/panter \
+        ~/Maildir/firmen/ungleich/technik/INBOX/teralytics \
+        ~/Maildir/bildung/zhaw \
+        ~/Maildir/firmen/ungleich/technik/INBOX/entwine; do
 
-        find $dir/cur $dir/new -type f
+        #find $dir/cur $dir/new -type f
+        find $dir/new -type f
     done
 ) | wc -l
+
+echo --
+notmuch count tag:inbox
+notmuch count tag:inbox and NOT tag:archive 
+echo --
+notmuch count tag:inbox and tag:unread 
+notmuch count tag:inbox and tag:new
+
+

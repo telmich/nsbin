@@ -6,4 +6,6 @@ datef="$2"
 file=$(date +%Y-%m-%d $datef)
 
 set -x
-$EDITOR "${file}${suffix}"
+
+# $EDITOR "${file}${suffix}"
+emacs "${file}${suffix}"

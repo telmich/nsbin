@@ -25,5 +25,5 @@ for arg in "$@"; do
     grep_param="${grep_param} -e ^${arg}:"
 done
 
-# set -x
+set -x
 find "$CALDIR" -type f -exec egrep --with-filename -A 2 $grep_param {} \;

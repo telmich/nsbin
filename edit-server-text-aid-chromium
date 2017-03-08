@@ -34,8 +34,8 @@ our $LOCALHOST_ONLY = 1;
 # Configure the program that you want to run to handle the requests.
 # This editor invocation must NOT return control to this script until
 # you are done editing.
-our $EDITOR_CMD = '/home/users/nico/bin/vim-term "%s"';
-#our $EDITOR_CMD = '/usr/bin/emacsclient -c "%s"';
+#our $EDITOR_CMD = '/home/users/nico/bin/vim-term "%s"';
+our $EDITOR_CMD = '/usr/bin/emacsclient -c "%s"';
 
 # The settings to configure the temp dir and how soon old files are removed.
 # If TMPTEMPLATE contains the string -URL64-, then up to 64 chars of the munged

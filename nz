@@ -1,4 +1,10 @@
 #!/bin/sh
+
+# exec > /tmp/nz
+# exec 2>&1
+
+set -x
+
 ddir="${HOME}/vcs/notes"
 
 cd "$ddir"

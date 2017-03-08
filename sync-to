@@ -5,14 +5,20 @@ set -x
 
 dsthost="$1"; shift
 case "$dsthost" in
-    42)
-        dst=42:/home/services/backup/bento
+    loch|rloch)
+        dst=root@$dsthost:/home/services/backup/notebook-manuell/home/users/nico/
     ;;
-    loch)
-        dst=root@loch:/home/services/backup/bento-manuell
+    nico-vm)
+        dst=nico-vm.schottelius.org:/data
     ;;
-    luchsingen)
-	    dst=root@luchsingen.schottelius.org:/home/services/backup/bento-manuell
+    freiheit)
+        dst=freiheit:
+    ;;
+    local)
+	    dst=root@192.168.0.20:/home/services/backup/notebook-manuell/home/users/nico/
+    ;;
+    nico-data)
+	    dst=nico-data.schottelius.org:/home/nico
     ;;
     *)
         echo "Unknown $1" >&2
@@ -22,17 +28,11 @@ esac
 
 start=$(date)
 rsync -avS --delete --progress 	\
-	--exclude '/proc/*' 	\
-	--exclude '/tmp/*' 	\
-	--exclude '/sys/*' 	\
-	--exclude '/dev/*' 	\
-	--exclude '/run/*' 	\
-	--exclude '/home/services/usbhd' 	\
-	--exclude '/home/users/nico/.cache/chromium/' \
-	--exclude '/home/users/nico/.bitcoin/blocks/' 	\
-	--exclude '/home/users/nico/.bitcoin/chainstate/' 	\
+	--exclude-from=/home/users/nico/.ccollect/defaults/exclude \
+    --exclude /.cache \
+    --exclude ~/temp/ \
 	"$@" 			\
-	/ "$dst"
+	~/ "$dst"
 end=$(date)
 
 echo $start

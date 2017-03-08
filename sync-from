@@ -16,10 +16,7 @@ dst=$1; shift
 
 case $from in
     loch)
-        src=root@loch:/home/services/backup/bento-manuell/
-    ;;
-    42)
-        src=root@42:/home/services/backup/bento/
+        src=root@loch:/home/services/backup/notebook-manuell/home/users/nico/
     ;;
 esac
 
@@ -30,6 +27,7 @@ sshconfig=$sshdir/config
 
 d1=$(date)
 set -x
-rsync -avS -e "ssh -i $sshkey -F $sshconfig" --delete "$src" "$dst"
+#rsync -avS -e "ssh -i $sshkey -F $sshconfig" --delete "$src" "$dst"
+rsync -avS --delete "$src" "$dst"
 echo $d1
 date

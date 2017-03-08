@@ -6,5 +6,4 @@
 #==============================================================================
 
 echo '[ "$TERM" = "rxvt-unicode" ] && export TERM=rxvt' >> "$HOME/.profile"
-echo '[ "$TERM" = "rxvt-unicode" ] && export TERM=rxvt' >> "$HOME/.bash_profile"
 echo 'if ( $TERM == rxvt-unicode ) setenv TERM rxvt' >> "$HOME/.cshrc"

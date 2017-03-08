@@ -5,6 +5,8 @@
 # used at conferences / congresses / meetings
 #
 
+$HOME/bin/securemail.off
+
 POP3=110
 POP3S=995
 IMAP=143
@@ -19,22 +21,33 @@ HOST="213.146.113.242"
 HOST="nico@62.65.138.78"
 HOST="home.schottelius.org"
 HOST="nico@77.109.138.222"
-# HOST="root@backup1.ungleich.ch"
+#HOST="ssh.schottelius.org"
+HOST="root@wein.ungleich.ch"
+HOST="root@kaffee.ungleich.ch"
+HOST="root@mx.ungleich.ch"
+HOST="oneadmin@kaffee.ungleich.ch"
+HOST="root@mx-hetzner01.ungleich.ch"
+HOST="root@mx.ungleich.ch"
 
 if [ $# -ge 1 ]; then
     HOST=$1; shift
 fi
-    #-L2323:mx3.schottelius.org:$IMAPS   \
-    #-L4241:mx3.schottelius.org:$SMTP    \
 
+#ssh -T -f -C -N \
+#    -L4241:mx.ungleich.ch:$SMTP         \
+#    -R :4242:localhost:22               \
+#    -D 3128 "$@"                        \
+#    "$HOST" && sendmail -q
+#
 ssh -T -f -C -N \
-    -L2323:77.109.138.221:$IMAPS   \
-    -L4241:77.109.138.221:$SMTP    \
+    -L2323:mx.ungleich.ch:$IMAPS        \
+    -L4241:mx.ungleich.ch:$SMTP         \
     -L2324:imap.googlemail.com:$IMAPS   \
     -L2325:mail.zhaw.ch:$IMAPS          \
+    -L2326:imap.googlemail.com:$POP3S   \
     -R :4242:localhost:22               \
-    -D 12345                            \
-    "$HOST" "$@"
+    -D 3128 "$@"                        \
+    "$HOST" && sendmail -q
 
 # Fernzugriff
 # ssh -T -f -C -N -R4242:localhost:22 "$HOST"

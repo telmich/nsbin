@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cd ~/oeffentlich/audio 
+cd ~/vcs/annex/audio 
 mpd --no-daemon ./mpd.conf 
 

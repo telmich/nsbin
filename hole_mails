@@ -1,16 +1,26 @@
 #!/bin/sh
 
-SLEEP=$1
+securemail
+fetchmail
 
-if [ -z "$SLEEP" ]; then
-   echo "$0 Zeit zum Schlafen"
-   exit 1
-fi
+# Disabled by Mon Jun 20 10:56:19 CEST 2016 -- using mu now
+# notmuch new
 
-while true; do
-   fetchmail >/dev/null
-   offlineimap
-   fetchmail >/dev/null
-   echo "Mails abgeholt, schlafe nun $SLEEP Sekunde(n)"
-   sleep $SLEEP;
-done
+# offlineimap
+# notmuch new
+
+exit 0
+
+cd ~/Maildir
+git add .
+git commit --quiet -m "Update from $(hostname) $(date +%F-%H:%M)"
+#git fetch --quiet origin
+git fetch origin
+
+git merge -m "Merge from VM" origin/from-vm
+
+git push --quiet origin master:from-notebook
+
+notmuch new --quiet
+
+exit 0

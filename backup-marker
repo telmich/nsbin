@@ -1,3 +1,4 @@
 #!/bin/sh
 
 touch "$0"
+date > ~/.last-backup

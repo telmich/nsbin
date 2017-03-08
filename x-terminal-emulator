@@ -1,5 +1,6 @@
 #!/bin/sh
 
-[ -x /usr/bin/urxvtcd ] && exec /usr/bin/urxvtcd 
+#[ -x /usr/bin/urxvtcd ] && exec /usr/bin/urxvtcd 
+#exec urxvt "$@"
 
 exec urxvtc "$@"
