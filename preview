@@ -1,0 +1,160 @@
+#!/usr/bin/perl -wT
+#
+# TWiki Collaboration Platform, http://TWiki.org/
+#
+# Copyright (C) 1999-2003 Peter Thoeny, peter@thoeny.com
+#
+# For licensing info read license.txt file in the TWiki root.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details, published at 
+# http://www.gnu.org/copyleft/gpl.html
+
+# Set library paths in @INC, at compile time
+BEGIN { unshift @INC, '.'; require 'setlib.cfg'; }
+
+use CGI::Carp qw(fatalsToBrowser);
+use CGI;
+use TWiki;
+
+use strict;
+
+&main();
+
+
+sub main
+{
+    my $query = new CGI;
+    my $thePathInfo = $query->path_info(); 
+    my $theRemoteUser = $query->remote_user();
+    my $theTopic = $query->param( 'topic' );
+    my $theUrl = $query->url;
+    my( $topic, $webName, $dummy, $userName ) = 
+       &TWiki::initialize( $thePathInfo, $theRemoteUser, $theTopic, $theUrl, $query );
+    $dummy = "";  # to suppress warning
+
+    my $tmpl = ""; 
+    my $text = "";
+    my $ptext = "";
+    my $meta = "";
+    my $formFields = "";
+    my $wikiUserName = &TWiki::userToWikiName( $userName );
+
+    if( ! &TWiki::Store::webExists( $webName ) ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsnoweb" );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    my( $mirrorSiteName, $mirrorViewURL ) = &TWiki::readOnlyMirrorWeb( $webName );
+    if( $mirrorSiteName ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsmirror", $mirrorSiteName, $mirrorViewURL );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    # reset lock time, this is to prevent contention in case of a long edit session
+    &TWiki::Store::lockTopic( $topic );
+
+    my $skin = $query->param( "skin" ) || &TWiki::Prefs::getPreferencesValue( "SKIN" );
+
+    # Is user looking to change the form used?  Sits oddly in preview, but 
+    # to avoid Javascript and pick up text on edit page it has to be in preview.
+    my $changeform = $query->param( 'submitChangeForm' ) || "";
+    if( $changeform ) {
+        &TWiki::Form::changeForm( $webName, $topic, $query );
+        return;
+    }
+
+    # get view template, standard view or a view with a different skin
+    $tmpl = &TWiki::Store::readTemplate( "preview", $skin );
+    my $dontNotify = $query->param( "dontnotify" ) || "";
+    $tmpl =~ s/%DONTNOTIFY%/$dontNotify/go;
+    my $saveCmd = $query->param( "cmd" ) || "";
+    if( $saveCmd ) {
+        if( ! &TWiki::Access::userIsInGroup( $wikiUserName, $TWiki::superAdminGroup ) ) {
+            # user has no permission to execute undocumented cmd=... parameter
+            my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsaccessgroup", "$TWiki::mainWebname.$TWiki::superAdminGroup" );
+            TWiki::redirect( $query, $url );
+            return;
+        }
+        $tmpl =~ s/\(preview\)/\(preview cmd=$saveCmd\)/go;
+    }
+    $tmpl =~ s/%CMD%/$saveCmd/go;
+    
+    if( $saveCmd ne "repRev" ) {
+        my $dummy = "";
+        ( $meta, $dummy ) = &TWiki::Store::readTopic( $webName, $topic );
+        
+	# parent setting
+	my $theParent = $query->param( 'topicparent' ) || "";
+	if( $theParent ) {
+	    $tmpl =~ s/%TOPICPARENT%/$theParent/go;
+	    $meta->put( "TOPICPARENT", ( "name" => $theParent ) );
+	}
+	$tmpl =~ s/%TOPICPARENT%/$theParent/;
+
+	my $formTemplate = $query->param( "formtemplate" );
+	if( $formTemplate ) {
+	   $meta->remove( "FORM" );
+	   $meta->put( "FORM", ( name => $formTemplate ) ) if( $formTemplate ne "none" );
+	   $tmpl =~ s/%FORMTEMPLATE%/$formTemplate/go;
+	} else {
+	   $tmpl =~ s/%FORMTEMPLATE%//go;
+	}
+
+        # get the edited text and combine text, form and attachments for preview
+        &TWiki::Form::fieldVars2Meta( $webName, $query, $meta );
+        $text = $query->param( "text" );
+        if( ! $text ) {
+            # empty topic not allowed
+            my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsempty" );
+            print $query->redirect( $url );
+            return;
+        }
+        #AS added hook for plugins that want to do heavy stuff
+        TWiki::Plugins::afterEditHandler( $text, $topic, $webName );
+        $ptext = $text;
+        
+        if( $meta->count( "FORM" ) ) {
+            $formFields = &TWiki::Form::getFieldParams( $meta );
+        }
+
+    } else {
+        # undocumented "repRev" mode
+        $text = $query->param( "text" ); # text to save
+        ( $meta, $ptext ) = &TWiki::Store::_extractMetaData( $webName, $topic, $text );
+        $text =~ s/%_(.)_%/%__$1__%/go;
+    }
+
+    my @verbatim = ();
+    $ptext = &TWiki::takeOutVerbatim( $ptext, \@verbatim );
+    $ptext =~ s/ {3}/\t/go;
+    $ptext = &TWiki::handleCommonTags( $ptext, $topic );
+    $ptext = &TWiki::getRenderedVersion( $ptext );
+
+    # do not allow click on link before save:
+    $ptext =~ s@(href=".*?")@href="%SCRIPTURLPATH%/oops%SCRIPTSUFFIX%/%WEB%/%TOPIC%\?template=oopspreview"@goi;
+    $ptext = &TWiki::handleCommonTags( $ptext, $topic );
+    $ptext = &TWiki::putBackVerbatim( $ptext, "pre", @verbatim );
+
+    $tmpl = &TWiki::handleCommonTags( $tmpl, $topic );
+    $tmpl = &TWiki::handleMetaTags( $webName, $topic, $tmpl, $meta );
+    $tmpl = &TWiki::getRenderedVersion( $tmpl );
+    $tmpl =~ s/%TEXT%/$ptext/go;
+    
+    $text = &TWiki::encodeSpecialChars( $text );
+
+    $tmpl =~ s/%HIDDENTEXT%/$text/go;
+    $tmpl =~ s/%FORMFIELDS%/$formFields/go;
+    $tmpl =~ s|( ?) *</*nop/*>\n?|$1|gois;   # remove <nop> tags (PTh 06 Nov 2000)
+
+    &TWiki::writeHeader( $query );
+    print $tmpl;
+}

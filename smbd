@@ -1,0 +1,15 @@
+case "$1" in
+
+start)
+
+	/sbin/portmap
+	/usr/net/sbin/rpc.mountd
+	/usr/net/sbin/rpc.nfsd
+	/usr/net/sbin/rpc.statd
+	/usr/net/sbin/rpc.lockd
+	/usr/net/sbin/rpc.rquotad
+	;;
+stop)
+	killall portmap rpc.mountd rpc.nfsd rpc.statd rpc.lockd rpc.rquotad
+	;;
+esac

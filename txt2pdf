@@ -1,0 +1,13 @@
+#!/bin/sh
+
+filename=$1; shift
+outfilename=${filename%.txt}.pdf
+
+if [ $# -eq 1 ]; then
+    title=$1; shift
+    set -- -b "$title"
+else
+    set -- -B
+fi
+
+iconv -f utf8 -t iso8859-1 < "$filename" | enscript  -o - "$@" | ps2pdf - "$outfilename"

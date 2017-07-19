@@ -1,0 +1,6 @@
+#!/bin/sh
+
+#set -x
+#exec >> /tmp/feh-log
+#exec 2>&1
+DISPLAY=:1.0 feh --bg-fill --randomize --recursive --draw-filename  --draw-tinted ~/photos/

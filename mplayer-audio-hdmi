@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mplayer -ao alsa:device=hw=0.7 "$@"

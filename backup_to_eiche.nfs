@@ -1,0 +1,18 @@
+NEWROOT=/mnt/eiche
+DATA_DIRS="bin boot etc home lib opt root sbin tmp usr var"
+SCRIPTS="/root/scripts/to_eiche"
+
+# display how long we backup
+date
+for script in $SCRIPTS; do
+	$script
+done
+
+# create empty dirs
+mkdir -p $NEWROOT/dev $NEWROOT/proc $NEWROOT/mnt 
+for a in /mnt/*; do mkdir -p $NEWROOT/$a; done
+
+cd /
+tar cf - $DATA_DIRS | ( cd $NEWROOT; tar xf - )
+
+date

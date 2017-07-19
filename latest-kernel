@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+# Nico Schottelius <nico@schottelius.(net|org)>
+# Date: 21-Oct-2003
+# Last Modified: 
+# Versions:
+#  1.6 2007-03-10
+#     Only mail, if new kernel is newer.
+#  1.5: 2006-03-20
+#     Added URL to download kernel
+#  1.4: 2006-02-03
+#     Added Changelog
+
+#set -x
+
+MAILTO="kernel-announce@lists.schottelius.org"
+
+USERFILE=$HOME/.latest-kernel
+
+#VERSION=`curl ftp://ftp.kernel.org/pub/linux/kernel/v2.6/  | grep linux-2.6.0 | sort | tail -n 1 | awk ' { print $9 }' 2>/dev/null`
+#VERSION=`curl ftp://ftp.kernel.org/pub/linux/kernel/v2.6/ | grep linux | awk '{ print $6 " " $7 " " $8 " " $9 }' | sort -M | tail -n 1`
+#VERSION=`curl ftp://ftp.kernel.org/pub/linux/kernel/v2.6/ 2>/dev/null| awk '/linux/ { print $9 }' | sort | tail -n 1`
+#VERSION=`curl ftp://ftp.kernel.org/pub/linux/kernel/v2.6/ 2>/dev/null| awk '/linux/ { print $9 }' | sort | tail -n 1 | sed 's/\.tar.*//'`
+#VERSION=`curl ftp://ftp.kernel.org/pub/linux/kernel/v2.6/ 2>/dev/null| awk '/linux/ { print $9 }' | sed 's/\.tar.*//' | sort | tail -n 1`
+#VERSION=$(curl -s http://ftp.kernel.org/pub/linux/kernel/v2.6/ 2>/dev/null | grep LATEST-IS | sed 's/.*LATEST-IS-//')
+
+VERSION=$(curl -s http://ftp.kernel.org/pub/linux/kernel/v2.6/ | grep LATEST-IS- | sed 's/.*LATEST-IS-\(.*\)<\/a.*/\1/')
+OLDVERSION=`cat $USERFILE 2>/dev/null`
+
+if [ "$OLDVERSION" != "$VERSION" -a -n "$VERSION"  ]; then
+   i=1
+   newpart=$(echo $VERSION | cut -f${i} -d.)
+
+   while [ "$newpart" ]; do
+      oldpart=$(echo $OLDVERSION | cut -f${i} -d.)
+      echo "${oldpart}::${newpart}"
+      if [ "$oldpart" -gt "$newpart" ]; then
+         echo "Abort: $VERSION is older then old $OLDVERSION"
+         exit 1
+      fi
+
+      i=$(($i+1))
+      newpart=$(echo $VERSION | cut -f${i} -d.)
+   done
+
+   CHANGELOG="http://www.kernel.org/pub/linux/kernel/v2.6/ChangeLog-${VERSION}"
+
+   BASEURL="http://www.kernel.org/pub/linux/kernel/v2.6/linux-"
+   EXTENSION=".tar.bz2"
+   FULL_URL=${BASEURL}${VERSION}${EXTENSION}
+
+   (
+      echo "Download kernel at $FULL_URL"
+      echo ""
+      curl -s ${CHANGELOG}
+   #) | mail -s "New Linux-Kernel: $VERSION" "$MAILTO"
+   ) | mutt -s "New Linux-Kernel: $VERSION" "$MAILTO"
+
+   echo "$VERSION" > "$USERFILE"
+   echo "Neue Version ($VERSION) gesendet"
+fi

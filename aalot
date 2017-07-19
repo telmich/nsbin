@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd /home/users/nico/p/foreign/alot
+export PYTHONPATH=$(pwd -P)
+python2 ./bin/alot

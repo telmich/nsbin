@@ -1,0 +1,571 @@
+#!/usr/bin/perl -wT
+#
+# TWiki Collaboration Platform, http://TWiki.org/
+#
+# Copyright (C) 2000-2003 Peter Thoeny, peter@thoeny.com
+# Copyright (C) 2002 Richard Donkin, rdonkin@bigfoot.com
+#
+# For licensing info read license.txt file in the TWiki root.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details, published at 
+# http://www.gnu.org/copyleft/gpl.html
+# 
+# DESCRIPTION
+# This script does update the usage statistics of each TWiki web.
+# It reads the current month's log file and updates the table
+# in the WebStatistics topic of each web.
+# The script should be called by a cron job, it is recommended to
+# call it once a day.
+
+# Set library paths in @INC, at compile time
+BEGIN { unshift @INC, '.'; require 'setlib.cfg'; }
+
+# 'Use locale' for internationalisation of Perl regexes -
+# main locale settings are done in TWiki::setupLocale
+BEGIN {
+    # Do a dynamic 'use locale' for this module
+    if( $TWiki::useLocale ) {
+        require locale;
+	import locale ();
+    }
+}
+
+use CGI::Carp qw(fatalsToBrowser);
+use CGI;
+use File::Copy qw(copy);
+use IO::File;
+
+use TWiki;
+
+use strict;
+# use diagnostics;		# Debug only
+
+#open(STDERR,'>&STDOUT');   # redirect error to browser
+# FIXME: Beware global $| in mod_perl!  Should use 'local'
+$| = 1;                    # no buffering
+
+&main();
+
+# =========================
+sub main
+{
+    # initialize variables
+    my $cgiQuery = undef;
+    my $tmp = "";
+    my $theTopic = "";
+    my $thePathInfo = ""; 
+    my $theRemoteUser = "";
+    my $logDate = "";
+
+    # determine at runtime if script is called by browser or cron job
+    if( $ENV{'DOCUMENT_ROOT'} ) {
+        # script is called by browser
+        $cgiQuery = new CGI;
+        $thePathInfo = $cgiQuery->path_info() || ""; 
+        $theRemoteUser = $cgiQuery->remote_user() || "";
+        $theTopic = $cgiQuery->param( 'topic' ) || "";
+        $tmp = $cgiQuery->param( 'logdate' ) || "";
+        $tmp =~ s/[^0-9]//g;  # remove all non numerals
+        if( $tmp ne "" ) {
+            $logDate = "$tmp";
+        }
+        TWiki::writeHeader( $cgiQuery );
+        print "<html>\n<head>\n<title>TWiki: Create Usage Statistics</title>\n";
+        print "</head>\n<body>\n";
+    } else {
+        # script is called by cron job
+    }
+
+    # Set up locale and regexes
+    &TWiki::basicInitialize();
+
+    # Initial messages
+    printMsg( "TWiki: Create Usage Statistics", $cgiQuery );
+    if( $cgiQuery ) {
+        print "<h4><font color=\"red\">Do not interrupt this script!</font> ( Please wait until page download has finished )</h4>\n";
+    }
+    if ( $theRemoteUser ) {
+        $tmp = &TWiki::userToWikiName( $theRemoteUser );
+        $tmp =~ s/^Main\.//;
+        printMsg( "* Executed by $tmp", $cgiQuery );
+    } else {
+        printMsg( "* Executed by a guest or a cron job scheduler", $cgiQuery );
+    }
+
+    if( ! $logDate ) {
+        # get current local time and format to "yyyymm" format:
+        my ( $sec, $min, $hour, $mday, $mon, $year) = localtime( time() );
+        $year = sprintf("%.4u", $year + 1900);  # Y2K fix
+        $mon = $mon+1;
+        $logDate = sprintf("%.4u%.2u", $year, $mon);
+    }
+
+    my $logMonth;
+    my $logYear;
+    $tmp = $logDate;
+    $tmp =~ s/([0-9]{4})(.*)/$2/g;
+    if( $tmp && $tmp < 13 ) {
+        $logMonth = $TWiki::isoMonth[$tmp-1];
+    } else {
+        $logMonth = "Date error";
+    }
+    $logYear = $logDate;
+    $logYear =~ s/([0-9]{4})(.*)/$1/g;
+    my $logMonthYear = "$logMonth $logYear";
+    printMsg( "* Statistics for $logMonthYear", $cgiQuery );
+
+    my $logFile = $TWiki::logFilename;
+    $logFile =~ s/%DATE%/$logDate/g;
+
+    if( -e $logFile ) {
+	# Copy the log file to temp file, since analysis could take some time
+
+	# FIXME move the temp dir stuff to TWiki.cfg
+	my $tmpDir;
+	if ( $TWiki::OS eq "UNIX" ) { 
+	    $tmpDir = $ENV{'TEMP'} || "/tmp"; 
+	} elsif ( $TWiki::OS eq "WINDOWS" ) {
+	    $tmpDir = $ENV{'TEMP'} || "c:/"; 
+	} else {
+	    # FIXME handle other OSs properly - assume Unix for now.
+	    $tmpDir = "/tmp";
+	}
+	my $randNo = int ( rand 1000);	# For mod_perl with threading...
+	my $tmpFilename = "$tmpDir/twiki-stats.$$.$randNo";
+	$tmpFilename =~ /(.*)/; $tmpFilename = $1;   # Untaint
+
+	File::Copy::copy ($logFile, $tmpFilename)
+	    or die "Can't copy $logFile to $tmpFilename - $!";
+
+	# Open the temp file
+	my $TMPFILE = new IO::File;
+	open $TMPFILE, $tmpFilename 
+	    or die "Can't open $tmpFilename - $!";
+
+	# Do a single data collection pass on the temporary copy of logfile,
+	# then call processWeb once for each web of interest.
+	my ($viewRef, $contribRef, $statViewsRef, $statSavesRef, 
+		$statUploadsRef) = collectLogData( $TMPFILE, $logMonthYear );
+
+=pod
+	# DEBUG ONLY
+	debugPrintHash($viewRef);
+	debugPrintHash($contribRef);
+	print "statViews tests===========\n";
+	print "Views in Main = " . ${$statViewsRef}{'Main'} . "\n";
+	print "hash stats (used/avail) = " . %{$statViewsRef}."\n";
+
+	foreach my $web (keys %{$statViewsRef}) {
+	   print "Web summary for $web\n";
+	   print $statViewsRef->{$web}."\n";
+	   print $statSavesRef->{$web}."\n";
+	   print $statUploadsRef->{$web}."\n";
+	}
+=cut
+
+	# Generate WebStatistics topic update for one or more webs
+        if ( $thePathInfo ) {
+            # do a particular web:
+            processWeb( $thePathInfo, $theRemoteUser, $theTopic, $logMonthYear, $viewRef, $contribRef,
+                        $statViewsRef, $statSavesRef, $statUploadsRef, $cgiQuery );
+
+        } else {
+            # do all webs:
+            my $dataDir = &TWiki::getDataDir();
+            my @weblist = ();
+            if( opendir( DIR, "$dataDir" ) ) {
+                @weblist = grep /^[^\.\_]/, readdir DIR; # exclude webs starting with . or _
+                closedir DIR;
+            } else {
+                printMsg( "  *** Error: opendir $dataDir, $!", $cgiQuery );
+            }
+            foreach my $web ( @weblist ) {
+                if( -d "$dataDir/$web" ) {
+                    processWeb( "/$web", $theRemoteUser, $theTopic, $logMonthYear, $viewRef, $contribRef,
+                                $statViewsRef, $statSavesRef, $statUploadsRef, $cgiQuery );
+                }
+            }
+        }
+	close $TMPFILE;		# Shouldn't be necessary with 'my'
+	unlink $tmpFilename;	# FIXME: works on Windows???  Unlink before
+				# usage to ensure deleted on crash?
+    } else {
+        printMsg( "  - Note: Log file $logFile does not exist", $cgiQuery );
+    }
+
+    if( $cgiQuery ) {
+        $tmp = $TWiki::statisticsTopicname;
+        my $url = &TWiki::getViewUrl( "", $tmp );
+        printMsg( "* Go back to <a href=\"$url\">$tmp</a> topic", $cgiQuery );
+        printMsg( "End creating usage statistics", $cgiQuery );
+        print "</body></html>\n";
+    } else {
+        printMsg( "End creating usage statistics", $cgiQuery );
+    }
+}
+
+# Debug only
+# Print all entries in a view or contrib hash, sorted by web and item name
+sub debugPrintHash {
+    my ($statsRef) = @_;
+    # print "Main.WebHome views = " . ${$statsRef}{'Main'}{'WebHome'}."\n";
+    # print "Main web, TWikiGuest contribs = " . ${$statsRef}{'Main'}{'Main.TWikiGuest'}."\n";
+    foreach my $web ( sort keys %$statsRef) {
+	my $count = 0;
+	print "$web web:\n";
+	# Get reference to the sub-hash for this web
+	my $webhashref = ${$statsRef}{$web};
+		# print "webhashref is " . ref ($webhashref) ."\n";
+	# Items can be topics (for view hash) or users (for contrib hash)
+	foreach my $item ( sort keys %$webhashref ) {
+	   print "  $item = ";
+	   print "" . ( ${$webhashref}{$item} || 0 ) ."\n";
+	   $count += ${$webhashref}{$item};
+	}
+	print "  WEB TOTAL = $count\n";
+    }
+}
+
+
+# =========================
+# Process the whole log file and collect information in hash tables.
+# Must build stats for all webs, to handle case of renames into web
+# requested for a single-web statistics run.
+#
+# Main hash tables are divided by web:
+#
+#   $view{$web}{$TopicName} == number of views, by topic
+#   $contrib{$web}{"Main.".$WikiName} == number of saves/uploads, by user
+
+sub collectLogData
+{
+    my( $TMPFILE, $theLogMonthYear ) = @_;
+
+    # Examples of log file format:
+    # | 03 Feb 2000 - 02:43 | Main.PeterThoeny | view | Know.WebHome |  |
+    # | 03 Feb 2000 - 02:43 | Main.PeterThoeny | save | Know.WebHome |  |
+    # | 03 Feb 2000 - 02:53 | Main.PeterThoeny | save | Know.WebHome | repRev 1.7 Main.PeterThoeny 2000/02/03 02:43:22 |
+    # | 23 Feb 2002 - 11:07 | Main.TWikiGuest | search | Main | Office *Locations[^A-Za-z] | 127.0.0.1 |
+    #   	Note: there's no topic name on search log entry
+    # | 23 Feb 2002 - 11:07 | Main.guest | search | Main | Office *Locations[^A-Za-z] | 127.0.0.1 |
+    # | 28 Mar 2002 - 07:11 | Main.FredBloggs | rename | Test.TestTopic7 | moved to Test.TestTopic7New  | 127.0.0.1 |
+
+
+    my %view;		# Hash of hashes, counts topic views by <web, topic>
+    my %contrib;	# Hash of hashes, counts uploads/saves by <web, user>
+
+    # Hashes for each type of statistic, one hash entry per web
+    my %statViews;
+    my %statSaves;
+    my %statUploads;
+
+    # Imported regex objects, supporting I18N
+    my $webNameRegex = $TWiki::webNameRegex;
+    my $wikiWordRegex = $TWiki::wikiWordRegex;
+    my $abbrevRegex = $TWiki::abbrevRegex;
+
+    # Script regexes
+    my $intranetUserRegex = qr/[a-z0-9]+/;	# FIXME: should centralise this
+    my $userRegex = qr/(?:$intranetUserRegex|$wikiWordRegex)/; 
+    my $opRegex = qr/[a-z0-9]+/;        	# Operation, no i18n needed
+    # my $topicRegex = qr/(?:$wikiWordRegex|$abbrevRegex)/; 	# Strict topic names only
+    my $topicRegex = qr/[^ ]+/; 	# Relaxed topic names - any non-space OK
+					# but won't be auto-linked in WebStatistics
+    my $errorRegex = qr/\(not exist\)/; 	# Match '(not exist)' flag
+
+    my ($webName, $opName, $topicName, $userName, $newTopicName, $newTopicWeb);
+    binmode $TMPFILE;
+    while ( <$TMPFILE> ) {
+        my $line = $_;
+	$line =~ s/\r*\n$//;		# Clean out line endings
+
+	$line =~ /^\|[^\|]*\| ($webNameRegex\.$userRegex) \| ($opRegex) \| ($webNameRegex)[. ]/o;
+	$userName = $1 || "";		# Main.FredBloggs
+	$opName = $2 || "";
+	$webName = $3 || "";
+
+	# Skip bad logfile lines and warn if necessary
+	unless ($userName && $opName && $webName) {
+	    if( $TWiki::doDebugStatistics ) {
+	        TWiki::writeDebug("Invalid log file line = '$line'");
+	        TWiki::writeDebug("userName = '$userName'");
+	        TWiki::writeDebug("opName = '$opName'");
+	        TWiki::writeDebug("webName = '$webName'");
+	    }
+	    next;
+	}
+
+	my $logContrib = 0;
+
+	if ($opName eq 'view' ) {
+	    $statViews{$webName}++;
+	    # Pick up the topic name and any error string
+	    $line =~ /^\|[^\|]*\| ($webNameRegex\.$userRegex) \| ($opRegex) \| ($webNameRegex)\.($topicRegex) \| +(${errorRegex}?) */o;
+	    $topicName = $4 || "";
+	    my $noSuchTopic = $5 || "";		# Set if '(not exist)' matched
+
+	    unless( $topicName ) {
+		if( $TWiki::doDebugStatistics ) {
+		    TWiki::writeDebug("Invalid log file line = '$line'");
+		    TWiki::writeDebug("userName = '$userName'");
+		    TWiki::writeDebug("opName = '$opName'");
+		    TWiki::writeDebug("webName = '$webName'");
+		    TWiki::writeDebug("topicName = '$topicName'");
+		}
+		next;
+	    }
+
+	    # Skip accesses to non-existent topics
+	    if ($noSuchTopic) {
+		next;
+	    } else {
+		# Count this topic access
+		$view{$webName}{$topicName}++;
+	    }
+
+	} elsif ($opName eq 'save' ) {
+	    $statSaves{$webName}++;
+	    $logContrib = 1;
+
+	} elsif ($opName eq 'upload' ) {
+	    $statUploads{$webName}++;
+	    $logContrib = 1;
+
+	} elsif ($opName eq 'rename' ) {
+	    # Pick up the old and new topic names
+	    $line =~ /^\|[^\|]*\| ($webNameRegex\.$userRegex) \| ($opRegex) \| ($webNameRegex)\.($topicRegex) \| moved to ($webNameRegex)\.($topicRegex) /o;
+	    $topicName = $4 || "";
+	    $newTopicWeb = $5 || "";
+	    $newTopicName = $6 || "";
+	    ## TWiki::writeDebug("$topicName renamed to $newTopicWeb.$newTopicName");
+
+	    unless ($topicName && $newTopicWeb && $newTopicName) {
+		if( $TWiki::doDebugStatistics ) {
+		    TWiki::writeDebug("Invalid log file line (rename) = '$line'");
+		    TWiki::writeDebug("userName = '$userName'");
+		    TWiki::writeDebug("opName = '$opName'");
+		    TWiki::writeDebug("webName = '$webName'");
+		    TWiki::writeDebug("topicName= '$topicName'");
+		    TWiki::writeDebug("newTopicWeb= '$newTopicWeb'");
+		    TWiki::writeDebug("newTopicName = '$newTopicName'");
+		}
+		next;
+	    }
+	    # Get number of views for old topic this month (may be zero)
+	    my $oldViews = $view{$webName}{$topicName} || 0;
+
+	    # Transfer views from old to new topic
+	    $view{$newTopicWeb}{$newTopicName} = $oldViews;
+	    delete $view{$webName}{$topicName};
+
+	    # Transfer views from old to new web
+	    if ( $newTopicWeb ne $webName ) {
+		$statViews{$webName} -= $oldViews;
+		$statViews{$newTopicWeb} += $oldViews;
+	    }
+	}
+	# Record saves and uploads
+	if ($logContrib) {
+	    # Record the contribution by user name
+	    $contrib{$webName}{$userName}++;
+	}
+=pod
+	# DEBUG
+	$. <= 5 && print "$line\n";
+	print "$line\n";
+	print "$.: $userName did $opName on $webName";
+	print ".$topicName" if (defined $topicName);
+	print "\n";
+=cut
+
+    }
+
+=pod
+
+    print "Main.WebHome views = " . $view{'Main'}{'WebHome'}."\n";
+    print "Main web's contribs = " . $contrib{'Main'}{'Main.RichardDonkin'}."\n";
+    debugPrintHash(\%view);
+    debugPrintHash(\%contrib);
+=cut
+    return \%view, \%contrib, \%statViews, \%statSaves, \%statUploads;
+
+
+
+
+}
+
+# =========================
+sub processWeb
+{
+    my( $thePathInfo, $theRemoteUser, $theTopic, $theLogMonthYear, $viewRef, $contribRef, 
+        $statViewsRef, $statSavesRef, $statUploadsRef, $cgiQuery ) = @_;
+
+    my ( $topic, $webName, $dummy, $userName, $dataDir ) = 
+        &TWiki::initialize( $thePathInfo, $theRemoteUser, $theTopic, "", $cgiQuery );
+    $dummy = "";  # to suppress warning
+
+    printMsg( "* Reporting on TWiki.$webName web", $cgiQuery );
+
+    if( ! &TWiki::Store::webExists( $webName ) ) {
+        printMsg( "  *** Error: Web $webName does not exist", $cgiQuery );
+        return;
+    }
+
+    # Handle null values, print summary message to browser/stdout
+    my $statViews = $statViewsRef->{$webName};
+    my $statSaves = $statSavesRef->{$webName};
+    my $statUploads = $statUploadsRef->{$webName};
+    $statViews ||= 0;
+    $statSaves ||= 0;
+    $statUploads ||= 0;
+    printMsg( "  - view: $statViews, save: $statSaves, upload: $statUploads", $cgiQuery );
+
+
+    # Get the top N views and contribs in this web
+    my (@topViews) = getTopList( $TWiki::statsTopViews, $webName, $viewRef );
+    my (@topContribs) = getTopList( $TWiki::statsTopContrib, $webName, $contribRef );
+
+    # Print information to stdout
+    my $statTopViews = "";
+    my $statTopContributors = "";
+    if( @topViews ) {
+	printMsg( "  - top view: $topViews[0]", $cgiQuery );
+	$statTopViews = join( "<br /> ", @topViews );
+    }
+    if( @topContribs ) {
+	printMsg( "  - top contributor: $topContribs[0]", $cgiQuery );
+	$statTopContributors = join( "<br /> ", @topContribs );
+    }
+
+    # Update the WebStatistics topic
+
+    my $tmp;
+    my $statsTopic = $TWiki::statisticsTopicname;
+    # DEBUG
+    # $statsTopic = "TestStatistics";		# Create this by hand
+    if( &TWiki::Store::topicExists( $webName, $statsTopic ) ) {
+	my( $meta, $text ) = &TWiki::Store::readTopic( $webName, $statsTopic, 1 );
+	my @lines = split( /\n/, $text );
+	my $statLine;
+	my $idxStat = -1;
+	my $idxTmpl = -1;
+	for( my $x = 0; $x < @lines; $x++ ) {
+	    $tmp = $lines[$x];
+	    # Check for existing line for this month+year
+	    if( $tmp =~ /$theLogMonthYear/ ) {
+		$idxStat = $x;
+	    } elsif( $tmp =~ /<\!\-\-statDate\-\->/ ) {
+		$statLine = $tmp;
+		$idxTmpl = $x;
+	    }
+	}
+	if( ! $statLine ) {
+	    $statLine = "| <!--statDate--> | <!--statViews--> | <!--statSaves--> | <!--statUploads--> | <!--statTopViews--> | <!--statTopContributors--> |";
+	}
+	$statLine =~ s/<\!\-\-statDate\-\->/$theLogMonthYear/;
+	$statLine =~ s/<\!\-\-statViews\-\->/ $statViews/;
+	$statLine =~ s/<\!\-\-statSaves\-\->/ $statSaves/;
+	$statLine =~ s/<\!\-\-statUploads\-\->/ $statUploads/;
+	$statLine =~ s/<\!\-\-statTopViews\-\->/$statTopViews/;
+	$statLine =~ s/<\!\-\-statTopContributors\-\->/$statTopContributors/;
+
+	if( $idxStat >= 0 ) {
+	    # entry already exists, need to update
+	    $lines[$idxStat] = $statLine;
+
+	} elsif( $idxTmpl >= 0 ) {
+	    # entry does not exist, add after <!--statDate--> line
+	    $lines[$idxTmpl] = "$lines[$idxTmpl]\n$statLine";
+
+	} else {
+	    # entry does not exist, add at the end
+	    $lines[@lines] = $statLine;
+	}
+	$text = join( "\n", @lines );
+	$text .= "\n";
+
+	&TWiki::Store::saveTopic( $webName, $statsTopic, $text, $meta, "", 1, 1, 1 );
+	printMsg( "  - Topic $statsTopic updated", $cgiQuery );
+
+    } else {
+	printMsg( "  *** Warning: No updates done, topic $webName.$statsTopic does not exist", $cgiQuery );
+    }
+}
+
+# =========================
+# Get the items with top N frequency counts
+# Items can be topics (for view hash) or users (for contrib hash)
+sub getTopList
+{
+    my( $theMaxNum, $webName, $statsRef ) = @_;
+
+    # Get reference to the sub-hash for this web
+    my $webhashref = $statsRef->{$webName};
+
+    # print "Main.WebHome views = " . $statsRef->{$webName}{'WebHome'}."\n";
+    # print "Main web, TWikiGuest contribs = " . ${$statsRef}{$webName}{'Main.TWikiGuest'}."\n";
+
+    my @list = ();
+    my $topicName;
+    my $statValue;
+
+    # Convert sub hash of item=>statsvalue pairs into an array, @list, 
+    # of '$statValue $topicName', ready for sorting.
+    while( ( $topicName, $statValue ) = each( %$webhashref ) ) {
+	# Right-align statistic value for sorting
+	$statValue = sprintf "%7d", $statValue;	
+	# Add new array item at end	of array
+	$list[@list] = "$statValue $topicName";
+    }
+
+    # DEBUG
+    # print " top N list for $webName\n";
+    # print join "\n", @list;
+
+    # Sort @list by frequency and pick the top N entries
+    if( @list ) {
+        @list = map{ s/^([0-9][0-9][^0-9])/\&nbsp\;$1/; $_ }
+                map{ s/^([0-9][^0-9])/\&nbsp\;\&nbsp\;$1/; $_ }
+                map{ s/^\s*//; $_ }
+                reverse( sort( @list ) );
+        if( $theMaxNum >= @list ) {
+            $theMaxNum = @list - 1;
+        }
+        return @list[0..$theMaxNum];
+    }
+    return @list;
+}
+
+# =========================
+sub printMsg
+{
+    my( $msg, $cgiQuery ) = @_;
+    my $htmlMsg = $msg;
+
+    if( $cgiQuery ) {
+	# TODO: May need to fix this regex if internationalised script
+	# messages are supported in future.
+	if( $htmlMsg =~ /^[A-Z]/ ) {
+	    $htmlMsg =~ s/^([A-Z].*)/<h3>$1<\/h3>/go;
+	} else {
+	    $htmlMsg =~ s/(\*\*\*.*)/<font color=\"FF0000\">$1<\/font>/go;
+	    $htmlMsg =~ s/^\s\s/&nbsp;&nbsp;/go;
+	    $htmlMsg =~ s/^\s/&nbsp;/go;
+	    $htmlMsg .= "<br />";
+	}
+	$htmlMsg =~ s/==([A-Z]*)==/<font color=\"FF0000\">==$1==<\/font>/go;
+        print "$htmlMsg\n";
+    } else {
+        print "$msg\n";
+    }
+}
+
+# =========================
+# EOF

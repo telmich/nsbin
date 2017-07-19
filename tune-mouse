@@ -10,11 +10,12 @@
 #synclient VertScrollDelta=-111
 #synclient HorizScrollDelta=-111
 
-## # mouse speed
-
 # XPS 13
 # xinput set-prop "DLL0704:01 06CB:76AE Touchpad" "libinput Natural Scrolling Enabled" 1
 
 # lenovo x1 carbon 2016
-xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Natural Scrolling Enabled" 1 
-xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Accel Speed" -0.5
+xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Natural Scrolling Enabled" 1
+# xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Accel Speed" -0.5
+
+# Dell Latitude 5285
+#xinput set-prop "Alps Alps Touchpad Touchpad" "libinput Natural Scrolling Enabled" 1

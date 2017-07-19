@@ -1,0 +1,2 @@
+cd /tmp/seti
+exec ./setiathome

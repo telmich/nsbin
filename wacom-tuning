@@ -1,0 +1,28 @@
+#!/bin/sh
+
+if [ $# -eq 1 ]; then
+    display=$1
+else
+    display=LVDS1
+fi
+
+devfinger="Wacom Bamboo 16FG 4x5 Finger"
+
+xinput set-prop "$devfinger" "Device Enabled" 0
+
+#xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen stylus" MapToOutput $display
+#xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen eraser" MapToOutput $display
+
+exit 0
+# xinput set-prop "Wacom Bamboo 16FG 4x5 Finger pad" "Device Enabled" 0
+
+xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen stylus" mode relative
+
+xinput set-prop "Wacom Bamboo 16FG 4x5 Pen stylus" "Device Accel Constant Deceleration" 4
+xinput set-prop "Wacom Bamboo 16FG 4x5 Pen stylus" "Device Accel Adaptive Deceleration" 2
+
+# Rotate so usb cable is not disturbing me
+# xinput set-prop 14 "Evdev Axis Inversion" 1 1
+# xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen" MapToOutput LVDS1
+
+exit 0

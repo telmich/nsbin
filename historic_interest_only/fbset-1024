@@ -1,0 +1,1 @@
+fbset -fb /dev/fb/0 -xres 1024 -yres 768

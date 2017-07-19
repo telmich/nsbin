@@ -1,0 +1,27 @@
+
+#! /bin/sh
+
+modprobe pktgen
+
+PGDEV=/proc/net/pktgen/pg0
+
+function pgset() {
+    local result
+
+    echo $1 > $PGDEV
+
+    result=`cat $PGDEV | fgrep "Result: OK:"`
+    if [ "$result" = "" ]; then
+         cat $PGDEV | fgrep Result:
+    fi
+}
+
+function pg() {
+    echo inject > $PGDEV
+    cat $PGDEV
+}
+
+pgset "odev eth0"
+pgset "dst 0.0.0.0"
+
+

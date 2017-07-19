@@ -1,0 +1,104 @@
+################################################################################
+# LINUX FIREWALL
+# Nico Schottelius <Nico@Schottelius.Org>
+# Dec 2001
+################################################################################
+
+########## TEST #### #DEV_OUT="eth1"
+DEV_OUT="eth0"
+DEV_INT="eth1"
+NET_INT="192.168.1.0/255.255.255.0"
+
+# Das NAT-Modul laden (dies zieht all die andern mit).
+modprobe iptable_nat
+
+# erstmal aufraeumen:
+# benutzerdefinierte chains von filter loeschen
+iptables -X
+
+# filter aufraeumen. loescht alle chains
+iptables -F
+
+# auch in nat
+iptables -t nat -F
+
+
+##################
+#
+# NAT/Masquarading
+# 
+
+# In der NAT-Tabelle (-t nat) eine Regel fuer alle an ppp0 (-o ppp0)
+# ausgehenden Pakete hinter dem Routing (POSTROUTING), die maskiert
+# werden sollen, anhaengen (-A).
+iptables -t nat -A POSTROUTING -o $DEV_OUT  -j MASQUERADE
+
+# IP-Forwarding aktivieren
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+# auch dynamische Adresse
+echo "1" > /proc/sys/net/ipv4/ip_dynaddr
+
+#################
+#
+# INPUT Pakete an diesen Rechner
+#
+
+# von intranet alles erlauben
+iptables -A INPUT -s $NET_INT -j ACCEPT
+
+# erlaube SSH von ueberall (auch inet)
+iptables -A INPUT -p tcp --dport ssh -j ACCEPT
+
+# civ
+iptables -A INPUT -p tcp --dport 5555 -j ACCEPT
+
+# UDP Pakete aus lokalem Netz passieren lassen
+# iptables -A INPUT -p udp -s $NET_INT -j ACCEPT
+
+# UDP-Pakete von Name-Servern durchlassen
+iptables -A INPUT -p udp --sport 53 -j ACCEPT
+
+# ICMP-Pakete (z.B. Ping) aus lokalem Netz erlauben
+iptables -A INPUT -p icmp -s $NET_INT -j ACCEPT
+
+# ICMP-Pakete (z.B. Ping) generell verbieten
+#iptables -A INPUT -p icmp -j DROP
+
+# lokale arbeit zulassen (loopback)
+iptables -A INPUT -i lo -j ACCEPT
+
+# sonst nur packete aus vorhandenen verbindungen
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Policy (Standardverhalten am Regelende): Paket verwerfen
+iptables -P INPUT DROP
+
+###############
+#
+# FORWARD Geroutete Packete
+# 
+
+# Policy (Standardverhalten am Regelende): Paket verwerfen
+iptables -P FORWARD DROP
+
+# Pakete aus lokalem Netz erlauben und routen
+iptables -A FORWARD -s $NET_INT -j ACCEPT
+
+# man koennte es auch nur auf ftp beschraenken: 
+##iptables -A FORWARD -o $DEV_OUT -p tcp --sport 1024:65535 --dport ftp -m state --state NEW -j ACCEPT
+
+# zu routende Pakete nur durchlassen, wenn von innen oder zu einer
+# bestehenden Verbindung gehörig
+#
+iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+
+##################
+#
+# OUTPUI von uns (lokal)
+#
+
+# Policy (Standardverhalten am Regelende): Paket durchlassen
+iptables -P OUTPUT ACCEPT
+

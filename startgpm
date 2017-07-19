@@ -1,0 +1,1 @@
+gpm -t ps2 -m /dev/misc/psaux

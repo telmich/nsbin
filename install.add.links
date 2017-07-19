@@ -1,0 +1,19 @@
+cd /usr/bin
+for a in "$1"/bin/*; do
+   ln -s $a
+done
+
+cd /usr/lib
+for a in "$1"/lib/*; do
+   ln -s $a
+done
+
+cd /usr/sbin
+for a in "$1"/sbin/*; do
+   ln -s $a
+done
+
+cd /usr/include
+for a in "$1"/include/*; do
+   ln -s $a
+done

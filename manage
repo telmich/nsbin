@@ -1,0 +1,266 @@
+#!/usr/bin/perl -wT
+#
+# TWiki Collaboration Platform, http://TWiki.org/
+#
+# Copyright (C) 2002-2003 Peter Thoeny, peter@thoeny.com
+#
+# For licensing info read license.txt file in the TWiki root.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details, published at
+# http://www.gnu.org/copyleft/gpl.html
+#
+# The manage script is used to manage some actions like creating
+# a new web.
+
+# Set library paths in @INC, at compile time
+BEGIN { unshift @INC, '.'; require 'setlib.cfg'; }
+
+use CGI::Carp qw( fatalsToBrowser );
+use CGI;
+use File::Copy;
+use TWiki;
+
+use strict;
+
+&main();
+
+#=========================
+sub main
+{
+    my $query = new CGI;
+    my $action = $query->param( 'action' ) || "";
+
+    if( $action eq "createweb" ) {
+        createWeb( $query );
+
+    # } elsif( $action eq "othercommand" ) {
+
+    } elsif( $action ) {
+        oopsRedirectMsg( $query, "", "", "", "msg_unrecognized_action", $action );
+    } else {
+        oopsRedirectMsg( $query, "", "", "", "msg_missing_action" );
+    }
+}
+
+#=========================
+sub oopsRedirectMsg
+{
+    my( $theQuery, $theWeb, $theTopic, $theOopsTmpl, $theTmplVar, $theMsg2, $theMsg3, $theMsg4 ) = @_;
+
+    $theWeb = $TWiki::mainWebname unless( $theWeb );
+    $theTopic = $TWiki::mainTopicname unless( $theTopic );
+    $theOopsTmpl = "oopsmanage" unless( $theOopsTmpl );
+    my $url = &TWiki::getOopsUrl( $theWeb, $theTopic, $theOopsTmpl,
+                                  "%TMPL:P{\"$theTmplVar\"}%", $theMsg2, $theMsg3, $theMsg4 );
+    TWiki::redirect( $theQuery, $url );
+}
+
+#=========================
+sub createWeb
+{
+    my( $query ) = @_;
+
+    my $thePathInfo = $query->path_info(); 
+    my $theRemoteUser = $query->remote_user();
+    my $theTopic = $query->param( 'topic' );
+
+    my $newWeb = $query->param( 'newweb' ) || "";
+    my $newTopic = $query->param( 'newtopic' ) || "";
+    my $baseWeb = $query->param( 'baseweb' ) || "";
+    my $webBgColor = $query->param( 'webbgcolor' ) || "";
+    my $siteMapWhat = $query->param( 'sitemapwhat' ) || "";
+    my $siteMapUseTo = $query->param( 'sitemapuseto' ) || "";
+    my $noSearchAll = $query->param( 'nosearchall' ) || "";
+    my $theUrl = $query->url;
+    my $oopsTmpl = "oopsmngcreateweb";
+
+    # initialize TWiki
+    my( $topicName, $webName, $dummy, $userName ) = 
+        &TWiki::initialize( $thePathInfo, $theRemoteUser, $theTopic, $theUrl, $query );
+    $dummy = ""; # avoid warning
+
+    # check permission, user authorized to create webs?
+    my $wikiUserName = &TWiki::userToWikiName( $userName );
+    unless( &TWiki::Access::checkAccessPermission( "manage", $wikiUserName, "", 
+                                                 $topicName, $webName ) ) {
+       # user has not permission to change the topic
+       my $url = &TWiki::getOopsUrl( $webName, $topicName, "oopsaccesscreateweb" );
+       TWiki::redirect( $query, $url );
+       return;
+    }
+
+    if( $newWeb =~ /^_[a-zA-Z0-9_]+$/ ) {
+        # valid template web name, untaint
+        $newWeb =~ /(.*)/;
+        $newWeb = $1;
+    } elsif( TWiki::isWebName( $newWeb ) ) {
+        # valid web name, untaint
+        $newWeb =~ /(.*)/;
+        $newWeb = $1;
+    } elsif( $newWeb ) {
+        oopsRedirectMsg( $query, "", "", $oopsTmpl, "msg_web_name" );
+        return;
+    } else {
+        oopsRedirectMsg( $query, "", "", $oopsTmpl, "msg_web_missing" );
+        return;
+    }
+
+    if( TWiki::Store::topicExists( $newWeb, $TWiki::mainTopicname ) ) {
+        oopsRedirectMsg( $query, "", "", $oopsTmpl, "msg_web_exist", $newWeb );
+        return;
+    }
+
+    $baseWeb =~ s/$TWiki::securityFilter//go;
+    $baseWeb =~ /(.*)/;
+    $baseWeb = $1;
+
+    unless( TWiki::Store::topicExists( $baseWeb, $TWiki::mainTopicname ) ) {
+        oopsRedirectMsg( $query, "", "", $oopsTmpl, "msg_base_web", $baseWeb );
+        return;
+    }
+
+    unless( $webBgColor =~ /\#[0-9a-f]{6}/i ) {
+        oopsRedirectMsg( $query, "", "", $oopsTmpl, "msg_web_color" );
+        return;
+    }
+
+    # create the empty web
+    my $err = createEmptyWeb( $newWeb );
+    if( $err ) {
+        oopsRedirectMsg( $query, "", "", $oopsTmpl, "msg_web_create", $err );
+        return;
+    }
+
+    # copy needed topics from base web
+    $err = copyWebTopics( $baseWeb, $newWeb );
+    if( $err ) {
+        oopsRedirectMsg( $query, $newWeb, "", $oopsTmpl, "msg_web_copy_topics", $err );
+        return;
+    }
+
+    # patch WebPreferences
+    $err = patchWebPreferences( $newWeb, $TWiki::webPrefsTopicname, $webBgColor, 
+                                $siteMapWhat, $siteMapUseTo, $noSearchAll );
+    if( $err ) {
+        oopsRedirectMsg( $query, $newWeb, $TWiki::webPrefsTopicname, $oopsTmpl, "msg_patch_webpreferences", $err );
+        return;
+    }
+
+    # everything OK, redirect to last message
+    $newTopic = $TWiki::mainTopicname unless( $newTopic );
+    oopsRedirectMsg( $query, $newWeb, $newTopic, $oopsTmpl, "msg_create_web_ok" );
+    return;
+}
+
+#=========================
+sub createEmptyWeb
+{
+    my ( $theWeb ) = @_;
+
+    my $dir = "$TWiki::dataDir/$theWeb";
+    umask( 0 );
+    unless( mkdir( $dir, 0775 ) ) {
+        return( "Could not create $dir, error: $!" );
+    }
+
+    if ( $TWiki::useRcsDir ) {
+        unless( mkdir( "$dir/RCS", 0775 ) ) {
+            return( "Could not create $dir/RCS, error: $!" );
+        }
+    }
+
+    unless( open( FILE, ">$dir/.changes" ) ) {
+        return( "Could not create changes file $dir/.changes, error: $!" );
+    }
+    print FILE "";  # empty file
+    close( FILE );
+
+    unless( open( FILE, ">$dir/.mailnotify" ) ) {
+        return( "Could not create mailnotify timestamp file $dir/.mailnotify, error: $!" );
+    }
+    print FILE "";  # empty file
+    close( FILE );
+    return "";
+}
+
+#=========================
+sub copyWebTopics
+{
+    my ( $theBaseWeb, $theNewWeb ) = @_;
+
+    my $err = "";
+    my @topicList = &TWiki::Store::getTopicNames( $theBaseWeb );
+    unless( $theBaseWeb =~ /^_/ ) {
+        # not a template web, so filter for only Web* topics
+        @topicList = grep { /^Web/ } @topicList;
+    }
+    foreach my $topic ( @topicList ) {
+        $topic =~ s/$TWiki::securityFilter//go;
+        $topic =~ /(.*)/;
+        $topic = $1;
+        $err = copyOneTopic( $theBaseWeb, $topic, $theNewWeb );
+        return( $err ) if( $err );
+    }
+    return "";
+}
+
+#=========================
+sub copyOneTopic
+{
+    my ( $theFromWeb, $theTopic, $theToWeb ) = @_;
+
+    # FIXME: This should go into TWiki::Store
+
+    # copy topic file
+    my $from = "$TWiki::dataDir/$theFromWeb/$theTopic.txt";
+    my $to = "$TWiki::dataDir/$theToWeb/$theTopic.txt";
+    unless( copy( $from, $to ) ) {
+        return( "Copy file ( $from, $to ) failed, error: $!" );
+    }
+    umask( 002 );
+    chmod( 0644, $to );
+
+    # copy repository file
+    # FIXME: Hack, no support for RCS subdirectory
+    $from .= ",v";
+    $to .= ",v";
+    unless( copy( $from, $to ) ) {
+        return( "Copy file ( $from, $to ) failed, error: $!" );
+    }
+    umask( 002 );
+    chmod( 0644, $to );
+
+    # FIXME: Copy also attachments if present
+
+    return "";
+}
+
+#=========================
+sub patchWebPreferences
+{
+    my ( $theWeb, $theTopic, $theWebBgColor, $theSiteMapWhat, $theSiteMapUseTo, $doNoSearchAll ) = @_;
+
+    my( $meta, $text ) = &TWiki::Store::readTopic( $theWeb, $theTopic );
+
+    my $siteMapList = "";
+    $siteMapList = "on" if( $theSiteMapWhat );
+    $text =~ s/(\s\* Set WEBBGCOLOR =)[^\n\r]*/$1 $theWebBgColor/os;
+    $text =~ s/(\s\* Set SITEMAPLIST =)[^\n\r]*/$1 $siteMapList/os;
+    $text =~ s/(\s\* Set SITEMAPWHAT =)[^\n\r]*/$1 $theSiteMapWhat/os;
+    $text =~ s/(\s\* Set SITEMAPUSETO =)[^\n\r]*/$1 $theSiteMapUseTo/os;
+    $text =~ s/(\s\* Set NOSEARCHALL =)[^\n\r]*/$1 $doNoSearchAll/os;
+
+    my $err = &TWiki::Store::saveTopic( $theWeb, $theTopic, $text, $meta );
+
+    return $err;
+}
+
+#=========================
+# EOF

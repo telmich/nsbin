@@ -1,0 +1,153 @@
+#!/usr/bin/perl -wT
+#
+# TWiki Collaboration Platform, http://TWiki.org/
+#
+# Copyright (C) 1999-2003 Peter Thoeny, peter@thoeny.com
+#
+# For licensing info read license.txt file in the TWiki root.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details, published at 
+# http://www.gnu.org/copyleft/gpl.html
+
+# Set library paths in @INC, at compile time
+BEGIN { unshift @INC, '.'; require 'setlib.cfg'; }
+
+use CGI::Carp qw( fatalsToBrowser );
+use CGI;
+use TWiki;
+
+use strict;
+
+#open(STDERR,'>&STDOUT'); # redirect error to browser
+$| = 1;                  # no buffering
+
+&main();
+
+
+# =========================
+sub listVersions
+{
+    my( $web, $topic, $attachment ) = @_;
+
+    my $latestRev = TWiki::Store::getRevisionNumber( $web, $topic, $attachment );
+    $latestRev =~ /\.(.*)/;
+    my $maxRevNum = $1;
+
+    my $found = 0;
+
+    my $result = "\n|  *Version:*  |  *Action:*   |  *Date:*  |  *Who:*  |  *Comment:*  |\n";
+
+    for( my $version = $maxRevNum; $version >= 1; $version-- ) {
+
+        my $rev = "1.$version";
+
+        my( $date, $userName, $dummy, $comment ) = 
+           TWiki::Store::getRevisionInfo( $web, $topic, $rev, "TWiki date", $attachment );
+        my $wikiUserName = &TWiki::userToWikiName( $userName );
+
+        my $viewAction = "<a href=\"%SCRIPTURLPATH%/viewfile%SCRIPTSUFFIX%/%WEB%/%TOPIC%?rev=$rev&filename=$attachment\">view</a>";
+        $result .= "| 1.$version  | $viewAction | $date | $wikiUserName | $comment |\n";
+    }
+
+    $result = "$result";
+    return $result;
+}
+
+
+# =========================
+sub main
+{
+    my $query = new CGI;
+    my $thePathInfo = $query->path_info(); 
+    my $theRemoteUser = $query->remote_user();
+    my $theTopic = $query->param( 'topic' );
+    my $theUrl = $query->url;
+    
+    my( $topic, $webName, $dummy, $userName ) = 
+	&TWiki::initialize( $thePathInfo, $theRemoteUser, $theTopic, $theUrl, $query );
+    $dummy = "";  # to suppress warning
+
+    my $tmpl = "";
+    my $text = "";
+    my $meta = "";
+    my $atext = "";
+    my $fileName = "";
+    my $fileUser = "";
+    my $wikiUserName = &TWiki::userToWikiName( $userName );
+
+    my $isHideChecked = "";
+
+    if( ! &TWiki::Store::webExists( $webName ) ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsnoweb" );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    my( $mirrorSiteName, $mirrorViewURL ) = &TWiki::readOnlyMirrorWeb( $webName );
+    if( $mirrorSiteName ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsmirror", $mirrorSiteName, $mirrorViewURL );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    # check access permission
+    if( ! &TWiki::Access::checkAccessPermission( "change", $wikiUserName, "", $topic, $webName ) ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsaccesschange" );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    $fileName = $query->param( 'filename' ) || "";
+
+    if( &TWiki::Store::topicExists( $webName, $topic ) ) {
+        ( $meta, $text ) = &TWiki::Store::readTopic( $webName, $topic );
+    }
+    
+    my %args = $meta->findOne( "FILEATTACHMENT", $fileName );
+    %args = ( "attr" => "", "path" => "", "comment" => "" ) if( ! % args );
+
+    if ( $args{"attr"} =~ /h/o ) {
+          $isHideChecked = "checked";
+    }
+
+    if ( $fileName ) { 
+        $atext = listVersions( $webName, $topic, $fileName );
+    }
+
+    # why log attach before post is called?
+    # FIXME: Move down, log only if successful (or with error msg?)
+    # Attach is a read function, only has potential for a change
+    if( $TWiki::doLogTopicAttach ) {
+        # write log entry
+        &TWiki::Store::writeLog( "attach", "$webName.$topic", $fileName );
+    }
+
+    my $fileWikiUser = "";
+    my $skin = $query->param( "skin" ) || TWiki::Prefs::getPreferencesValue( "SKIN" );
+    if( $fileName && %args ) {
+        $tmpl = TWiki::Store::readTemplate( "attachagain", $skin );
+        $fileWikiUser = &TWiki::userToWikiName( $args{"user"} );
+    } else {
+        $tmpl = TWiki::Store::readTemplate( "attachnew", $skin );
+    }
+    $tmpl =~ s/%ATTACHTABLE%/$atext/go;
+    $tmpl =~ s/%FILEUSER%/$fileWikiUser/go;
+    $tmpl = &TWiki::handleCommonTags( $tmpl, $topic );
+    $tmpl = &TWiki::getRenderedVersion( $tmpl );
+    $tmpl = &TWiki::handleMetaTags( $webName, $topic, $tmpl, $meta );
+    $tmpl =~ s/%HIDEFILE%/$isHideChecked/go;
+    $tmpl =~ s/%FILENAME%/$fileName/go;
+    $tmpl =~ s/%FILEPATH%/$args{"path"}/go;
+    $tmpl =~ s/%FILECOMMENT%/$args{"comment"}/go;
+    TWiki::writeHeader( $query );
+    print $tmpl;
+}
+
+# EOF

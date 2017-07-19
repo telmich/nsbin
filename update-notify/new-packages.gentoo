@@ -1,0 +1,6 @@
+#!/bin/sh
+# Nico Schottelius
+# stolen from Frank
+# usable as cron script, to show which packages should be updated
+
+emerge sync >/dev/null && emerge -pDuv

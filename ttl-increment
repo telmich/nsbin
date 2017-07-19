@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Increase the ttl to avoid problems with braindead ISPs
+iptables -t mangle -A POSTROUTING -o wlp3s0 -j TTL --ttl-inc 1

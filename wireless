@@ -1,0 +1,15 @@
+IW_DEV="eth1"
+IW_MODE="ad-hoc"
+IW_ESSID="home"
+IW_IP="192.168.10.5"
+IW_NETM="255.255.255.0"
+
+case $1 in
+	start)
+		iwconfig $IW_DEV mode $IW_MODE
+		iwconfig $IW_DEV essid $IW_ESSID
+		ifconfig $IW_DEV $IW_IP netmask $IW_NETM up
+	;;
+	stop)
+	;;
+esac

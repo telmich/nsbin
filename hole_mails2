@@ -1,0 +1,5 @@
+#!/bin/sh
+
+maildircommit
+git pull
+git push

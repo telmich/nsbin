@@ -1,0 +1,2 @@
+cd /home/server/www/
+tail -n1 -F */*/*/*/logs/access.log */*/*/*/logs/error.log

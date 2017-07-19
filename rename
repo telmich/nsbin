@@ -1,0 +1,437 @@
+#!/usr/bin/perl -wT
+#
+# TWiki Collaboration Platform, http://TWiki.org/
+#
+# Copyright (C) 2001-2003 Peter Thoeny, peter@thoeny.com
+# Copyright (C) 2001 Sven Dowideit, svenud@ozemail.com.au
+#
+# For licensing info read license.txt file in the TWiki root.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details, published at
+# http://www.gnu.org/copyleft/gpl.html
+#
+
+# Set library paths in @INC, at compile time
+BEGIN { unshift @INC, '.'; require 'setlib.cfg'; }
+
+# 'Use locale' for internationalisation of Perl regexes -
+# main locale settings are done in TWiki::setupLocale
+BEGIN {
+    # Do a dynamic 'use locale' for this module
+    if( $TWiki::useLocale ) {
+        require locale;
+	import locale ();
+    }
+}
+
+use CGI::Carp qw( fatalsToBrowser );
+use CGI;
+use TWiki;
+
+use strict;
+
+use vars qw($query);
+
+&main();
+
+
+sub main
+{
+    $query= new CGI;
+    my $thePathInfo = $query->path_info(); 
+    my $theRemoteUser = $query->remote_user();
+    my $theTopic = $query->param( 'topic' );
+    my $newWeb = $query->param( 'newweb' ) || "";
+    my $newTopic = $query->param( 'newtopic' ) || "";
+    my $theUrl = $query->url;
+    my $lockFailure = "";
+    my $breakLock = $query->param( 'breaklock' );
+    my $theAttachment = $query->param( 'attachment' );
+    my $confirm = $query->param( 'confirm' );
+    my $currentWebOnly = $query->param( 'currentwebonly' ) || "";
+    my $doAllowNonWikiWord = $query->param( 'nonwikiword' ) || "";
+    my ( $oldTopic, $oldWeb, $scriptUrlPath, $userName, $dataDir ) = 
+        &TWiki::initialize( $thePathInfo, $theRemoteUser, $theTopic, $theUrl, $query ); # DRKW difference to core
+    my $skin = $query->param( "skin" ) || TWiki::Prefs::getPreferencesValue( "SKIN" );
+    
+    $newTopic =~ s/\s//go;
+    $newTopic =~ s/$TWiki::securityFilter//go;
+
+    if( ! $theAttachment ) {
+        $theAttachment = "";
+    }
+    
+    my $wikiUserName = &TWiki::userToWikiName( $userName );
+    
+    # justChangeRefs will be true when some topics that had links to $oldTopic
+    # still need updating, previous update being prevented by a lock.
+    my $justChangeRefs = $query->param( 'changeRefs' ) || "";
+
+    my $fileName = &TWiki::Store::getFileName( $oldWeb, $oldTopic );
+    my $newName;
+    $newName = &TWiki::Store::getFileName( $newWeb, $newTopic ) if( $newWeb );
+    
+    if( ! $justChangeRefs ) {
+       if( checkExist( $oldWeb, $oldTopic, $newWeb, $newTopic, $theAttachment, $fileName, $newName ) ) {
+           return;
+       }
+
+       if( ! checkPermissions( $oldWeb, $oldTopic, $wikiUserName ) ) {
+           return;
+       }
+    }
+
+    # Has user selected new name yet?
+    if( ! $newTopic || $confirm ) {
+       newTopicScreen( $oldWeb, $oldTopic, $newWeb, $newTopic, $theAttachment,
+                       $confirm, $currentWebOnly, $skin );
+       return;
+    } 
+    
+    if( ! $justChangeRefs ) {
+        if( ! getLocks( $oldWeb, $oldTopic, $newWeb, $newTopic, $theAttachment, $breakLock, $skin ) ) {
+              return;
+        }
+    }
+
+    if( ! $justChangeRefs ) {
+       if( $theAttachment ) {
+	  my $moveError = 
+	     &TWiki::Store::moveAttachment( $oldWeb, $oldTopic, $newWeb, $newTopic, $theAttachment );
+	  if( $moveError ) {
+              TWiki::redirect( $query, &TWiki::getOopsUrl( $newWeb, $newTopic, "oopsmoveerr", $theAttachment, $moveError ) );
+              return;
+          }
+       } else {
+          if( ! $doAllowNonWikiWord && ! &TWiki::isWikiName( $newTopic ) ) {
+              TWiki::redirect( $query, &TWiki::getOopsUrl( $newWeb, $newTopic, "oopsrenamenotwikiword" ) );
+              return;
+          }
+	  my $renameError = &TWiki::Store::renameTopic( $oldWeb, $oldTopic, $newWeb, $newTopic, "relink" );
+	  if( $renameError ) {
+	      TWiki::redirect( $query, &TWiki::getOopsUrl( $oldWeb, $oldTopic, "oopsrenameerr", $renameError, $newWeb, $newTopic ) );
+	      return;
+           }
+       } 
+    }
+
+    # Update references in referring pages - not applicable to attachments.
+    if( ! $theAttachment ) {
+        my @refs = findReferingPages( $oldWeb, $oldTopic );
+        my $problems;
+        ( $lockFailure, $problems ) = 
+            updateReferingPages( $oldWeb, $oldTopic, $wikiUserName, $newWeb, $newTopic, @refs );
+    }
+
+    my $new_url = "";
+    if( $lockFailure ) {
+       moreRefsToChange( $oldWeb, $oldTopic, $newWeb, $newTopic, $skin );
+       return;
+    } else {
+       #redirect to new topic
+       $new_url = &TWiki::getViewUrl( $newWeb, $newTopic );
+    }
+
+    TWiki::redirect( $query, $new_url );
+    return;
+}
+
+
+#=========================
+sub findReferingPages
+{
+    my @result = ();
+    
+    # Go through parameters finding all topics for change
+    my @types = qw\local global\;
+    foreach my $type ( @types ) {
+	my $count = 1;
+	while( $query->param( "TOPIC$type$count" ) ) {
+	   my $checked = $query->param( "RENAME$type$count" );
+	   if ($checked) {
+	      push @result, $type;
+	      push @result, $query->param( "TOPIC$type$count" );
+	   }
+	   $count++;
+	}
+    }
+    return @result;
+}
+
+
+#==================================
+# update pages that refer to the one being renamed/moved
+sub updateReferingPages
+{
+    my ( $oldWeb, $oldTopic, $wikiUserName, $newWeb, $newTopic, @refs ) = @_;
+
+    my $lockFailure = 0;
+
+    my $result = "";
+    my $alphaNum = $TWiki::mixedAlphaNum;
+    my $preTopic = '^|[^${alphaNum}_]';		# Start of line or non-alphanumeric
+    my $postTopic = '$|[^${alphaNum}_]';	# End of line or non-alphanumeric
+    my $spacedTopic = TWiki::Search::spacedTopic( $oldTopic );
+
+    while ( @refs ) {
+       my $type = shift @refs;
+       my $item = shift @refs;
+       my( $itemWeb, $itemTopic ) = TWiki::Store::normalizeWebTopicName( "", $item );
+       if ( &TWiki::Store::topicIsLockedBy( $itemWeb, $itemTopic ) ) {
+          $lockFailure = 1;
+       } else {
+          my $resultText = "";
+          $result .= ":$item: , "; 
+          #open each file, replace $topic with $newTopic
+          if ( &TWiki::Store::topicExists($itemWeb, $itemTopic) ) { 
+             my $scantext = &TWiki::Store::readTopicRaw($itemWeb, $itemTopic);
+             if( ! &TWiki::Access::checkAccessPermission( "change", $wikiUserName, $scantext,
+                    $itemWeb, $itemTopic ) ) {
+                 # This shouldn't happen, as search will not return, but check to be on the safe side
+                 &TWiki::writeWarning( "rename: attempt to change $itemWeb.$itemTopic without permission" );
+                 next;
+             }
+	     my $insidePRE = 0;
+	     my $insideVERBATIM = 0;
+             my $noAutoLink = 0;
+	     foreach( split( /\n/, $scantext ) ) {
+	        if( /^%META:TOPIC(INFO|MOVED)/ ) {
+	            $resultText .= "$_\n";
+	            next;
+	        }
+		# FIXME This code is in far too many places - also in Search.pm and Store.pm
+		m|<pre>|i  && ( $insidePRE = 1 );
+		m|</pre>|i && ( $insidePRE = 0 );
+		if( m|<verbatim>|i ) {
+		    $insideVERBATIM = 1;
+		}
+		if( m|</verbatim>|i ) {
+		    $insideVERBATIM = 0;
+		}
+		m|<noautolink>|i   && ( $noAutoLink = 1 );
+		m|</noautolink>|i  && ( $noAutoLink = 0 );
+
+		if( ! ( $insidePRE || $insideVERBATIM || $noAutoLink ) ) {
+		    if( $type eq "global" ) {
+			my $insertWeb = ($itemWeb eq $newWeb) ? "" : "$newWeb.";
+			s/($preTopic)\Q$oldWeb.$oldTopic\E(?=$postTopic)/$1$insertWeb$newTopic/g;
+		    } else {
+			# Only replace bare topic (i.e. not preceeded by web) if web of referring
+			# topic is in original Web of topic that's being moved
+			if( $oldWeb eq $itemWeb ) {
+			    my $insertWeb = ($oldWeb eq $newWeb) ? "" : "$newWeb.";
+			    s/($preTopic)\Q$oldTopic\E(?=$postTopic)/$1$insertWeb$newTopic/g;
+			    s/\[\[($spacedTopic)\]\]/[[$newTopic][$1]]/gi;
+			}
+		    }
+		}
+	        $resultText .= "$_\n";
+	     }
+	     my ( $meta, $text ) = &TWiki::Store::_extractMetaData( $itemWeb, $itemTopic, $resultText );
+	     &TWiki::Store::saveTopic( $itemWeb, $itemTopic, $text, $meta, "", "unlock", "dontNotify", "" );
+          } else {
+	    $result .= ";$item does not exist;";
+          }
+       }
+    }
+    return ( $lockFailure, $result );
+}
+
+
+#=============================
+# return "" if problem, otherwise return text of oldTopic
+sub checkPermissions
+{
+    my( $oldWeb, $oldTopic, $wikiUserName ) = @_;
+   
+    my $ret = "";
+   
+    if( &TWiki::Store::topicExists( $oldWeb, $oldTopic ) ) {
+	$ret = &TWiki::Store::readWebTopic( $oldWeb, $oldTopic );
+    }
+    
+    if( ! &TWiki::Access::checkAccessPermission( "change", $wikiUserName, $ret, $oldTopic, $oldWeb ) ) {
+       # user has not permission to change the topic
+       my $url = &TWiki::getOopsUrl( $oldWeb, $oldTopic, "oopsaccesschange" );
+       TWiki::redirect( $query, $url );
+       $ret = "";
+    }
+    
+    
+    if( ! &TWiki::Access::checkAccessPermission( "rename", $wikiUserName, $ret, $oldTopic, $oldWeb ) ) {
+       my $url = &TWiki::getOopsUrl( $oldWeb, $oldTopic, "oopsaccessrename" );
+       TWiki::redirect( $query, $url );
+       $ret = "";
+    }
+
+    return $ret;
+}
+
+
+#==========================================
+# Check that various webs and topics exist or don't exist as required
+sub checkExist
+{
+   my( $oldWeb, $oldTopic, $newWeb, $newTopic, $theAttachment, $oldFileName, $newFileName ) = @_;
+   
+   my $ret = "";
+   my $tmpl = "";
+   
+   # Does old WEB exist?
+   if( ! &TWiki::Store::webExists( $oldWeb ) ) {
+      TWiki::redirect( $query, &TWiki::getOopsUrl( $oldWeb, $oldTopic, "oopsnoweb" ) );
+      $ret = "problem";
+   }
+
+   # Does new WEB exist?
+   if( defined( $newFileName ) && ! &TWiki::Store::webExists( $newWeb ) ) {
+      TWiki::redirect( $query, &TWiki::getOopsUrl( $newWeb, $newTopic, "oopsnoweb" ) );
+      $ret = "problem";
+   }
+
+   # Does old attachment exist?
+   if( ! -e $oldFileName) {
+      TWiki::redirect( $query, &TWiki::getOopsUrl( $oldWeb, $oldTopic, "oopsmissing" ) );
+      $ret = "problem"; 
+   }
+
+   # Check new topic doesn't exist (opposite if we've moving an attachment)
+   if( defined( $newFileName ) && -e $newFileName && ! $theAttachment ) {
+      # Unless moving an attachment, new topic should not already exist
+      TWiki::redirect( $query, &TWiki::getOopsUrl( $newWeb, $newTopic, "oopstopicexists" ) );
+      $ret = "problem";    
+   }    
+   
+   if( defined( $newFileName ) && $theAttachment && ! -e $newFileName ) {
+      TWiki::redirect( $query, &TWiki::getOopsUrl( $newWeb, $newTopic, "oopsmissing" ) );
+      $ret = "problem"; 
+   }
+   
+   return $ret;
+}
+
+
+#============================
+#Return "" if can't get lock, otherwise "okay"
+sub getLocks
+{
+    my( $oldWeb, $oldTopic, $newWeb, $newTopic, $theAttachment, $breakLock, $skin ) = @_;
+    
+    my( $oldLockUser, $oldLockTime, $newLockUser, $newLockTime );
+    
+    if( ! $breakLock ) {
+	# Check for lock - at present the lock can't be broken
+	( $oldLockUser, $oldLockTime ) = &TWiki::Store::topicIsLockedBy( $oldWeb, $oldTopic );
+	if( $oldLockUser ) {
+	   $oldLockUser = &TWiki::userToWikiName( $oldLockUser );
+	   use integer;
+	   $oldLockTime = ( $oldLockTime / 60 ) + 1; # convert to minutes
+	}
+
+	if( $theAttachment ) {
+	    ( $newLockUser, $newLockTime ) = &TWiki::Store::topicIsLockedBy( $newWeb, $newTopic );
+	    if( $newLockUser ) {
+	       $newLockUser = &TWiki::userToWikiName( $newLockUser );
+	       use integer;
+	       $newLockTime = ( $newLockTime / 60 ) + 1; # convert to minutes
+	       my $editLock = $TWiki::editLockTime / 60;
+	    }
+	}
+    }
+    
+    if( $oldLockUser || $newLockUser ) {
+       my $tmpl = &TWiki::Store::readTemplate( "oopslockedrename", $skin );
+       my $editLock = $TWiki::editLockTime / 60;
+       if( $oldLockUser ) {
+           $tmpl =~ s/%OLD_LOCK%/Source topic $oldWeb.$oldTopic is locked by $oldLockUser, lock expires in $oldLockTime minutes.<br \/>/go;
+       } else {
+           $tmpl =~ s/%OLD_LOCK%//go;
+       }
+       if( $newLockUser ) {
+           $tmpl =~ s/%NEW_LOCK%/Destination topic $newWeb.$newTopic is locked by $newLockUser, lock expires in $newLockTime minutes.<br \/>/go;
+       } else {
+           $tmpl =~ s/%NEW_LOCK%//go;
+       }
+       $tmpl =~ s/%NEW_WEB%/$newWeb/go;
+       $tmpl =~ s/%NEW_TOPIC%/$newTopic/go;
+       $tmpl =~ s/%ATTACHMENT%/$theAttachment/go;
+       $tmpl = &TWiki::handleCommonTags( $tmpl, $oldTopic, $oldWeb );
+       $tmpl = &TWiki::getRenderedVersion( $tmpl, $oldWeb );
+       TWiki::writeHeader( $query );
+       print $tmpl;
+       return "";
+    } else {
+       &TWiki::Store::lockTopicNew( $oldWeb, $oldTopic );
+       if( $theAttachment ) {
+            &TWiki::Store::lockTopicNew( $newWeb, $newTopic );
+       }
+    }
+    
+    return "okay";
+}
+
+
+#============================
+# Display screen so user can decide on new web and topic.
+sub newTopicScreen
+{
+   my( $oldWeb, $oldTopic, $newWeb, $newTopic, $theAttachment, $confirm, $currentWebOnly, $skin ) = @_;
+   
+   my $tmpl = "";
+   
+   if( ! $newTopic ) {
+       $newTopic = $oldTopic;
+   }
+   
+   TWiki::writeHeader( $query );
+   if( $theAttachment ) {
+     $tmpl = TWiki::Store::readTemplate( "moveattachment", $skin );
+     $tmpl =~ s/%FILENAME%/$theAttachment/go;
+   } elsif( $confirm ) {
+     $tmpl = TWiki::Store::readTemplate( "renameconfirm", $skin );
+   } else {
+     $tmpl = &TWiki::Store::readTemplate( "rename", $skin );
+   }
+   
+   $tmpl = setVars( $tmpl, $oldTopic, $newWeb, $newTopic );
+   $tmpl = &TWiki::handleCommonTags( $tmpl, $oldTopic, $oldWeb );
+   $tmpl = &TWiki::getRenderedVersion( $tmpl );
+   if( $currentWebOnly ) {
+     $tmpl =~ s/%RESEARCH\{.*?web=\"all\".*\}%/(skipped)/o; # Remove search all web search
+   }
+   $tmpl =~ s/%RESEARCH/%SEARCH/go; # Pre search result from being rendered
+   $tmpl = &TWiki::handleCommonTags( $tmpl, $oldTopic, $oldWeb );   
+   print $tmpl;
+ }
+ 
+ #=========================
+ sub setVars
+ {
+     my( $tmpl, $oldTopic, $newWeb, $newTopic ) = @_;
+     $tmpl =~ s/%NEW_WEB%/$newWeb/go;
+     $tmpl =~ s/%NEW_TOPIC%/$newTopic/go;
+     
+     return $tmpl;
+ }
+ 
+ #=========================
+ sub moreRefsToChange
+ {
+    my( $oldWeb, $oldTopic, $newWeb, $newTopic, $skin ) = @_;
+    
+    TWiki::writeHeader( $query );
+    my $tmpl = TWiki::Store::readTemplate( "renamerefs", $skin );
+    $tmpl = setVars( $tmpl, $oldTopic, $newWeb, $newTopic );
+    $tmpl = TWiki::getRenderedVersion( $tmpl );
+    $tmpl =~ s/%RESEARCH/%SEARCH/go; # Pre search result from being rendered
+    $tmpl = TWiki::handleCommonTags( $tmpl, $oldTopic, $oldWeb );
+    print $tmpl;
+ }
+

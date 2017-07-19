@@ -1,0 +1,218 @@
+#!/usr/bin/perl -wT
+#
+# TWiki Collaboration Platform, http://TWiki.org/
+#
+# Copyright (C) 1999-2003 Peter Thoeny, peter@thoeny.com
+#
+# For licensing info read license.txt file in the TWiki root.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details, published at 
+# http://www.gnu.org/copyleft/gpl.html
+
+# Colas (http://colas.nahaboo.net)
+# modifications from mailnotify script from Dec 2001 release:
+# - email is now optional, is fetched from the user homepage
+# - webs not beginning by a capital letter are ignored ( _default, ...)
+# - no mail is sent to TWikiGuest
+# - if user is a group, recurses through its members
+
+# Set library paths in @INC, at compile time
+BEGIN { unshift @INC, '.'; require 'setlib.cfg'; }
+
+use TWiki;
+use TWiki::Net;
+
+my $debug = ! ( @ARGV && $ARGV[0] eq "-q" );
+
+&main();
+
+sub main
+{
+    &TWiki::basicInitialize();
+
+    $debug && print "TWiki mail notification\n";
+    $debug && print "- to suppress all normal output: mailnotify -q\n";
+
+    my $dataDir = &TWiki::getDataDir();
+    opendir( DIR, "$dataDir" ) or die "could not open $dataDir";
+    @weblist = grep !/^\.\.?$/, readdir DIR;
+    closedir DIR;
+    foreach $web ( @weblist ) {
+	# Only process webs with normal names, i.e. not starting with '_'
+        if( -d "$dataDir/$web" && &TWiki::isWebName($web) ) {
+             processWeb( $web );
+
+             # remove obsolete .lock files
+             &TWiki::Store::removeObsoleteTopicLocks( $web );
+        }
+    }
+    $debug && print "End TWiki mail notification\n";
+}
+
+sub processWeb
+{
+    my( $web) = @_;
+
+    my ( $topic, $webName, $dummy, $userName, $dataDir) = 
+	&TWiki::initialize( "/$web", "nobody" );
+    $dummy = "";  # to suppress warning
+
+    $debug && print "Checking TWiki.$webName\n";
+
+    if( ! &TWiki::Store::webExists( $webName ) ) {
+	print STDERR "* ERROR: TWiki mailnotify does not find web $webName\n";
+	return;
+    }
+
+    my @notifylist = TWiki::getEmailNotifyList($webName);
+    unless ( scalar @notifylist ) {
+	$debug && print "<none>\n";
+	return;
+    }
+
+    my $emailbody = "";
+    my $topiclist = "";
+
+    my $skin = TWiki::Prefs::getPreferencesValue( "SKIN" );
+    my $text = TWiki::Store::readTemplate( "changes", $skin );
+    my $changes= &TWiki::Store::readFile( "$dataDir/$webName/.changes" );
+
+    my %exclude;
+
+    $text = &TWiki::handleCommonTags($text, $topic);
+    $text =~ s/\%META{.*?}\%//go;  # remove %META{"parent"}%
+
+    if( $TWiki::doRemoveImgInMailnotify ) {
+        # change images to [alt] text if there, else remove image
+        $text =~ s/<img src=.*?alt=\"([^\"]+)[^>]*>/[$1]/goi;
+        $text =~ s/<img src=.*?[^>]>//goi;
+    }
+
+    my $before = "";
+    my $after = "";
+    ( $before, $text, $after) = split( /%REPEAT%/, $text );
+    $emailbody = &TWiki::getRenderedVersion( $before );
+    $after = &TWiki::getRenderedVersion( $after );
+
+    my $prevLastmodify = &TWiki::Store::readFile( "$dataDir/$webName/.mailnotify" ) || "0";
+    my $currLastmodify = "";
+    my $scriptSuffix = $TWiki::scriptSuffix;
+    my $scriptUrlPath = $TWiki::scriptUrlPath;
+    my $scriptUrl = "$TWiki::urlHost$scriptUrlPath";
+    my $frev = "";
+
+    foreach( reverse split( /\n/, $changes ) ) {
+	# Parse lines from .changes:
+	# <topic>	<user>		<change time>	<revision>
+	# WebHome	FredBloggs	1014591347	21
+
+	my ($topicName, $userName, $changeTime, $revision) = split( /\t/);
+	$newText = $text;		# Repeating text from email template
+
+	if( ( ! %exclude ) || ( ! $exclude{ $topicName } ) ) {
+            next unless TWiki::Store::topicExists( $webName, $topicName );
+
+	    if( ! $currLastmodify ) {
+	        # newest entry
+	        $time = &TWiki::formatGmTime( $prevLastmodify );
+	        if( $prevLastmodify eq $changeTime ) {
+	            # newest entry is same as at time of previous notification
+	            $debug && print "- Note: No topics changed since $time\n";
+	            return;
+	        }
+	        $currLastmodify = $changeTime;
+	        $debug && print "- Changed topics since $time: ";
+	    }
+
+	    if( $prevLastmodify >= $changeTime ) {
+	        #print "Date: found item of last notification\n";
+	        # found item of last notification
+	        last;
+	    }
+            $frev = "";
+            if( $revision ) {
+                if( $revision > 1 ) {
+                    $frev = "r1.$revision";
+                } else {
+                    $frev = "<b>NEW</b>";
+                }
+            }
+
+	    # Create entry in HTML attachment
+	    $newText = $text;
+	    $newText =~ s/%TOPICNAME%/$topicName/go;
+	    $wikiuser = &TWiki::userToWikiName( $userName );
+
+	    $newText =~ s/%AUTHOR%/$wikiuser/go;
+            $newText =~ s/%LOCKED%//go;
+	    $time = &TWiki::formatGmTime( $changeTime );
+            $newText =~ s/%TIME%/$time/go;
+            $newText =~ s/%REVISION%/$frev/go;
+	    $newText = &TWiki::getRenderedVersion( $newText );
+
+            $head = &TWiki::Store::readFileHead( "$dataDir\/$webName\/$topicName.txt", 16 );
+            $head = &TWiki::makeTopicSummary( $head, $topicName, $webName );
+            $newText =~ s/%TEXTHEAD%/$head/go;
+
+	    $emailbody .= $newText;
+	    $exclude{ $topicName } = "1";
+
+	    $debug && print "$topicName ";
+
+	    # URL-encode topic names for use of I18N topic names in plain text
+	    $webNameEnc = TWiki::handleUrlEncode( $webName );
+	    my $topicNameEnc = TWiki::handleUrlEncode( $topicName );
+
+	    # Create entry in plain-text email body
+	    $newText = "- $topicName  ($wikiuser)\n  $scriptUrl/view$scriptSuffix/$webNameEnc/$topicNameEnc\n";
+            $newText =~ s/Main\.//go;
+	    $topiclist = "$topiclist$newText";
+	}
+    }
+
+    if( $topiclist eq "" ) {
+	$debug && print "- Note: Topic list is empty\n";
+	return;
+    }
+    $debug && print "\n";
+
+    $emailbody .= $after;
+
+    my $from = &TWiki::Prefs::getPreferencesValue("WIKIWEBMASTER");
+
+    my $notifylist = join ', ', @notifylist;
+
+    $text = &TWiki::Store::readTemplate( "mailnotify", $skin );
+    $text =~ s/%EMAILFROM%/$from/go;
+    $text =~ s/%EMAILTO%/$notifylist/go;
+    $text =~ s/%EMAILBODY%/$emailbody/go;
+    $text =~ s/%TOPICLIST%/$topiclist/go;
+    $text =~ s/%LASTDATE%/&TWiki::formatGmTime($prevLastmodify)/geo;
+    $text = &TWiki::handleCommonTags( $text, $topic );
+
+    # change absolute addresses to relative ones & do some cleanup
+    $text =~ s/(href=\")$scriptUrlPath/$1..\/../goi;
+    $text =~ s/(action=\")$scriptUrlPath/$1..\/../goi;
+    $text =~ s|( ?) *</*nop/*>\n?|$1|gois;
+
+    $debug && print "- Sending mail notification to: $notifylist\n";
+
+    my $error = &TWiki::Net::sendEmail( $text );
+    if( $error ) {
+	print STDERR "* $error\n";
+        $debug && print "- End TWiki.$webName\n";
+
+    } else {
+        &TWiki::Store::saveFile( "$dataDir/$webName/.mailnotify", $currLastmodify );
+
+	$debug && print "- End TWiki.$webName, mail notification sent\n";
+    }
+}
+

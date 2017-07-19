@@ -1,0 +1,28 @@
+#!/bin/sh
+# Date: 27. May 1999
+# Author: Nico Schottelius ( webmaster@schottelius.org )
+# webalizer.cron; do webalizer for every server
+# Last Modified: 20. Mai 2003
+# Version : 1.02
+
+# Preperations
+
+  # unset / set varibales
+  SERV=""
+  WEBALIZER="/usr/bin/nice -n 20 webalizer"
+  ERR_LOG="/var/log/webalizer.err"
+  STD_LOG="/var/log/webalizer.log"
+
+## Startup
+  echo Starting at : `date`
+  
+# MAIN
+  for SERV in `find /home/server/www/ -name webalizer.conf`; do
+    echo "Using $SERV"
+    LOGDIR=`dirname $SERV`/..
+    $WEBALIZER -c $SERV $LOGDIR/access.log*
+#   $WEBALIZER -c $SERV $LOGDIR/access.log.1 $LOGDIR/access.log*
+  done
+
+## Shutdown
+  echo Stopping at : `date`

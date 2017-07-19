@@ -1,0 +1,5 @@
+#!/bin/sh
+# Nico Schottelius
+# usable as cron script, to show which packages should be updated
+
+apt-get update >/dev/null && echo n | apt-get -q --no-download dist-upgrade

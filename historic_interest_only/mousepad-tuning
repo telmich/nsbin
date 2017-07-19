@@ -1,0 +1,4 @@
+#!/bin/sh
+
+xinput --set-prop bcm5974 "Trackpad Sensitivity" 0.3
+

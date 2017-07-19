@@ -1,0 +1,5 @@
+
+~/scripts/enab_fbdev
+~/scripts/enab_sound
+setterm -blank 0
+mplayer -vo fbdev /mnt/dvd/* "$@"

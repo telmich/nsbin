@@ -1,0 +1,3 @@
+for a in `seq 1 $#`; do
+   eval find \$$a -exec /root/scripts/set_correct_bits {} \\\;
+done

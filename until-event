@@ -1,0 +1,18 @@
+#!/bin/sh
+
+event="Historic event"
+arrival="2014-7-14"
+arrival="2014-8-20"
+arrival="2014-12-08"
+arrival="2014-11-29"
+arrival="2016-01-25"
+arrival="2016-08-10"; event="First exam"
+arrival="2016-08-23"; event="FMFP exam"
+arrival="2017-01-24"; event="Algolabs exam"
+arrival="2017-01-30"; event="Algolabs exam 2"
+arrival="2017-02-07"; event="syssec"
+arrival="2017-08-21"; event="cil"
+
+export arrival event
+
+python3 -c 'import os; import datetime; day=datetime.datetime.strptime(os.environ["arrival"], "%Y-%m-%d"); delta = day - datetime.datetime.now(); print("%s is %sd away" % (os.environ["event"], delta.days + 1))'

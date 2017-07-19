@@ -1,0 +1,136 @@
+#!/usr/bin/perl -wT
+#
+# TWiki Collaboration Platform, http://TWiki.org/
+#
+# Copyright (C) 1999-2003 Peter Thoeny, peter@thoeny.com
+#
+# Based on parts of Ward Cunninghams original Wiki and JosWiki.
+# Copyright (C) 1998 Markus Peter - SPiN GmbH (warpi@spin.de)
+# Some changes by Dave Harris (drh@bhresearch.co.uk) incorporated
+#
+# For licensing info read license.txt file in the TWiki root.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details, published at 
+# http://www.gnu.org/copyleft/gpl.html
+
+# Set library paths in @INC, at compile time
+BEGIN { unshift @INC, '.'; require 'setlib.cfg'; }
+
+use CGI::Carp qw(fatalsToBrowser);
+use CGI;
+use TWiki;
+
+&main();
+
+sub main
+{
+    my $query = new CGI;
+
+    my $thePathInfo = $query->path_info(); 
+    my $theRemoteUser = $query->remote_user();
+    my $theTopic = $query->param( 'topic' );
+    my $theUrl = $query->url;
+
+    ( $topic, $webName, $dummy, $userName ) = 
+	&TWiki::initialize( $thePathInfo, $theRemoteUser, $theTopic, $theUrl, $query );
+    $dummy = "";  # to suppress warning	
+
+    my $wikiUserName = &TWiki::userToWikiName( $userName );
+
+    if( ! &TWiki::Store::webExists( $webName ) ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsnoweb" );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    my( $mirrorSiteName, $mirrorViewURL ) = &TWiki::readOnlyMirrorWeb( $webName );
+    if( $mirrorSiteName ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsmirror", $mirrorSiteName, $mirrorViewURL );
+        print $query->redirect( $url );
+        return;
+    }
+
+    # check access permission
+    if( ! &TWiki::Access::checkAccessPermission( "change", $wikiUserName, "", $topic, $webName ) ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsaccesschange" );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    # check permission for undocumented cmd=... parameter
+    my $saveCmd = $query->param( "cmd" ) || "";
+    if( ( $saveCmd ) &&
+        ( ! &TWiki::Access::userIsInGroup( $wikiUserName, $TWiki::superAdminGroup ) ) ) {
+        # user has no permission to execute undocumented cmd=... parameter
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsaccessgroup", "$TWiki::mainWebname.$TWiki::superAdminGroup" );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    # get text and other parameters
+    my $text = $query->param( "text" );
+    my $unlock = $query->param( "unlock" ) || "";
+    my $dontNotify = $query->param( "dontnotify" ) || "";
+
+    # PTh 06 Nov 2000: check if proper use of save script
+    if( ! ( defined $text ) ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopssave" );
+        TWiki::redirect( $query, $url );
+        return;
+    } elsif( ! $text ) {
+        # empty topic not allowed
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsempty" );
+        print $query->redirect( $url );
+        return;
+    }
+
+    my $changeform = $query->param( 'submitChangeForm' ) || "";
+    if( $changeform ) {
+        &TWiki::Form::changeForm( $webName, $topic, $query );
+        return;
+    }
+    
+    $text = &TWiki::decodeSpecialChars( $text );
+    $text =~ s/ {3}/\t/go;
+
+    my $meta = "";
+    if( $saveCmd eq "repRev" ) {
+        $text =~ s/%__(.)__%/%_$1_%/go;
+	( $meta, $text ) = &TWiki::Store::_extractMetaData( $webName, $topic, $text );
+    } else {
+        # normal case: Get latest attachment from file for preview
+        my $tmp;
+        ( $meta, $tmp ) = &TWiki::Store::readTopic( $webName, $topic );
+        
+	# parent setting
+	my $theParent = $query->param( 'topicparent' ) || "";
+	if( $theParent ) {
+	    $meta->put( "TOPICPARENT", ( "name" => $theParent ) );
+	}
+        
+	my $formTemplate = $query->param( "formtemplate" );
+	if( $formTemplate ) {
+	   $meta->remove( "FORM" );
+	   $meta->put( "FORM", ( name => $formTemplate ) ) if( $formTemplate ne "none" );
+	}
+
+        &TWiki::Form::fieldVars2Meta( $webName, $query, $meta );
+    }
+
+
+    my $error = &TWiki::Store::saveTopic( $webName, $topic, $text, $meta, $saveCmd, $unlock, $dontNotify );
+    if( $error ) {
+        # S. Knutson 30 Nov 2000: error happened (probably from RCS), show it
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopssaveerr", $error );
+        TWiki::redirect( $query, $url );
+    } else {
+        TWiki::redirect( $query, &TWiki::getViewUrl( "", $topic ) );
+    }
+}

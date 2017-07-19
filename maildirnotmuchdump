@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+file=.notmuch/dump.xz
+
+cd ~/Maildir
+notmuch dump | xz > "$file"
+git commit -m "Update notmuch dump" "$file"

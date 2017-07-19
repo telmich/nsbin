@@ -1,0 +1,4 @@
+/root/bin/show_apache_logs &
+tail -f /var/log/syslog &
+tail -f /var/log/mail.log &
+tail -f /var/log/xferlog &

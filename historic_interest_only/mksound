@@ -1,0 +1,4 @@
+modprobe sound
+ln -s /dev/sound/dsp /dev/dsp
+ln -s /dev/sound/mixer /dev/mixer
+ln -s /dev/sound/mixer1 /dev/mixer1

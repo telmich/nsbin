@@ -1,0 +1,111 @@
+#!/usr/bin/perl -wT
+#
+# TWiki Collaboration Platform, http://TWiki.org/
+#
+# Copyright (C) 1999-2003 Peter Thoeny, peter@thoeny.com
+#
+# For licensing info read license.txt file in the TWiki root.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details, published at 
+# http://www.gnu.org/copyleft/gpl.html
+#
+# 20000501 Kevin Kinnell : Changed to support new search functionality.
+#                          Move a block of code to wikisearch.pm, removed
+#                          hardcoded flags (except the inline flag) from
+#                          the searchWikiWeb call, added new params.
+
+# Set library paths in @INC, at compile time
+BEGIN { unshift @INC, '.'; require 'setlib.cfg'; }
+
+use CGI::Carp qw(fatalsToBrowser);
+use CGI;
+use TWiki;
+
+use strict;
+
+&main();
+
+sub main
+{
+    my $query = new CGI;
+    
+    my $thePathInfo = $query->path_info(); 
+    my $theRemoteUser = $query->remote_user();
+    my $theTopic = $query->param( 'topic' );
+    my $theUrl = $query->url;
+
+    my( $topic, $webName ) = 
+	&TWiki::initialize( $thePathInfo, $theRemoteUser, $theTopic, $theUrl, $query );
+    
+    if( ! &TWiki::Store::webExists( $webName ) ) {
+        my $url = &TWiki::getOopsUrl( $webName, $topic, "oopsnoweb" );
+        TWiki::redirect( $query, $url );
+        return;
+    }
+
+    # The CGI.pm docs claim that it returns all of the values in a
+    # multiple select if called in a list context, but that may not
+    # work (didn't on the dev box -- perl 5.004_4 and CGI.pm 2.36 on
+    # Linux (Slackware 2.0.33) with Apache 1.2.  That being the case,
+    # we need to parse them out here.
+
+#    my @webs          = $query->param( "web" ) || ( $webName ); #doesn't work
+
+    # Note for those unused to Perlishness:
+    # -------------------------------------
+    # The pipeline at the end of this assignment splits the full query
+    # string on '&' or ';' and selects out the params that begin with 'web=',
+    # replacing them with whatever is after that.  In the case of a
+    # single list of webs passed as a string (say, from a text entry
+    # field) it does more processing than it needs to to get the
+    # correct string, but so what?  The pipline is the second
+    # parameter to the join, and consists of the last two lines.  The
+    # join takes the results of the pipeline and strings them back
+    # together, space delimited, which is exactly what &searchWikiWeb
+    # needs.
+    # Note that mod_perl/cgi appears to use ';' as separator, whereas plain cgi uses '&'
+
+    my $websStr       = join ' ',
+                        grep { s/^web=(.*)$/$1/ }
+                        split(/[&;]/, $query->query_string);
+    # need to unescape URL-encoded data since we use the raw query_string
+    # suggested by JeromeBouvattier
+    $websStr =~ tr/+/ /;       # pluses become spaces
+    $websStr =~ s/%([0-9a-fA-F]{2})/pack("c",hex($1))/ge;  # %20 becomes space
+
+    my $search        = $query->param( "search" ) || "";
+    my $scope         = $query->param( "scope" )  || "";
+    my $order         = $query->param( "order" )  || "";
+    my $revSort       = $query->param( "reverse" )  || "";
+    my $caseSensitive = $query->param( "casesensitive" ) || "";
+    my $regex         = $query->param( "regex" )  || "";
+    my $limit         = $query->param( "limit" )  || "";
+    my $nosummary     = $query->param( "nosummary" )  || "";
+    my $nosearch      = $query->param( "nosearch" )  || "";
+    my $noheader      = $query->param( "noheader" )  || "";
+    my $nototal       = $query->param( "nototal" ) || "";
+    my $bookView      = $query->param( "bookview" )  || ""; # PTh 20 Jul 2000
+    my $renameView    = $query->param( "renameview" )  || "";
+    my $showlock      = $query->param( "showlock" ) || "";
+    my $noempty       = $query->param( "noempty" ) || "";
+    my $attrTemplate  = $query->param( "template" ) || "";  # undocumented
+    my $attrHeader    = $query->param( "header" ) || "";
+    my $attrFormat    = $query->param( "format" ) || "";
+
+    &TWiki::writeHeader( $query );
+    &TWiki::Search::searchWeb( "0",
+        $websStr, $search, $scope, $order, $regex,
+        $limit, $revSort, $caseSensitive, $nosummary,
+        $nosearch, $noheader, $nototal, $bookView, $renameView,
+        $showlock, $noempty, $attrTemplate, $attrHeader, $attrFormat
+    );
+}
+
+# EOF

@@ -1,0 +1,8 @@
+
+#
+#
+#
+
+. /etc/sys/paths
+
+for a in "

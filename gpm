@@ -1,0 +1,33 @@
+#! /bin/sh
+# Copyright (c) 1995-1998 S.u.S.E. GmbH Fuerth, Germany.
+#
+# Author: 
+#
+# /sbin/init.d/gpm
+#
+#   and symbolic its link
+#
+# /sbin/rcgpm
+#
+### BEGIN INIT INFO
+
+case "$1" in
+    start)
+	gpm -m /dev/misc/psaux -t ps2
+	;;
+    stop)
+	killall -TERM gpm
+	;;
+    restart|reload)
+	$0 stop  &&  $0 start
+	;;
+    status)
+	echo -n "Checking for console mouse support (gpm): "
+	checkproc /usr/sbin/gpm && echo OK || echo No process
+	;;
+    *)
+	echo "Usage: $0 {start|stop|status|restart|reload}"
+	exit 1
+	;;
+esac
+rc_exit

@@ -1,0 +1,4 @@
+dhcpcd -h flapp
+~/scripts/mount-musik
+~/scripts/sound_2.5
+su - nico -c startx

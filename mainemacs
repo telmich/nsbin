@@ -1,0 +1,2 @@
+#!/bin/sh
+emacs --funcall "mu4e" --name mainemacs

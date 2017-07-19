@@ -1,14 +1,14 @@
 #!/bin/sh
+# Nico, some years ago
 
 if [ $# -lt 1 ]; then
-    echo "$0 host-to-configure"
+    echo "$0 host(s)-to-configure"
     exit 1
 fi
 
-host=$1
 
-ssh -A ungleich@control.ungleich.ch "
+
+ssh -A ungleich@control.place5.ungleich.ch "
     cd ~/.cdist
-    git pull
-    git submodule update --init; " '~/cdist/bin/cdist config -vp' "$@"
-
+    git pull -v
+    git submodule update --init; " '~/cdist/bin/cdist config -vvp' "$@"

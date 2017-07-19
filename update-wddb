@@ -1,0 +1,8 @@
+#!/bin/sh
+export TMPFILE="/tmp/`basename $0`-$$"
+cat > $TMPFILE
+
+/home/user/nico/bin/mail.add.wddb "$TMPFILE"
+#/home/user/nico/bin/mail.add.wddb "$TMPFILE" &> /home/user/nico/LOG.wddb
+
+rm -f $TMPFILE

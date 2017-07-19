@@ -1,0 +1,28 @@
+# virtull devices
+vdev=0
+dev=eth0
+
+
+l6="0"
+while [ "$l6" -lt 256 ]; do
+   l5="0"
+   while [ "$l5" -lt 256 ]; do
+      l4="0"
+      while [ "$l4" -lt 256 ]; do
+         l3="0"
+         while [ "$l3" -lt 256 ]; do
+            l2="0"
+            while [ "$l2" -lt 256 ]; do
+               echo ifconfig $dev:$vdev hw ether `printf 00:%x:%x:%x:%x:%x $l2 $l3 $l4 $l5 $l6`
+               ifconfig $dev:$vdev hw ether `printf 00:%x:%x:%x:%x:%x $l2 $l3 $l4 $l5 $l6`
+               l2=$[$l2+1]
+               vdev=$[$vdev+1]
+            done
+            l3=$[$l3+1]
+         done
+         l4=$[$l4+1]
+      done
+      l5=$[$l5+1]
+   done
+   l6=$[$l6+1]
+done
