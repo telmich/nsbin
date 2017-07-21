@@ -5,6 +5,8 @@
 # used at conferences / congresses / meetings
 #
 
+set -x
+
 $HOME/bin/securemail.off
 
 POP3=110
@@ -33,19 +35,14 @@ if [ $# -ge 1 ]; then
     HOST=$1; shift
 fi
 
-#ssh -T -f -C -N \
-#    -L4241:mx.ungleich.ch:$SMTP         \
 #    -R :4242:localhost:22               \
-#    -D 3128 "$@"                        \
-#    "$HOST" && sendmail -q
-#
+
 ssh -T -f -C -N \
     -L2323:mx.ungleich.ch:$IMAPS        \
     -L4241:mx.ungleich.ch:$SMTP         \
     -L2324:imap.googlemail.com:$IMAPS   \
     -L2325:mail.zhaw.ch:$IMAPS          \
     -L2326:imap.googlemail.com:$POP3S   \
-    -R :4242:localhost:22               \
     -D 3128 "$@"                        \
     "$HOST" && sendmail -q
 

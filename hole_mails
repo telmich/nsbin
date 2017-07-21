@@ -1,9 +1,10 @@
 #!/bin/sh
 
 # Tue Jul 18 15:13:45 CEST 2017
-#securemail
-#fetchmail
+securemail
 mbsync -a
+
+#fetchmail
 
 # Disabled by Mon Jun 20 10:56:19 CEST 2016 -- using mu now
 # notmuch new
