@@ -5,8 +5,6 @@
 # used at conferences / congresses / meetings
 #
 
-set -x
-
 $HOME/bin/securemail.off
 
 POP3=110
