@@ -1,0 +1,4 @@
+#!/bin/sh
+
+x-off
+xrandr --output DP1 --above eDP1 --auto --rotate left
