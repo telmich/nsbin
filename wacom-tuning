@@ -3,8 +3,14 @@
 if [ $# -eq 1 ]; then
     display=$1
 else
-    display=LVDS1
+    display=eDP1
 fi
+
+
+xsetwacom --set "Wacom HID 484C Finger" MapToOutput "$display"
+xsetwacom --set "Wacom HID 484C Pen Pen (0)" MapToOutput "$display"
+
+exit 0
 
 devfinger="Wacom Bamboo 16FG 4x5 Finger"
 
@@ -14,6 +20,7 @@ xinput set-prop "$devfinger" "Device Enabled" 0
 #xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen eraser" MapToOutput $display
 
 exit 0
+
 # xinput set-prop "Wacom Bamboo 16FG 4x5 Finger pad" "Device Enabled" 0
 
 xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen stylus" mode relative
