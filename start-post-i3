@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Restore layouts
-i3-msg 'workspace 1; append_layout /home/users/nico/.i3/workspace-1.json'
-i3-msg 'workspace 2; append_layout /home/users/nico/.i3/workspace-2.json'
-i3-msg 'workspace 10; append_layout /home/users/nico/.i3/workspace-10.json'
+i3-msg 'workspace 1; append_layout ~/.i3/workspace-1.json'
+i3-msg 'workspace 2; append_layout ~/.i3/workspace-2.json'
+
 
 # Start programs afterwards and watch matching
 chromium &
