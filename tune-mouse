@@ -1,4 +1,42 @@
 #!/bin/sh
 
 xinput set-prop "$(cat ~/.touchpad-name)" "libinput Natural Scrolling Enabled" 1
-!
+
+# Only continue if there is wacom stuff
+if ! xinput list | grep -i wacom -q; then
+    exit 0
+fi
+
+if [ $# -eq 1 ]; then
+    display=$1
+else
+    display=eDP1
+fi
+
+
+xsetwacom --set "Wacom HID 484C Finger touch" MapToOutput "$display"
+xsetwacom --set "Wacom HID 484C Pen stylus" MapToOutput "$display"
+
+exit 0
+
+devfinger="Wacom Bamboo 16FG 4x5 Finger"
+
+xinput set-prop "$devfinger" "Device Enabled" 0
+
+#xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen stylus" MapToOutput $display
+#xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen eraser" MapToOutput $display
+
+exit 0
+
+# xinput set-prop "Wacom Bamboo 16FG 4x5 Finger pad" "Device Enabled" 0
+
+xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen stylus" mode relative
+
+xinput set-prop "Wacom Bamboo 16FG 4x5 Pen stylus" "Device Accel Constant Deceleration" 4
+xinput set-prop "Wacom Bamboo 16FG 4x5 Pen stylus" "Device Accel Adaptive Deceleration" 2
+
+# Rotate so usb cable is not disturbing me
+# xinput set-prop 14 "Evdev Axis Inversion" 1 1
+# xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen" MapToOutput LVDS1
+
+exit 0
