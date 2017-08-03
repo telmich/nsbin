@@ -41,6 +41,7 @@ if __name__ == "__main__":
         addr = first_addr.reverse_pointer
         name = "{}.place5.ungleich.ch".format(str(first_addr).replace(":",""))
         record = "{}. IN PTR {}.".format(addr, name)
+        record = "{}. IN AAAA {}".format(name, first_addr)
 
         print(record)
 
