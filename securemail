@@ -41,7 +41,6 @@ ssh -T -f -C -N \
     -L2324:imap.googlemail.com:$IMAPS   \
     -L2325:mail.zhaw.ch:$IMAPS          \
     -L2326:imap.googlemail.com:$POP3S   \
-
     "$HOST" && sendmail -q
 
 # Fernzugriff
