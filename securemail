@@ -36,16 +36,17 @@ fi
 #    -R :4242:localhost:22               \
 
 ssh -T -f -C -N \
-    -L2323:mx.ungleich.ch:$IMAPS        \
-    -L4241:mx.ungleich.ch:$SMTP         \
+    -L[::1]:2323:localhost:$IMAPS        \
+    -L[::1]:4241:localhost:$SMTP         \
     -L2324:imap.googlemail.com:$IMAPS   \
     -L2325:mail.zhaw.ch:$IMAPS          \
     -L2326:imap.googlemail.com:$POP3S   \
-    -D 3128 "$@"                        \
+
     "$HOST" && sendmail -q
 
 # Fernzugriff
 # ssh -T -f -C -N -R4242:localhost:22 "$HOST"
+#    -D 3128 "$@"                        \
 
 #ssh -T -f -C -N -L2342:mx2.schottelius.org:$SMTP 62.65.138.66
 #ssh -T -f -C -N -L4242:imaps.schottelius.org:$IMAPS "$HOST"

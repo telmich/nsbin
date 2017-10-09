@@ -17,14 +17,15 @@ fi
 xsetwacom --set "Wacom HID 484C Finger touch" MapToOutput "$display"
 xsetwacom --set "Wacom HID 484C Pen stylus" MapToOutput "$display"
 
-exit 0
+if xinput list | grep -q Bamboo; then
+    devfinger="Wacom Bamboo 16FG 4x5 Finger touch"
 
-devfinger="Wacom Bamboo 16FG 4x5 Finger"
+    xinput set-prop "$devfinger" "Device Enabled" 0
 
-xinput set-prop "$devfinger" "Device Enabled" 0
+    xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen stylus" MapToOutput $display
+    xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen eraser" MapToOutput $display
 
-#xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen stylus" MapToOutput $display
-#xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen eraser" MapToOutput $display
+fi
 
 exit 0
 
