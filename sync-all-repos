@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+for repo in ~/.ctt \
+                ~/vcs/notes/ \
+                ~/vcs/ungleich-administrativ/ \
+                ~/vcs/mindmap/ \
+                ~/.password-store \
+            ; do
+    cd $repo
+    git add .
+    git commit -m "updated by $0"
+    git pull
+    git push
+done
