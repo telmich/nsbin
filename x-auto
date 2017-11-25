@@ -5,7 +5,7 @@ if [ "$#" -lt 1 ]; then
     set -- "$@" above
 fi
 
-primary=eDP-1
+primary=eDP1
 
 # position: something xrandr understands
 position=$1; shift
