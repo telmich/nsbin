@@ -12,6 +12,7 @@ arrival="2017-01-24"; event="Algolabs exam"
 arrival="2017-01-30"; event="Algolabs exam 2"
 arrival="2017-02-07"; event="syssec"
 arrival="2017-08-21"; event="cil"
+arrival="2018-02-02"; event="algolab-1"
 
 export arrival event
 
