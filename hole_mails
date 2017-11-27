@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Tue Jul 18 15:13:45 CEST 2017
-#securemail
+securemail
 #fetchmail
 mbsync -a
 
