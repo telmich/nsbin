@@ -9,6 +9,9 @@
 # i3lock -i ~/.background.png --dpms --nofork
 
 # try to start - if it already runs it will just exit
-xscreensaver &
+if ! pgrep xscreensaver; then
+    xscreensaver -no-splash &
+    sleep 1
+fi
 
 xscreensaver-command -lock
