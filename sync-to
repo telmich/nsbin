@@ -6,7 +6,7 @@ set -x
 dsthost="$1"; shift
 case "$dsthost" in
     loch|rloch)
-        dst=root@$dsthost:/home/services/backup/notebook-manuell/home/users/nico/
+        dst=root@loch.place5.ungleich.ch:/home/services/backup/notebook-manuell/home/users/nico/
     ;;
     nico-vm)
         dst=nico-vm.schottelius.org:/data
