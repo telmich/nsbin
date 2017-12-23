@@ -4,6 +4,7 @@ set -e
 
 for repo in ~/.ctt \
                 ~/vcs/notes/ \
+                ~/vcs/nico-dot-cdist \
                 ~/vcs/mindmap/ \
                 ~/vcs/ungleich-administrativ/ \
                 ~/.password-store \

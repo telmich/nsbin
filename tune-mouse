@@ -14,8 +14,8 @@ else
 fi
 
 
-xsetwacom --set "Wacom HID 484C Finger touch" MapToOutput "$display"
-xsetwacom --set "Wacom HID 484C Pen stylus" MapToOutput "$display"
+xsetwacom --set "Wacom HID 484D Finger touch" MapToOutput "$display"
+xsetwacom --set "Wacom HID 484D Pen stylus" MapToOutput "$display"
 
 if xinput list | grep -q Bamboo; then
     devfinger="Wacom Bamboo 16FG 4x5 Finger touch"
