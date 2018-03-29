@@ -14,8 +14,6 @@ else
 fi
 
 
-xsetwacom --set "Wacom HID 484D Finger touch" MapToOutput "$display"
-xsetwacom --set "Wacom HID 484D Pen stylus" MapToOutput "$display"
 
 if xinput list | grep -q Bamboo; then
     devfinger="Wacom Bamboo 16FG 4x5 Finger touch"
@@ -35,6 +33,9 @@ xsetwacom --set "Wacom Bamboo 16FG 4x5 Pen stylus" mode relative
 
 xinput set-prop "Wacom Bamboo 16FG 4x5 Pen stylus" "Device Accel Constant Deceleration" 4
 xinput set-prop "Wacom Bamboo 16FG 4x5 Pen stylus" "Device Accel Adaptive Deceleration" 2
+
+xsetwacom --set "Wacom HID 484D Finger touch" MapToOutput "$display"
+xsetwacom --set "Wacom HID 484D Pen stylus" MapToOutput "$display"
 
 # Rotate so usb cable is not disturbing me
 # xinput set-prop 14 "Evdev Axis Inversion" 1 1
