@@ -18,7 +18,7 @@ my $user = shift;
 my $worte = shift;
 my $ppid = $$;
 
-# standard values: user changable
+# standard values: user changeable
 my $ua = LWP::UserAgent->new;
    $ua->agent("C3/25");          # as you like
 my $concurrent = 2;              # number of forks testing http-auth

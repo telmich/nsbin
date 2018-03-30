@@ -82,7 +82,7 @@ Proxy (return=none) :
 You can define wildcards, like: -*.gif +www.*.com/*.zip -*img_*.zip
 Wildcards (return=none) :+*.pdf
 
-You can define additional options, such as recurse level (-r<number>), separed by blank spaces
+You can define additional options, such as recurse level (-r<number>), separated by blank spaces
 To see the option list, type help
 Additional options (return=none) :--preserve
 

@@ -7,7 +7,7 @@
    
 
 if [ $# -lt 1 ]; then
-   echo `basename $0`': file(s) (may ommit .tex extension)'
+   echo `basename $0`': file(s) (may omit .tex extension)'
    echo 'Hey, hey guy, what to convert ?'
    exit 1
 fi   

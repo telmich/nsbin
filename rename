@@ -223,7 +223,7 @@ sub updateReferingPages
 			my $insertWeb = ($itemWeb eq $newWeb) ? "" : "$newWeb.";
 			s/($preTopic)\Q$oldWeb.$oldTopic\E(?=$postTopic)/$1$insertWeb$newTopic/g;
 		    } else {
-			# Only replace bare topic (i.e. not preceeded by web) if web of referring
+			# Only replace bare topic (i.e. not preceded by web) if web of referring
 			# topic is in original Web of topic that's being moved
 			if( $oldWeb eq $itemWeb ) {
 			    my $insertWeb = ($oldWeb eq $newWeb) ? "" : "$newWeb.";

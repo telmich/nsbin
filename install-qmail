@@ -142,7 +142,7 @@ case "\$1" in
    # ferne
    tcpserver -x /etc/tcp.smtp.cdb  -v -u \$QMAILD -g \$NOFILES 0 smtp $QMAIL_HOME/bin/qmail-smtpd 2>&1 | $QMAIL_HOME/bin/splogger smtpd 3 &
 
-   # lokal
+   # local
    $QMAIL_HOME/rc
 
    # pop3

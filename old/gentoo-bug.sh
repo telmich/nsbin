@@ -29,7 +29,7 @@ echo "Please enter information as exact as possible. Thanks."
 echo ""
 
 package=`reread package-name`
-error=`reread "Error occured (short description)"`
+error=`reread "Error occurred (short description)"`
 problem=`reread "Please describe problem in your words"`
 
 rm -f "$TMP"

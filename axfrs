@@ -30,7 +30,7 @@ for domain in "$@"; do
    $ECHO "Servers: $NS_SERVERS"
 
    for server in $NS_SERVERS; do
-      $ECHO "Quering $server for $domain ..."
+      $ECHO "Querying $server for $domain ..."
       $DIG @$server $domain axfr >> $domain-$server 2>&1
       $ECHO "Done. Saved output to $domain-$server"
    done   

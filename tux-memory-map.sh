@@ -17,7 +17,7 @@ awk '
          }
          return res;
       }
-      # hex numbers are big, do substract of small numbers!
+      # hex numbers are big, do subtract of small numbers!
       function hexsub(a, b)
       {
          hstr = "0123456789abdcef";

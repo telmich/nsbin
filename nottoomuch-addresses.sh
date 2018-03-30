@@ -138,7 +138,7 @@ if ($ARGV[0] eq '--update')
 
     unlink $adbpath if defined $ARGV[1] and $ARGV[1] eq '--rebuild';
 
-    my ($sstr, $acount) = (0, 0);
+    my ($sstr, $account) = (0, 0);
     if (-s $adbpath) {
 	die "Cannot open '$adbpath': $!\n" unless open I, '<', $adbpath;
 	sysread I, $_, 18;

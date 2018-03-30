@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # A simple web server that just listens for textarea filter requests
 # and runs an editor to manipulate the text.  Is intended to be
-# used with the TextAid extention for Chrome.
+# used with the TextAid extension for Chrome.
 #
 # NOTE:  If you use this on a shared system, you should configure TextAid
 # with a username & password and make sure that the saved authorization

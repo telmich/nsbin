@@ -13,7 +13,7 @@ while true; do
 	if [ $ret = "failed" ];  then
 		echo "Failed: "`date`
 	else
-		echo "Recieved: "`date`
+		echo "Received: "`date`
 	fi
 	sleep $sleep 
 done

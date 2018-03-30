@@ -77,13 +77,13 @@ PERCENT_ONE="This percentage lasted (in secs): "
 PERCENT_ALL="The complete battery would aprox. live about (minutes)"
 TIME_RAN="We ran so long:"
 PERCENT_START="We started at percent:"
-PERCENT_STOP="We stoped at percent:"
+PERCENT_STOP="We stopped at percent:"
 USED_PERCENT="We used so many percent of battery:"
 ONE_HOUR_TIME="For one hour running this machine we need"
 TO_LESS_PERCENT="Sorry, we ran to short and didn't get enough percents. \
 Please take some more time to run `basename $0`."
 TO_LESS_TIME="Sorry, we ran to short. Give me some more time to run."
-SORRY_ONLINE="Sorry, running apmcount while beeing AC-Online is senseless."
+SORRY_ONLINE="Sorry, running apmcount while being AC-Online is senseless."
 
 ####### END OF MESSAGES ########
 
@@ -125,7 +125,7 @@ if [ "`apm | grep "battery charging"`" != "" ]; then
    exit 1
 fi
 
-# do it until we recieve the ctrl+C sequenz
+# do it until we receive the ctrl+C sequenz
 while [ $EXIT != "yes" ] ; do
 
    # position number sixth is "XX%" (67%), eleminate the percent sign
