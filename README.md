@@ -10,6 +10,7 @@ driver.
 
 Also: supports multiple backlight outputs at the same time.
 
+```
 [14:12] line:~% cbackblight --help
 usage: cbackblight [-h] [--inc INC | --dec DEC | --set SET] [--get]
 
@@ -24,4 +25,8 @@ optional arguments:
 [14:12] line:~% cbackblight --inc 5
 [14:12] line:~% cbackblight --get
 intel_backlight: 72.17%
-[14:13] line:~%
+[14:13] line:~% cbackblight --dec 7 --get
+intel_backlight: 65.19%
+```
+
+It is basically a smarter / lighter xbacklight replacement
