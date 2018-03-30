@@ -1,3 +1,0 @@
-modprobe usb-storage
-modprobe ohci-hcd
-modprobe sd_mod

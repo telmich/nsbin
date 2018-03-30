@@ -1,3 +1,0 @@
-/root/scripts/add-links "$1"
-/root/scripts/rekursivperms "$1"
-chown -R .util "$1"
