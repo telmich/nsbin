@@ -28,12 +28,11 @@ HOST="root@mx.ungleich.ch"
 HOST="oneadmin@kaffee.ungleich.ch"
 HOST="root@mx-hetzner01.ungleich.ch"
 HOST="root@mx.place5.ungleich.ch"
+HOST="nico-vm.schottelius.org"
 
 if [ $# -ge 1 ]; then
     HOST=$1; shift
 fi
-
-#    -R :4242:localhost:22               \
 
 ssh -T -f -C -N \
     -L[::1]:2323:localhost:$IMAPS        \
@@ -41,7 +40,7 @@ ssh -T -f -C -N \
     -L2324:imap.googlemail.com:$IMAPS   \
     -L2325:mail.zhaw.ch:$IMAPS          \
     -L2326:imap.googlemail.com:$POP3S   \
-    "$HOST" && sendmail -q
+    "$HOST" && /usr/sbin/sendmail -q
 
 # Fernzugriff
 # ssh -T -f -C -N -R4242:localhost:22 "$HOST"
