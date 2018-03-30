@@ -1,5 +1,0 @@
-#!/bin/sh
-# Open vim
-
-# x-terminal-emulator -e vim "$@"
-urxvt -e vim "$@"

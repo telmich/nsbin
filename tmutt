@@ -1,2 +1,0 @@
-#!/bin/sh
-x-terminal-emulator -name mutt -e mutt "$@"

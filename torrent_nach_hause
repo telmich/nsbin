@@ -1,2 +1,0 @@
-#!/bin/sh
-scp *torrent zuhause.schottelius.org:torrent/t/ && rm *torrent
