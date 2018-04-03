@@ -1,4 +1,6 @@
 #!/bin/sh
-for d in DP1 DP2 HDMI1 HDMI2 VIRTUAL1; do
+
+# Turn off all outputs besides the primary - connected also matches disconnected ;-)
+for d in $(xrandr | grep -v primary | awk '/connected/ { print $1 }'); do
     xrandr --output $d --off
 done
