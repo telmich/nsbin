@@ -10,9 +10,8 @@ fi
 if [ $# -eq 1 ]; then
     display=$1
 else
-    display=eDP1
+    display="$(xrandr | awk '/primary/ { print $1 }')"
 fi
-
 
 
 if xinput list | grep -q Bamboo; then
