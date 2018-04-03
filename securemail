@@ -28,7 +28,7 @@ HOST="root@mx.ungleich.ch"
 HOST="oneadmin@kaffee.ungleich.ch"
 HOST="root@mx-hetzner01.ungleich.ch"
 HOST="root@mx.place5.ungleich.ch"
-HOST="nico-vm.schottelius.org"
+
 
 if [ $# -ge 1 ]; then
     HOST=$1; shift
