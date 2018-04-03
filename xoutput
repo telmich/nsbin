@@ -5,8 +5,8 @@
 mode="${1:-normal}"
 location="${2:-above}"
 resolution="${3:-1024x768}"
-#primary="${4:-$(xrandr | awk '/primary/ { print $1 }')}"
-primary="eDP1"
+primary="${4:-$(xrandr | awk '/primary/ { print $1 }')}"
+
 
 xrandr=$(xrandr)
 disconnected=$(echo "$xrandr" | grep disconnected | cut -d' ' -f1)
