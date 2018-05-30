@@ -16,6 +16,8 @@ arrival="2017-09-25"; event="euler-reinstallation"
 arrival="2018-02-02"; event="algolab-1"
 arrival="2018-03-03"; event="Sanghee"
 arrival="2018-06-01"; event="Plan raising funds"
+arrival="2018-06-01"; event="Plan raising funds"
+arrival="2018-08-06"; event="CIL Exam (project: 2018-07-02)"
 
 export arrival event
 
