@@ -18,6 +18,8 @@ arrival="2018-03-03"; event="Sanghee"
 arrival="2018-06-01"; event="Plan raising funds"
 arrival="2018-06-01"; event="Plan raising funds"
 arrival="2018-08-06"; event="CIL Exam (project: 2018-07-02)"
+arrival="2018-08-21"; event="FMSEC"
+arrival="2018-11-01"; event="Begin crowdfunding"
 
 export arrival event
 
