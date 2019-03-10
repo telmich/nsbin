@@ -1,1 +1,0 @@
-find ~/pub/hobby/tanzen/rnr/octopus_cup_2004/cd3 -type f -exec ../link.sh {} \;

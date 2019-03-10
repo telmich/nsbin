@@ -1,5 +1,0 @@
-#!/bin/sh
-
-cd ~/vcs/annex/audio 
-mpd --no-daemon ./mpd.conf 
-

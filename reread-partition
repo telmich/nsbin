@@ -1,7 +1,0 @@
-#!/bin/sh
-# cLinux
-# Nico Schottelius (nico-linux@schottelius.org)
-# 2004-12
-# 
-
-hdparm -z $1

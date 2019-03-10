@@ -1,4 +1,0 @@
-fetchmail &>/dev/null
-#ogg123 ~/computer/audio/aol/alle/m00001a2.wav &>/dev/null
-ogg123 temp/test.ogg
-#ogg123 ~/computer/audio/fun/gotmail.ogg &>/dev/null

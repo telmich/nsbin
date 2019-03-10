@@ -1,3 +1,0 @@
-for file in `find /mnt/dvd/  | grep .wav\$`; do
-   cat $file | oggenc - > `basename $file`
-done

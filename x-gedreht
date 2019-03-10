@@ -1,4 +1,0 @@
-#!/bin/sh
-# xrandr --output HDMI1 --auto --above DP1
-xrandr --output VGA1 --off
-xrandr --output HDMI1 --auto --left-of DP1 --rotate left

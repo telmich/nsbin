@@ -1,9 +1,0 @@
-#!/bin/sh
-
-read -p "Rechte gehoeren: " myrechte
-
-for a in $* 
-  do
-  cat $a | sed "s/FIRMA/${myrechte}/g" > $a.tmp
-  mv $a.tmp $a
-  done

@@ -1,9 +1,0 @@
-#!/bin/sh
-
-read -p "Keywords: " mykey
-
-for a in $* 
-  do
-  cat $a | sed "s/KEYWORDS/${mykey}/g" > $a.tmp
-  mv $a.tmp $a
-  done

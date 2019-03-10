@@ -1,1 +1,0 @@
-while [ true ]; do setleds +num; sleep 1; setleds -num +caps; sleep 1; setleds -caps +scroll; sleep 1; setleds -scroll; sleep 2; setleds +num +caps +scroll; sleep 1; setleds -num -scroll -caps;sleep 1;done

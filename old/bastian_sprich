@@ -1,4 +1,0 @@
-#!/bin/sh
-
-#ssh nico@nb-it-debian "txt2pho -f | mbrola -t 1.2 /usr/local/tts/data/de5/de5 - - | bplay -s 22050 -b 16"
-ssh nico@nb-it-debian "/usr/local/bin/mbr_say -"

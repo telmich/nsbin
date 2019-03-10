@@ -1,5 +1,0 @@
-#!/bin/sh
-
-export MPD_HOST=buche
-
-mpc play

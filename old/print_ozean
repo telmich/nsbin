@@ -1,8 +1,0 @@
-#!/bin/bash
-
-server="ozean"
-printcmd="/home/utils/easy_print"
-
-cat $@ | ssh $server -lroot "$printcmd"
-
-#ssh $server -lroot "$printcmd $basedir/$1"

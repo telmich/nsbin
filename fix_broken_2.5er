@@ -1,6 +1,0 @@
-#!/bin/sh
-
-cd /lib/modules/"$1"
-
-cp `find -name \*.ko` kernel
-~nico/bin/mmv ko o

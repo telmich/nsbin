@@ -1,3 +1,0 @@
-#!/bin/sh
-cd /home/server/www/nico/org/schottelius/unix
-webalizer -c webalizer/webalizer.conf logs/access.log.1

@@ -1,9 +1,0 @@
-
-if [ $# != 1 ]; then
-   echo "`basename $0`: Host"
-   exit 1
-fi
-
-host="$1"
-
-cat ~/.ssh/identity.pub | ssh $host "(mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys)"

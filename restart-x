@@ -1,7 +1,0 @@
-#!/bin/sh
-
-while true; do
-    startx
-    #cp /var/log/Xorg.0.log ~/Xorg.0.log-crash-$(date +%s)
-    sleep 1
-done

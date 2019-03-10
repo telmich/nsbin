@@ -1,9 +1,0 @@
-#!/bin/sh
-# Nico Schottelius (c) 2001
-# nico-linux at schottelius dot org
-# Kill ssh tunnels
-#
-
-#pkill -f -u nico "ssh -T -f -C -N -L"
-#pkill -f -u nico "ssh -T -f -C -N -R"
-pkill -f -u nico "ssh -T -f -C -N"

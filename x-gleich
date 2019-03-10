@@ -1,4 +1,0 @@
-#!/bin/sh
-xrandr --output HDMI1 --off
-xrandr --output VGA1 --auto --same-as DP1
-xrandr --output DP1 --auto --same-as DP1

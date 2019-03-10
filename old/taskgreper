@@ -1,5 +1,0 @@
-#!/bin/sh
-
-for proc in $@; do
-   ps ax|grep $proc|grep -v $0|grep -v "grep $proc"
-done   

@@ -1,3 +1,0 @@
-#!/bin/sh
-cd ~/computer/sources/linux/gpm/cvstree/
-screen -q

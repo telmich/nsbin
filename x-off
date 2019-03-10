@@ -1,6 +1,0 @@
-#!/bin/sh
-
-# Turn off all outputs besides the primary - connected also matches disconnected ;-)
-for d in $(xrandr | grep -v primary | awk '/connected/ { print $1 }'); do
-    xrandr --output $d --off
-done

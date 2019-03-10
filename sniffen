@@ -1,6 +1,0 @@
-cd ~nico
-ifconfig eth1 promisc up
-iwpriv eth1 monitor 1 6
-~/scripts/orinoco_hopper eth1 &
-kismet_monitor
-kismet

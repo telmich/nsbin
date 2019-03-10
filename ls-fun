@@ -1,9 +1,0 @@
-#!/bin/sh
-# Found somewhere on the net
-
-# ls with colors :)
-ls "$@" | perl -pe '$i=$.;s//\e[3@{[$i++%7+1]}m/g'
-
-# stop colors, if needed
-#echo -n "\033[m"
-#echo -n -e "\033[m"

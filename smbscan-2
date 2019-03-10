@@ -1,9 +1,0 @@
-BASE=192.168.0
-SMBCLIENT="smbclient -n NONE -L"
-
-i=0
-
-while [ $i -lt 255 ]; do 
-	$SMBCLIENT "$BASE"."$i"
-	i=$[$i+1]
-done

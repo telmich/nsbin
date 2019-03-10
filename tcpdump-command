@@ -1,2 +1,0 @@
-tcpdump -q -x port ftp or ftp-data | sed 's/..:..:..\..*//'
-

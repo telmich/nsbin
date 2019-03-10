@@ -1,2 +1,0 @@
-ssh -L 6667:irc.freenet.de:6667 -N schottelius.org
-ssh -L 6668:irc.schottelius.org:6667 -N schottelius.org

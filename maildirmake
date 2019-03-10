@@ -1,8 +1,0 @@
-for a in $@; do
-   echo "Creating maildir $a"
-   # bash only
-   #mkdir -p "$a"/{new,tmp,cur}
-   mkdir -p "$a"/new
-   mkdir -p "$a"/tmp
-   mkdir -p "$a"/cur
-done

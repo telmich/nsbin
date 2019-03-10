@@ -1,2 +1,0 @@
-iptables -t nat -A POSTROUTING -o eth0 -s 172.16.23.10 -j SNAT --to 62.65.138.74
-iptables -t nat -A POSTROUTING -o eth0 -s 172.16.23.6 -j SNAT --to 62.65.138.74

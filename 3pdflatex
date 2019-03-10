@@ -1,5 +1,0 @@
-#!/bin/sh
-
-file="$1"
-
-pdflatex "$file" && pdflatex "$file" && pdflatex "$file"

@@ -1,3 +1,0 @@
-#!/bin/sh
-
-ssh -o 'ProxyCommand corkscrew 192.168.100.10 3128 %h %p' $@

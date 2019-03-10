@@ -1,2 +1,0 @@
-#tcpdump -i ppp0 port ! ftp and port ! ftp-data and port ! ssh and port ! ircd $@
-tcpdump -i ppp0 port ! ssh and port ! ircd $@

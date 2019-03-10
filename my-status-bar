@@ -1,9 +1,0 @@
-#!/bin/sh
-
-i3status | while :
-do
-    read line
-    sut=$(sut)
-    korea=$(TZ='Asia/Seoul' date "+%F %H:%M %Z")
-    echo "$korea | $sut | $line" || exit 1
-done

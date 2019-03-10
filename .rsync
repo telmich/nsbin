@@ -1,3 +1,0 @@
-[ $# -ge 1 ] || exit 23
-
-rsync -av --exclude .git ./ "$@"

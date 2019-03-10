@@ -1,4 +1,0 @@
-
-~/scripts/enab_fbdev
-~/scripts/enab_sound
-mplayer -nogui -vo fbdev -dvd 1 /dev/cdroms/cdrom0 "$@"

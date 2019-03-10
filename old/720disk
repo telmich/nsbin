@@ -1,4 +1,0 @@
-#!/bin/bash
-fdformat /dev/fd0h720
-mformat -s 8 -t 80 -h 2 a:
-mdir a:

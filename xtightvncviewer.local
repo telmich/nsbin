@@ -1,6 +1,0 @@
-#!/bin/sh
-# Do Mär  9 15:52:13 CET 2006
-
-xtightvncviewer -encodings \
-   "copyrect tight hextile zlib corre rre raw" \
-   $@

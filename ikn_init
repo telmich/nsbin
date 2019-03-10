@@ -1,7 +1,0 @@
-#!/bin/sh
-# + screen
-# + x
-xrandr  --output LVDS1 --off 
-# use latest version
-/home/users/nico/temp/build/synergy-read-only/bin/synergyc kr
-sgterm &

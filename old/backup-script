@@ -1,5 +1,0 @@
-HOST=fs2
-BACKUP_DIR=backup
-DATA_DIRS=$HOME
-
-time tar cf - $DATA_DIRS | ssh $HOST "gzip -c > $BACKUP_DIR/`date +%d-%b-%Y`.tar.gz "

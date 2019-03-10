@@ -1,4 +1,0 @@
-#!/bin/sh
-
-. /home/users/nico/p/foreign/irker/virtualenv/bin/activate
-/home/users/nico/p/foreign/irker/irker/irkerd "$@"

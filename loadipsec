@@ -1,5 +1,0 @@
-modprobe esp4
-modprobe ah4
-modprobe ip_gre
-modprobe ipcomp
-modprobe af_key

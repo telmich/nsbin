@@ -1,9 +1,0 @@
-#!/bin/sh
-
-read -p "Datum: " mydate
-
-for a in $* 
-  do
-  cat $a | sed "s/DATUM/${mydate}/g" > $a.tmp
-  mv $a.tmp $a
-  done

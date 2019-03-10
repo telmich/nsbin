@@ -1,8 +1,0 @@
-#!/bin/sh
-
-touch ~/privat/rechner/eigene/.lastsync
-
-rsync -av --delete --progress 	\
-	"$@" 			\
-	~/.ssh ~/.gnupg ~/privat/rechner/eigene/ \
-    /mnt

@@ -1,3 +1,0 @@
-#enscript -2 -b "qmail-remote.c" -E -G -j -M A4 -o druck.ps -r -v
-enscript -2 -E -G -j -M A4 -o druck.ps -r -v "$@"
-

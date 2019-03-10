@@ -1,6 +1,0 @@
-for a in $@; do
-   if [ ! -e "$a" ]; then
-      echo removing "$a"...
-      rm "$a"
-   fi
-done

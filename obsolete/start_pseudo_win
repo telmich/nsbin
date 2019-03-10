@@ -1,7 +1,0 @@
-xsetroot -solid black
-sleep 1
-wmsetbg -e computer/images/fun/windows95.jpg -s -b black
-sleep 5
-wmsetbg -e computer/images/fun/screenshot-winxp2.jpg
-sleep 5
-wmsetbg -a computer/html/darkpage/images/noms/bugs/bsod1.gif

@@ -1,5 +1,0 @@
-#!/bin/sh
-
-x-off
-xrandr --output DP1 --auto --rotate normal --right-of eDP1
-xrandr --output HDMI1 --auto --rotate normal --right-of eDP1

@@ -1,6 +1,0 @@
-~/bin/route home
-ssh ozean -lroot ". onlinegehen"
-su -l nico -c mutt
-ssh ozean -lroot ". offlinegehen"
-read -p "Shutdown ? (y/n)" yes
-case "$yes" in y|Y|j|J) shutdown -h now	;; esac

@@ -1,1 +1,0 @@
-netcat -p 37337 -l > /dev/sound/dsp

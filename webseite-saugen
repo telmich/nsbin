@@ -1,1 +1,0 @@
-wget -x -l 1 -r -k -p -H -N -E "$@"

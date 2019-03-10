@@ -1,4 +1,0 @@
-killall -ALRM qmail-send
-sleep 2
-sendmail -bp
-ps xau| grep qmail-remote | sed 's/.*\(qmail-remote.*\)/\1/g'

@@ -1,8 +1,0 @@
-#!/bin/sh
-#
-# Nico Schottelius <nico-linux@schottelius.org>
-# Date: 09-Nov-2005
-# Last Modified: -
-#
-
-find "$1" -exec chmod u+rw,og-rwx {} \;

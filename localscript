@@ -1,3 +1,0 @@
-#!/bin/sh
-
-script -a ~/localch/vcs/logs/$(date +%Y-%m-%d).script "$@"

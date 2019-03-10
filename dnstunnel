@@ -1,9 +1,0 @@
-#!/bin/sh
-
-
-ns=$1; shift
-
-sudo iodine -f "$ns" 42.schottelius.org "$@" < ~nico/.iodine-password
-
-#ip route del default
-#ip route add default via 172.16.0.1

@@ -1,6 +1,0 @@
-#!/bin/sh
-# Nico Schottelius (nico-linux@schottelius.org)
-# 2004-12
-# 
-
-hdparm -d1 -c1 $1

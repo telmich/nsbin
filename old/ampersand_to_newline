@@ -1,1 +1,0 @@
-cat test | perl -e 'while(<>) { s/&/\n/; print $_; }'
