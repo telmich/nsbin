@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Assuming *m4a in one directory
+
+# Shuffle and convert
+for i in *.m4a; do
+    o=$(echo $i | md5sum | cut -d " " -f1).wav;
+    ffmpeg -i "$i" "$o"
+done
+
+wodim -v -pad -dao -swab *wav

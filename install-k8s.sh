@@ -10,5 +10,6 @@ while [ $# -ge 1 ]; do
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF"
     ssh root@$host "apt-get update; apt-get install -y kubeadm kubectl; apt-mark hold kubelet kubeadm kubectl"
-
+    ssh root@$host "apt-get install -y docker.io && systemctl enable docker.service"
+    ssh root@$host "echo net.ipv6.conf.all.forwarding=1 > /etc/sysctl.conf; sysctl -p"
 done
