@@ -62,7 +62,7 @@ curl --silent --netrc ${site} | \
 
       print $2 ":" year cyear " " month " " day
    }
-      # print unchangable lines
+      # print unchangeable lines
       $4 ~ /(permanent|time-frame|^ *$)/ { print $0 }
    '
 

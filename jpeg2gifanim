@@ -3,7 +3,7 @@
 # Date: 14th of March 2k+1
 # LastChanged: 15th of March 2k+1
 # Copying: See GNU GENERAL PUBLIC LICENSE ; Version 2, June 1991 
-# Descripton: JPEG to GIF
+# Description: JPEG to GIF
 # This script uses the Blender output (JPEG files) and makes
 # an gif-animation of them
 
